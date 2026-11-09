@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stitchease | Your Style, Your Way</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- LOGIN AND REGISTRATION -->
+    <section id="customerSection" class="page auth-page">
+        <header class="site-header">
+            <a class="brand" href="#" onclick="showPage('customerSection'); showLogin(); return false;">
+                <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
+            </a>
+        </header>
+
+        <main class="auth-layout">
+            <div class="auth-intro">
+                <span class="eyebrow">MADE JUST FOR YOU</span>
+                <h1>Fashion that fits<br><em>your story.</em></h1>
+
+                <!-- INTRODUCTION WITH MEASUREMENT IMAGE -->
+                <div class="intro-visual">
+                    <img
+                        src="stitchease-measurement-illustration.png"
+                        alt="Fashion designer taking body measurements"
+                        class="intro-image"
+                    >
+
+                    <div class="intro-copy">
+                        <p>Your personal space for customized fashion, thoughtful details, and outfits made to feel like you.</p>
+
+                        <div class="intro-note">
+                            <i data-lucide="heart"></i>
+                            <span>Designed around you. Stitched with care.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-card">
+                <div id="loginForm">
+                    <span class="eyebrow">WELCOME BACK</span>
+                    <h2>Welcome to Stitchease</h2>
+                    <p class="muted">Your personalized fashion journey starts here.</p>
+
+                    <form onsubmit="event.preventDefault(); login();">
+                        <label for="loginEmail">Email address</label>
+                        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" required>
+
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password" required>
+
+                        <button class="btn btn-primary btn-full" type="submit">
+                            Login <i data-lucide="arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <p class="auth-switch">New customer?
+                        <a href="#" onclick="showRegister(); return false;">Create an account</a>
+                    </p>
+
+                    <button class="text-button" onclick="showAdminLogin()">
+                        <i data-lucide="store"></i> Boutique Admin Login
+                    </button>
+                </div>
+
+                <div id="registerForm" hidden>
+                    <span class="eyebrow">YOUR STYLE JOURNEY</span>
+                    <h2>Create your account</h2>
+                    <p class="muted">Join Stitchease for a more personal fashion experience.</p>
+
+                    <form onsubmit="event.preventDefault(); register();">
+                        <label for="registerName">Full name</label>
+                        <input type="text" id="registerName" placeholder="Your full name" autocomplete="name" required>
+
+                        <label for="registerEmail">Email address</label>
+                        <input type="email" id="registerEmail" placeholder="you@example.com" autocomplete="email" required>
+
+                        <label for="registerPassword">Create password</label>
+                        <input type="password" id="registerPassword" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required>
+
+                        <button class="btn btn-primary btn-full" type="submit">
+                            Create Account <i data-lucide="arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <p class="auth-switch">Already registered?
+                        <a href="#" onclick="showLogin(); return false;">Back to Login</a>
+                    </p>
+                </div>
+
+                <p id="authMessage" class="message" role="status"></p>
+            </div>
+        </main>
+
+        <footer class="site-footer">A little more personal. A little more you. ♡</footer>
+    </section>
+
+    <!-- CUSTOMER DASHBOARD -->
+    <section id="customerDashboard" class="page" hidden>
+        <header class="app-header">
+            <a class="brand" href="#" onclick="showHome(); return false;">
+                <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
+            </a>
+
+            <button class="dashboard-bar" onclick="showHome()">
+                <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+            </button>
+
+            <div class="header-user">
+                <span class="avatar" id="userInitial">A</span>
+                <span id="headerCustomerName">Customer</span>
+                <button class="icon-button" title="Logout" aria-label="Logout" onclick="logout()">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <section class="welcome-banner">
+                <div>
+                    <span class="eyebrow">YOUR PERSONAL SPACE</span>
+                    <h1 id="welcomeMessage">Welcome!</h1>
+                    <p>Manage your measurements and boutique appointments in one place.</p>
+                </div>
+                <div class="welcome-decoration" aria-hidden="true">
+                    <i data-lucide="flower-2"></i>
+                </div>
+            </section>
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">YOUR BOUTIQUE, YOUR WAY</span>
+                    <h2>What would you like to do?</h2>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <button class="feature-card" onclick="openProfile()">
+                    <span class="feature-icon"><i data-lucide="heart"></i></span>
+                    <span class="feature-title">My Profile</span>
+                    <span class="feature-description">Update your details and body measurements.</span>
+                    <span class="feature-link">View profile <i data-lucide="arrow-up-right"></i></span>
+                </button>
+
+                <button class="feature-card" onclick="openAppointments()">
+                    <span class="feature-icon"><i data-lucide="calendar-heart"></i></span>
+                    <span class="feature-title">Book Appointment</span>
+                    <span class="feature-description">Arrange a boutique visit and view your appointments.</span>
+                    <span class="feature-link">Book a visit <i data-lucide="arrow-up-right"></i></span>
+                </button>
+
+                <button class="feature-card" onclick="showPage('designsSection')">
+                    <span class="feature-icon"><i data-lucide="sparkles"></i></span>
+                    <span class="feature-title">Explore Customized Fashion</span>
+                    <span class="feature-description">Share your style preferences for a personalized outfit.</span>
+                    <span class="feature-link">Explore styles <i data-lucide="arrow-up-right"></i></span>
+                </button>
+
+                <button class="feature-card" onclick="openOrders()">
+                    <span class="feature-icon"><i data-lucide="shopping-bag"></i></span>
+                    <span class="feature-title">My Orders</span>
+                    <span class="feature-description">Keep your custom outfit orders in one place.</span>
+                    <span class="feature-link">View orders <i data-lucide="arrow-up-right"></i></span>
+                </button>
+            </div>
+
+            <div class="dashboard-bottom">
+                <i data-lucide="heart-handshake"></i>
+                <p><strong>Your style, your story.</strong><br>Thoughtful details make every outfit special.</p>
+            </div>
+        </main>
+    </section>
+
+    <!-- MY PROFILE -->
+    <section id="profileSection" class="page" hidden>
+        <header class="app-header">
+            <a class="brand" href="#" onclick="showHome(); return false;">
+                <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
+            </a>
+            <button class="dashboard-bar" onclick="showHome()">
+                <i data-lucide="layout-dashboard"></i><span>Back to Home</span>
+            </button>
+            <button class="btn btn-outline btn-small" onclick="logout()">Logout</button>
+        </header>
+
+        <main class="content-main">
+            <button class="back-link" onclick="showHome()"><i data-lucide="arrow-left"></i> Back to Home</button>
+
+            <div class="page-heading">
+                <span class="eyebrow">GETTING TO KNOW YOU</span>
+                <h1>My Profile</h1>
+                <p>Your personal details and measurements, saved to your account.</p>
+            </div>
+
+            <form id="profileForm" class="form-card" onsubmit="event.preventDefault(); saveProfile();">
+                <div class="form-section-title">
+                    <span class="form-icon"><i data-lucide="user-round"></i></span>
+                    <div><h2>Personal Details</h2><p>Keep your contact information up to date.</p></div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="profileName">Full name</label>
+                        <input type="text" id="profileName" required>
+                    </div>
+                    <div class="field">
+                        <label for="profileEmail">Email address</label>
+                        <input type="email" id="profileEmail" required>
+                    </div>
+                    <div class="field">
+                        <label for="profilePhone">Phone number</label>
+                        <input type="tel" id="profilePhone" placeholder="Enter phone number">
+                    </div>
+                    <div class="field">
+                        <label for="profileAddress">Address</label>
+                        <input type="text" id="profileAddress" placeholder="Enter your address">
+                    </div>
+                </div>
+
+                <div class="form-section-title measurements-title">
+                    <span class="form-icon"><i data-lucide="ruler"></i></span>
+                    <div><h2>Body Measurements</h2><p>Enter measurements in centimetres (cm). You can update them any time.</p></div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field"><label for="height">Height (cm)</label><input type="number" id="height" min="0.1" step="0.1" placeholder="e.g. 160"></div>
+                    <div class="field"><label for="shoulder">Shoulder (cm)</label><input type="number" id="shoulder" min="0.1" step="0.1" placeholder="e.g. 38"></div>
+                    <div class="field"><label for="bust">Bust (cm)</label><input type="number" id="bust" min="0.1" step="0.1" placeholder="e.g. 86"></div>
+                    <div class="field"><label for="waist">Waist (cm)</label><input type="number" id="waist" min="0.1" step="0.1" placeholder="e.g. 70"></div>
+                    <div class="field"><label for="hip">Hip (cm)</label><input type="number" id="hip" min="0.1" step="0.1" placeholder="e.g. 94"></div>
+                    <div class="field"><label for="sleeve">Sleeve length (cm)</label><input type="number" id="sleeve" min="0.1" step="0.1" placeholder="e.g. 56"></div>
+                    <div class="field"><label for="dressLength">Dress length (cm)</label><input type="number" id="dressLength" min="0.1" step="0.1" placeholder="e.g. 105"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save My Details</button>
+                    <button type="button" class="btn btn-outline" onclick="loadProfile()">Reload Saved Details</button>
+                </div>
+                <p id="profileMessage" class="message" role="status"></p>
+            </form>
+        </main>
+    </section>
+
+    <!-- APPOINTMENTS -->
+    <section id="appointmentSection" class="page" hidden>
+        <header class="app-header">
+            <a class="brand" href="#" onclick="showHome(); return false;">
+                <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
+            </a>
+            <button class="dashboard-bar" onclick="showHome()"><i data-lucide="layout-dashboard"></i><span>Back to Home</span></button>
+            <button class="btn btn-outline btn-small" onclick="logout()">Logout</button>
+        </header>
+
+        <main class="content-main">
+            <button class="back-link" onclick="showHome()"><i data-lucide="arrow-left"></i> Back to Home</button>
+            <div class="page-heading">
+                <span class="eyebrow">LET'S MAKE TIME FOR YOU</span>
+                <h1>Book Appointment</h1>
+                <p>Plan a visit to discuss your measurements, design, or custom outfit.</p>
+            </div>
+
+            <div class="two-column-layout">
+                <form class="form-card" onsubmit="event.preventDefault(); bookAppointment();">
+                    <div class="form-section-title">
+                        <span class="form-icon"><i data-lucide="calendar-days"></i></span>
+                        <div><h2>Appointment Details</h2><p>Choose a date and time that works for you.</p></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="appointmentDate">Preferred date</label>
+                        <input type="date" id="appointmentDate" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="appointmentTime">Preferred time</label>
+                        <select id="appointmentTime" required>
+                            <option value="">Choose a time</option>
+                            <option>10:00 AM</option>
+                            <option>11:00 AM</option>
+                            <option>12:00 PM</option>
+                            <option>2:00 PM</option>
+                            <option>3:00 PM</option>
+                            <option>4:00 PM</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="appointmentPurpose">Purpose of visit</label>
+                        <select id="appointmentPurpose" required>
+                            <option value="">Choose a purpose</option>
+                            <option>Measurements</option>
+                            <option>Custom Outfit</option>
+                            <option>Design Consultation</option>
+                            <option>Order Discussion</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="appointmentNotes">Additional notes (optional)</label>
+                        <textarea id="appointmentNotes" rows="3" placeholder="Tell us anything you'd like us to know."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full"><i data-lucide="calendar-check"></i> Book Appointment</button>
+                    <p id="appointmentMessage" class="message" role="status"></p>
+                </form>
+
+                <aside class="form-card appointments-card">
+                    <div class="form-section-title">
+                        <span class="form-icon"><i data-lucide="calendar-heart"></i></span>
+                        <div><h2>My Appointments</h2><p>Your appointment list</p></div>
+                    </div>
+                    <div id="appointmentsList" class="appointments-list">
+                        <p class="empty-state">No appointments booked yet.</p>
+                    </div>
+                    <p class="small-note">Appointments are currently saved in this browser for your account. Boutique-wide scheduling can be connected to the backend later.</p>
+                </aside>
+            </div>
+        </main>
+    </section>
+
+    <!-- EXPLORE CUSTOMIZED FASHION -->
+    <section id="designsSection" class="page" hidden>
+        <header class="app-header">
+            <a class="brand" href="#" onclick="showHome(); return false;">
+                <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
+            </a>
+            <button class="dashboard-bar" onclick="showHome()"><i data-lucide="layout-dashboard"></i><span>Back to Home</span></button>
+            <button class="btn btn-outline btn-small" onclick="logout()">Logout</button>
+        </header>
+
+        <main class="content-main">
+            <button class="back-link" onclick="showHome()"><i data-lucide="arrow-left"></i> Back to Home</button>
+            <div class="page-heading">
+                <span class="eyebrow">YOUR IDEAS, YOUR STYLE</span>
+                <h1>Explore Customized Fashion</h1>
+                <p>Share the details of your dream outfit to help plan your custom design.</p>
+            </div>
+
+            <div class="fashion-intro">
+                <i data-lucide="sparkles"></i>
+                <div><h2>Your style, thoughtfully customized</h2><p>Choose your preferences below. AI-generated design suggestions can be connected as a future enhancement.</p></div>
+            </div>
+
+            <form class="form-card fashion-form" onsubmit="event.preventDefault(); saveFashionPreferences();">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="outfitType">Outfit type</label>
+                        <select id="outfitType" required>
+                            <option value="">Choose outfit type</option>
+                            <option>Kurti</option>
+                            <option>Saree Blouse</option>
+                            <option>Lehenga</option>
+                            <option>Gown</option>
+                            <option>Dress</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="outfitColor">Preferred colour</label>
+                        <input type="text" id="outfitColor" placeholder="e.g. Dusty rose, maroon">
+                    </div>
+                    <div class="field">
+                        <label for="outfitFabric">Preferred fabric</label>
+                        <input type="text" id="outfitFabric" placeholder="e.g. Silk, cotton, chiffon">
+                    </div>
+                    <div class="field">
+                        <label for="outfitOccasion">Occasion</label>
+                        <select id="outfitOccasion">
+                            <option value="">Choose occasion (optional)</option>
+                            <option>Everyday wear</option>
+                            <option>College or work</option>
+                            <option>Festive</option>
+                            <option>Wedding</option>
+                            <option>Party</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="field field-full">
+                        <label for="outfitStyle">Describe your design</label>
+                        <textarea id="outfitStyle" rows="4" placeholder="Describe neckline, sleeves, embroidery, patterns, fit, or any inspiration you have."></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i data-lucide="heart"></i> Save My Preferences</button>
+                <p id="fashionMessage" class="message" role="status"></p>
+            </form>
+        </main>
+    </section>
+
+    <!-- MY ORDERS -->
+    <section id="ordersSection" class="page" hidden>
+        <header class="app-header">
+            <a class="brand" href="#" onclick="showHome(); return false;">
+                <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
+            </a>
+            <button class="dashboard-bar" onclick="showHome()">
+                <i data-lucide="layout-dashboard"></i><span>Back to Home</span>
+            </button>
+            <button class="btn btn-outline btn-small" onclick="logout()">Logout</button>
+        </header>
+
+        <main class="content-main">
+            <button class="back-link" onclick="showHome()"><i data-lucide="arrow-left"></i> Back to Home</button>
+
+            <div class="page-heading">
+                <span class="eyebrow">MADE ESPECIALLY FOR YOU</span>
+                <h1>My Orders</h1>
+                <p>Place your custom outfit order and follow its progress.</p>
+            </div>
+
+            <div class="two-column-layout orders-layout">
+                <form id="customOrderForm" class="form-card" onsubmit="event.preventDefault(); placeCustomOrder();">
+                    <div class="form-section-title">
+                        <span class="form-icon"><i data-lucide="scissors"></i></span>
+                        <div>
+                            <h2>Create a Custom Order</h2>
+                            <p>Tell us how you would like your outfit made.</p>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="orderOutfitType">Outfit type</label>
+                        <select id="orderOutfitType" required>
+                            <option value="">Choose outfit type</option>
+                            <option value="Kurti">Kurti</option>
+                            <option value="Saree Blouse">Saree Blouse</option>
+                            <option value="Lehenga">Lehenga</option>
+                            <option value="Gown">Gown</option>
+                            <option value="Dress">Dress</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="orderColor">Preferred colour</label>
+                        <input id="orderColor" type="text" placeholder="e.g. Dusty rose" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="orderFabric">Preferred fabric</label>
+                        <input id="orderFabric" type="text" placeholder="e.g. Cotton, silk" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="orderOccasion">Occasion</label>
+                        <select id="orderOccasion">
+                            <option value="">Choose occasion (optional)</option>
+                            <option>Everyday wear</option>
+                            <option>College or work</option>
+                            <option>Festive</option>
+                            <option>Wedding</option>
+                            <option>Party</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="orderDescription">Customization details</label>
+                        <textarea id="orderDescription" rows="3" placeholder="Neckline, sleeves, embroidery, fit, etc."></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label for="orderDuration">Customization duration</label>
+                        <select id="orderDuration" required>
+                            <option value="3">3 days</option>
+                            <option value="5" selected>5 days</option>
+                            <option value="7">7 days</option>
+                            <option value="10">10 days</option>
+                            <option value="14">14 days</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="orderPayment">Mode of payment</label>
+                        <select id="orderPayment" required>
+                            <option value="">Choose payment mode</option>
+                            <option value="Cash at Boutique">Cash at Boutique</option>
+                            <option value="Card at Boutique">Card at Boutique</option>
+                        </select>
+                    </div>
+
+                    <div class="order-estimate">
+                        <span>Estimated price</span>
+                        <strong id="orderPrice">₹1,000</strong>
+                        <p id="orderPriceNote">Indicative estimate; final price will be confirmed by the boutique.</p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i data-lucide="shopping-bag"></i> Place Custom Order
+                    </button>
+
+                    <p id="orderMessage" class="message" role="status"></p>
+                </form>
+
+                <aside class="form-card">
+                    <div class="form-section-title">
+                        <span class="form-icon"><i data-lucide="package-check"></i></span>
+                        <div>
+                            <h2>My Order Summary</h2>
+                            <p>Your saved custom orders and their status.</p>
+                        </div>
+                    </div>
+
+                    <div id="ordersList" class="orders-list">
+                        <p class="empty-state">You haven't placed any orders yet.</p>
+                    </div>
+
+                    <p class="small-note">
+                        Orders are currently saved in this browser. Order status updates from the boutique require backend integration.
+                    </p>
+                </aside>
+            </div>
+        </main>
+    </section>
+
+    <!-- BOUTIQUE ADMIN LOGIN -->
+    <section id="boutiqueLogin" class="page auth-page" hidden>
+        <header class="site-header">
+            <a class="brand" href="#" onclick="showPage('customerSection'); showLogin(); return false;">
+                <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
+            </a>
+        </header>
+        <main class="admin-card form-card">
+            <span class="eyebrow">BOUTIQUE MANAGEMENT</span>
+            <h1>Admin Login</h1>
+            <p class="muted">The admin login service is not connected to the current Flask backend yet.</p>
+            <p class="small-note">Your current app.py provides customer registration, login, and profile APIs only.</p>
+            <button class="btn btn-primary btn-full" onclick="showPage('customerSection'); showLogin()">Back to Customer Login</button>
+        </main>
+    </section>
+
+    <script src="script.js"></script>
+    <!-- STITCHEASE CHATBOT -->
+<div id="chatbot">
+    <button id="chatbotToggle" aria-label="Open chat">
+        💬
+    </button>
+
+    <div id="chatbotWindow" hidden>
+        <div class="chatbot-header">
+            <div>
+                <strong>Stitchease Assistant</strong>
+                <small>We're here to help!</small>
+            </div>
+            <button id="chatbotClose" aria-label="Close chat">×</button>
+        </div>
+
+        <div id="chatbotMessages" class="chatbot-messages">
+            <div class="bot-message">
+                Hi! Welcome to Stitchease 👋<br>
+                How can I help you today?
+            </div>
+        </div>
+
+        <form id="chatbotForm" class="chatbot-input">
+            <input
+                type="text"
+                id="chatbotText"
+                placeholder="Type your message..."
+                autocomplete="off"
+                required
+            >
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</div>
+<iframe
+    src="./chatbot.html"
+    title="Stitchease Chatbot"
+    style="
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        width: 400px;
+        height: 520px;
+        border: none;
+        background: transparent;
+        z-index: 99999;
+    ">
+</iframe>
+</body>
+</html>
