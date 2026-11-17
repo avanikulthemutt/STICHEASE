@@ -469,122 +469,165 @@
                 <span class="brand-icon"><i data-lucide="scissors"></i></span>
                 <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
             </a>
+
             <button class="dashboard-bar" onclick="showHome()">
-                <i data-lucide="layout-dashboard"></i><span>Back to Home</span>
+                <i data-lucide="layout-dashboard"></i>
+                <span>Back to Home</span>
             </button>
+
             <button class="btn btn-outline btn-small" onclick="logout()">Logout</button>
         </header>
 
-        <main class="content-main">
-            <button class="back-link" onclick="showHome()"><i data-lucide="arrow-left"></i> Back to Home</button>
+        <main class="content-main orders-page">
+            <button class="back-link" onclick="showHome()">
+                <i data-lucide="arrow-left"></i> Back to Home
+            </button>
 
-            <div class="page-heading">
-                <span class="eyebrow">MADE ESPECIALLY FOR YOU</span>
-                <h1>My Orders</h1>
-                <p>Place your custom outfit order and follow its progress.</p>
+            <div class="orders-hero">
+                <div>
+                    <span class="eyebrow">MADE ESPECIALLY FOR YOU</span>
+                    <h1>My Orders</h1>
+                    <p>Every detail matters. Create your custom outfit and keep track of its journey.</p>
+                </div>
+                <div class="orders-hero-icon">
+                    <i data-lucide="package-check"></i>
+                </div>
             </div>
 
-            <div class="two-column-layout orders-layout">
-                <form id="customOrderForm" class="form-card" onsubmit="event.preventDefault(); placeCustomOrder();">
-                    <div class="form-section-title">
-                        <span class="form-icon"><i data-lucide="scissors"></i></span>
+            <div class="orders-layout">
+
+                <!-- CREATE CUSTOM ORDER -->
+                <section class="form-card order-create-card">
+                    <div class="orders-card-heading">
+                        <div class="orders-heading-icon">
+                            <i data-lucide="scissors"></i>
+                        </div>
                         <div>
+                            <span class="eyebrow">YOUR DESIGN, YOUR WAY</span>
                             <h2>Create a Custom Order</h2>
-                            <p>Tell us how you would like your outfit made.</p>
+                            <p>Share your preferences with our boutique.</p>
                         </div>
                     </div>
 
-                    <div class="field">
-                        <label for="orderOutfitType">Outfit type</label>
-                        <select id="orderOutfitType" required>
-                            <option value="">Choose outfit type</option>
-                            <option value="Kurti">Kurti</option>
-                            <option value="Saree Blouse">Saree Blouse</option>
-                            <option value="Lehenga">Lehenga</option>
-                            <option value="Gown">Gown</option>
-                            <option value="Dress">Dress</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
+                    <form id="customOrderForm" onsubmit="event.preventDefault(); placeCustomOrder();">
 
-                    <div class="field">
-                        <label for="orderColor">Preferred colour</label>
-                        <input id="orderColor" type="text" placeholder="e.g. Dusty rose" required>
-                    </div>
+                        <div class="field">
+                            <label for="orderOutfitType">Outfit type</label>
+                            <select id="orderOutfitType" required>
+                                <option value="">Choose outfit type</option>
+                                <option value="Kurti">Kurti</option>
+                                <option value="Saree Blouse">Saree Blouse</option>
+                                <option value="Lehenga">Lehenga</option>
+                                <option value="Gown">Gown</option>
+                                <option value="Dress">Dress</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
 
-                    <div class="field">
-                        <label for="orderFabric">Preferred fabric</label>
-                        <input id="orderFabric" type="text" placeholder="e.g. Cotton, silk" required>
-                    </div>
+                        <div class="order-fields-grid">
+                            <div class="field">
+                                <label for="orderColor">Preferred colour</label>
+                                <input id="orderColor" type="text" placeholder="e.g. Dusty rose" required>
+                            </div>
 
-                    <div class="field">
-                        <label for="orderOccasion">Occasion</label>
-                        <select id="orderOccasion">
-                            <option value="">Choose occasion (optional)</option>
-                            <option>Everyday wear</option>
-                            <option>College or work</option>
-                            <option>Festive</option>
-                            <option>Wedding</option>
-                            <option>Party</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
+                            <div class="field">
+                                <label for="orderFabric">Preferred fabric</label>
+                                <input id="orderFabric" type="text" placeholder="e.g. Cotton, silk" required>
+                            </div>
+                        </div>
 
-                    <div class="field">
-                        <label for="orderDescription">Customization details</label>
-                        <textarea id="orderDescription" rows="3" placeholder="Neckline, sleeves, embroidery, fit, etc."></textarea>
-                    </div>
+                        <div class="field">
+                            <label for="orderOccasion">Occasion</label>
+                            <select id="orderOccasion">
+                                <option value="">Choose occasion (optional)</option>
+                                <option>Everyday wear</option>
+                                <option>College or work</option>
+                                <option>Festive</option>
+                                <option>Wedding</option>
+                                <option>Party</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
 
-                    <div class="field">
-                        <label for="orderDuration">Customization duration</label>
-                        <select id="orderDuration" required>
-                            <option value="3">3 days</option>
-                            <option value="5" selected>5 days</option>
-                            <option value="7">7 days</option>
-                            <option value="10">10 days</option>
-                            <option value="14">14 days</option>
-                        </select>
-                    </div>
+                        <div class="field">
+                            <label for="orderDescription">Customization details</label>
+                            <textarea id="orderDescription" rows="4" placeholder="Describe neckline, sleeves, embroidery, fit, patterns or any special requirements..."></textarea>
+                        </div>
 
-                    <div class="field">
-                        <label for="orderPayment">Mode of payment</label>
-                        <select id="orderPayment" required>
-                            <option value="">Choose payment mode</option>
-                            <option value="Cash at Boutique">Cash at Boutique</option>
-                            <option value="Card at Boutique">Card at Boutique</option>
-                        </select>
-                    </div>
+                        <div class="order-fields-grid">
+                            <div class="field">
+                                <label for="orderDuration">Customization duration</label>
+                                <select id="orderDuration" required>
+                                    <option value="3">3 days</option>
+                                    <option value="5" selected>5 days</option>
+                                    <option value="7">7 days</option>
+                                    <option value="10">10 days</option>
+                                    <option value="14">14 days</option>
+                                </select>
+                            </div>
 
-                    <div class="order-estimate">
-                        <span>Estimated price</span>
-                        <strong id="orderPrice">₹1,000</strong>
-                        <p id="orderPriceNote">Indicative estimate; final price will be confirmed by the boutique.</p>
-                    </div>
+                            <div class="field">
+                                <label for="orderPayment">Mode of payment</label>
+                                <select id="orderPayment" required>
+                                    <option value="">Choose payment mode</option>
+                                    <option value="Cash at Boutique">Cash at Boutique</option>
+                                    <option value="Card at Boutique">Card at Boutique</option>
+                                </select>
+                            </div>
+                        </div>
 
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <i data-lucide="shopping-bag"></i> Place Custom Order
-                    </button>
+                        <div class="order-estimate">
+                            <div class="estimate-icon">
+                                <i data-lucide="receipt"></i>
+                            </div>
+                            <div class="estimate-copy">
+                                <span>Estimated price</span>
+                                <strong id="orderPrice">₹1,000</strong>
+                                <p id="orderPriceNote">Indicative estimate; final price will be confirmed by the boutique.</p>
+                            </div>
+                        </div>
 
-                    <p id="orderMessage" class="message" role="status"></p>
-                </form>
+                        <button type="submit" class="btn btn-primary btn-full order-submit-btn">
+                            <i data-lucide="shopping-bag"></i>
+                            Place Custom Order
+                        </button>
 
-                <aside class="form-card">
-                    <div class="form-section-title">
-                        <span class="form-icon"><i data-lucide="package-check"></i></span>
+                        <p id="orderMessage" class="message" role="status"></p>
+                    </form>
+                </section>
+
+                <!-- ORDER HISTORY -->
+                <section class="form-card order-history-card">
+                    <div class="orders-card-heading">
+                        <div class="orders-heading-icon">
+                            <i data-lucide="package-check"></i>
+                        </div>
                         <div>
+                            <span class="eyebrow">YOUR ORDER JOURNEY</span>
                             <h2>My Order Summary</h2>
-                            <p>Your saved custom orders and their status.</p>
+                            <p>View your custom orders and follow their progress.</p>
                         </div>
                     </div>
 
                     <div id="ordersList" class="orders-list">
-                        <p class="empty-state">You haven't placed any orders yet.</p>
+                        <div class="orders-empty-state">
+                            <div class="empty-order-icon">
+                                <i data-lucide="shopping-bag"></i>
+                            </div>
+                            <h3>No orders yet</h3>
+                            <p>Your custom outfit orders will appear here once you place one.</p>
+                        </div>
                     </div>
 
-                    <p class="small-note">
-                        Orders are currently saved in this browser. Order status updates from the boutique require backend integration.
-                    </p>
-                </aside>
+                    <div class="orders-info-note">
+                        <i data-lucide="info"></i>
+                        <p>
+                            Your order details are displayed here. Order status updates depend
+                            on the boutique's order-management connection.
+                        </p>
+                    </div>
+                </section>
+
             </div>
         </main>
     </section>
@@ -597,6 +640,7 @@
                 <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
             </a>
         </header>
+
         <main class="admin-card form-card">
             <span class="eyebrow">BOUTIQUE MANAGEMENT</span>
             <h1>Admin Login</h1>
