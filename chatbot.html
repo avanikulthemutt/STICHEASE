@@ -4,304 +4,285 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stitchease - Mira AI Assistant</title>
+<title>Mira | Stitchease Assistant</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    * {
-        box-sizing: border-box;
-    }
+:root {
+    --navy: #071B35;
+    --deep: #051329;
+    --secondary: #102B4C;
+    --yellow: #FFC928;
+    --white: #FFFFFF;
+    --muted: #C1CDDC;
+    --line: #29415E;
+}
 
-    body {
-        margin: 0;
-        font-family: "DM Sans", Arial, sans-serif;
-        color: #51434a;
-    }
+* { box-sizing: border-box; }
 
-    #chatbot {
-        position: fixed;
-        right: 20px;
-        bottom: 20px;
-        z-index: 99999;
-    }
+body {
+    margin: 0;
+    font-family: "DM Sans", Arial, sans-serif;
+    background: transparent;
+    color: var(--white);
+}
 
-    /* Floating chatbot button */
-    #chatbotToggle {
-        width: 62px;
-        height: 62px;
-        border: none;
-        border-radius: 50%;
-        background: #633d4a;
-        color: white;
-        font-size: 27px;
-        cursor: pointer;
-        box-shadow: 0 5px 18px rgba(85, 49, 63, 0.25);
-        transition: transform 0.3s, background 0.3s;
-    }
+button, input { font: inherit; }
 
-    #chatbotToggle:hover {
-        transform: translateY(-5px) rotate(-5deg);
-        background: #4f303b;
-    }
+#chatbot {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 99999;
+}
 
-    /* Chat window */
+#chatbotToggle {
+    width: 62px;
+    height: 62px;
+    border: 2px solid var(--yellow);
+    border-radius: 50%;
+    background: var(--yellow);
+    color: var(--navy);
+    font-size: 27px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(0,0,0,.3);
+    transition: .25s;
+}
+
+#chatbotToggle:hover {
+    transform: translateY(-5px);
+    background: #FFDA62;
+}
+
+#chatbotWindow {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 76px;
+    width: min(370px, calc(100vw - 32px));
+    height: min(520px, calc(100vh - 90px));
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--navy);
+    border: 1px solid var(--yellow);
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(0,0,0,.35);
+}
+
+#chatbotWindow.open {
+    display: flex;
+    animation: openChat .25s ease;
+}
+
+@keyframes openChat {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* HEADER */
+
+.chatbot-header {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 15px;
+    background: var(--deep);
+    border-bottom: 3px solid var(--yellow);
+}
+
+.bot-avatar {
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    background: var(--yellow);
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.bot-info { flex: 1; }
+
+.bot-info strong {
+    display: block;
+    font-family: "Playfair Display", serif;
+    font-size: 19px;
+}
+
+.bot-info small {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--yellow);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-actions button {
+    border: none;
+    background: transparent;
+    color: var(--white);
+    cursor: pointer;
+    font-size: 20px;
+}
+
+#chatbotClose { font-size: 27px; }
+
+/* MESSAGES */
+
+#chatbotMessages {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    overflow-y: auto;
+    padding: 16px;
+    background: var(--navy);
+    scroll-behavior: smooth;
+}
+
+.bot-message, .user-message {
+    max-width: 88%;
+    padding: 11px 14px;
+    border-radius: 15px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+    animation: messageIn .25s ease;
+}
+
+@keyframes messageIn {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.bot-message {
+    align-self: flex-start;
+    color: var(--white);
+    background: var(--secondary);
+    border: 1px solid var(--line);
+    border-bottom-left-radius: 4px;
+}
+
+.user-message {
+    align-self: flex-end;
+    color: var(--navy);
+    background: var(--yellow);
+    border-bottom-right-radius: 4px;
+}
+
+.quick-title {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--yellow);
+}
+
+.quick-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+}
+
+.quick-btn {
+    border: 1px solid var(--yellow);
+    background: transparent;
+    color: var(--yellow);
+    border-radius: 18px;
+    padding: 8px 11px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.quick-btn:hover {
+    background: var(--yellow);
+    color: var(--navy);
+}
+
+/* TYPING */
+
+.typing {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    width: fit-content;
+    padding: 13px 16px;
+    background: var(--secondary);
+    border-radius: 14px;
+}
+
+.typing span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--yellow);
+    animation: typing 1s infinite;
+}
+
+.typing span:nth-child(2) { animation-delay: .2s; }
+.typing span:nth-child(3) { animation-delay: .4s; }
+
+@keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+}
+
+/* INPUT */
+
+.chatbot-input {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: var(--deep);
+    border-top: 1px solid var(--line);
+}
+
+.chatbot-input input {
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    padding: 10px 13px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    outline: none;
+    background: var(--secondary);
+    color: var(--white);
+    font-size: 13px;
+}
+
+.chatbot-input input::placeholder { color: var(--muted); }
+
+.chatbot-input input:focus { border-color: var(--yellow); }
+
+.chatbot-input button {
+    padding: 9px 15px;
+    border: none;
+    border-radius: 10px;
+    background: var(--yellow);
+    color: var(--navy);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.chatbot-input button:hover { background: #FFDA62; }
+
+@media(max-width:480px) {
     #chatbotWindow {
-        display: none;
-        position: absolute;
-        right: 0;
-        bottom: 76px;
         width: min(370px, calc(100vw - 32px));
-        height: 520px;
-        flex-direction: column;
-        overflow: hidden;
-        background: #fffdfc;
-        border: 1px solid #eadde0;
-        border-radius: 20px;
-        box-shadow: 0 12px 35px rgba(85, 49, 63, 0.2);
-        animation: openChat 0.25s ease;
+        height: min(520px, calc(100vh - 90px));
     }
-
-    @keyframes openChat {
-        from {
-            opacity: 0;
-            transform: translateY(15px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Header */
-    .chatbot-header {
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        padding: 15px;
-        background: #633d4a;
-        color: white;
-    }
-
-    .bot-avatar {
-        width: 43px;
-        height: 43px;
-        border-radius: 50%;
-        background: #f8eeee;
-        color: #633d4a;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 23px;
-    }
-
-    .bot-info {
-        flex: 1;
-    }
-
-    .bot-info strong {
-        display: block;
-        font-size: 15px;
-    }
-
-    .bot-info small {
-        display: block;
-        margin-top: 4px;
-        font-size: 11px;
-        color: #f1e4e7;
-    }
-
-    .online-dot {
-        color: #b9e7bd;
-    }
-
-    #chatbotClose {
-        border: none;
-        background: transparent;
-        color: white;
-        font-size: 26px;
-        cursor: pointer;
-    }
-
-    /* Messages */
-    #chatbotMessages {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        overflow-y: auto;
-        padding: 16px;
-        background: #fcf8f5;
-        scroll-behavior: smooth;
-    }
-
-    .bot-message,
-    .user-message {
-        max-width: 88%;
-        padding: 11px 14px;
-        border-radius: 15px;
-        font-size: 13px;
-        line-height: 1.6;
-        overflow-wrap: anywhere;
-        animation: messageIn 0.25s ease;
-    }
-
-    @keyframes messageIn {
-        from {
-            opacity: 0;
-            transform: translateY(7px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .bot-message {
-        align-self: flex-start;
-        color: #633d4a;
-        background: #f1e4e7;
-        border-bottom-left-radius: 4px;
-    }
-
-    .user-message {
-        align-self: flex-end;
-        color: white;
-        background: #633d4a;
-        border-bottom-right-radius: 4px;
-    }
-
-    .message-time {
-        display: block;
-        margin-top: 5px;
-        font-size: 9px;
-        opacity: 0.65;
-        text-align: right;
-    }
-
-    /* Quick suggestions */
-    .quick-title {
-        font-size: 11px;
-        font-weight: bold;
-        letter-spacing: 1px;
-        color: #88777e;
-        margin-top: 4px;
-    }
-
-    .quick-options {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        width: 100%;
-    }
-
-    .quick-btn {
-        border: 1px solid #e5cfd5;
-        background: #fffdfc;
-        color: #633d4a;
-        border-radius: 18px;
-        padding: 8px 11px;
-        font-size: 11px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .quick-btn:hover {
-        background: #ead9de;
-        transform: translateY(-2px);
-    }
-
-    /* Typing animation */
-    .typing {
-        display: flex;
-        gap: 5px;
-        align-items: center;
-        width: fit-content;
-        padding: 13px 16px;
-        background: #f1e4e7;
-        border-radius: 14px;
-    }
-
-    .typing span {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #96717d;
-        animation: typing 1s infinite;
-    }
-
-    .typing span:nth-child(2) {
-        animation-delay: 0.2s;
-    }
-
-    .typing span:nth-child(3) {
-        animation-delay: 0.4s;
-    }
-
-    @keyframes typing {
-        0%, 60%, 100% {
-            transform: translateY(0);
-        }
-        30% {
-            transform: translateY(-5px);
-        }
-    }
-
-    /* Input area */
-    .chatbot-input {
-        display: flex;
-        gap: 8px;
-        padding: 12px;
-        background: #fffdfc;
-        border-top: 1px solid #eadde0;
-    }
-
-    #chatbotText {
-        flex: 1;
-        min-width: 0;
-        padding: 11px;
-        border: 1px solid #e7dadd;
-        border-radius: 12px;
-        outline: none;
-        font-size: 13px;
-        background: #fcf8f5;
-    }
-
-    #chatbotText:focus {
-        border-color: #b18b98;
-    }
-
-    .chatbot-input button {
-        padding: 0 16px;
-        border: none;
-        border-radius: 11px;
-        background: #633d4a;
-        color: white;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .chatbot-input button:hover {
-        background: #4f303b;
-    }
-
-    .chatbot-footer {
-        text-align: center;
-        padding: 7px;
-        font-size: 10px;
-        color: #96717d;
-        background: #fffdfc;
-    }
-
-    @media (max-width: 480px) {
-        #chatbot {
-            right: 12px;
-            bottom: 12px;
-        }
-
-        #chatbotWindow {
-            height: min(520px, calc(100vh - 110px));
-        }
-    }
+}
 </style>
 </head>
 
@@ -309,315 +290,262 @@
 
 <div id="chatbot">
 
-    <button id="chatbotToggle" aria-label="Open chat">
-        💬
-    </button>
+    <button id="chatbotToggle" aria-label="Open Mira chatbot">💬</button>
 
     <div id="chatbotWindow">
 
-        <!-- Chatbot Header -->
         <div class="chatbot-header">
-
-            <div class="bot-avatar">🪡</div>
+            <div class="bot-avatar">✦</div>
 
             <div class="bot-info">
-                <strong>Mira | Stitchease</strong>
-                <small><span class="online-dot">●</span> Your personal AI style assistant</small>
+                <strong>Mira</strong>
+                <small>● Stitchease Style Assistant</small>
             </div>
 
-            <button id="chatbotClose" aria-label="Close chat">
-                ×
-            </button>
-
+            <div class="header-actions">
+                <button id="clearChat" title="Clear chat">↻</button>
+                <button id="chatbotClose" aria-label="Close chat">×</button>
+            </div>
         </div>
 
-        <!-- Chat Messages -->
         <div id="chatbotMessages">
-
             <div class="bot-message">
-                Hey there, fashion lover! 💗<br><br>
+                Hi there! Welcome to Stitchease! 💛
 
-                I'm <strong>Mira</strong>, your personal AI assistant at Stitchease. 🪡✨<br><br>
+                I'm Mira, your personal boutique assistant.
 
-                I'm here to help you with your outfits, appointments and orders.<br><br>
+                Whether you need help planning an outfit, booking an appointment or checking your order, I'm here to help!
 
-                What can I help you with today?
+                What can I help you with today? 😊
             </div>
 
-            <div class="quick-title">QUICK HELP ✨</div>
+            <div class="quick-title">EXPLORE QUICK HELP</div>
 
             <div class="quick-options">
-
-                <button class="quick-btn" data-message="I want to customize my outfit">
-                    👗 Customize outfit
-                </button>
-
-                <button class="quick-btn" data-message="How can I book an appointment?">
-                    📅 Book appointment
-                </button>
-
-                <button class="quick-btn" data-message="How can I save my measurements?">
-                    🧵 Measurements
-                </button>
-
-                <button class="quick-btn" data-message="How can I track my order?">
-                    📦 Track my order
-                </button>
-
-                <button class="quick-btn" data-message="How can I contact the boutique?">
-                    💗 Contact boutique
-                </button>
-
+                <button class="quick-btn" data-question="How do I book an appointment?">📅 Appointments</button>
+                <button class="quick-btn" data-question="How do I place a custom order?">👗 Custom Orders</button>
+                <button class="quick-btn" data-question="What measurements do I need?">📏 Measurements</button>
+                <button class="quick-btn" data-question="How can I track my order?">📦 Track Order</button>
+                <button class="quick-btn" data-question="Can you suggest an outfit for a wedding?">✨ Outfit Ideas</button>
+                <button class="quick-btn" data-question="What fabrics are suitable for a festive outfit?">🧵 Fabrics</button>
             </div>
-
         </div>
 
-        <!-- Input -->
-        <form class="chatbot-input" id="chatbotForm">
-
+        <form id="chatbotForm" class="chatbot-input">
             <input
                 type="text"
                 id="chatbotText"
                 placeholder="Ask Mira anything..."
                 autocomplete="off"
-                required
-            >
-
-            <button type="submit">Send ➤</button>
-
+                required>
+            <button type="submit">Send</button>
         </form>
 
-        <div class="chatbot-footer">
-            Made with 💗 for your style journey
-        </div>
-
     </div>
-
 </div>
 
 <script>
+const toggle = document.getElementById("chatbotToggle");
+const closeButton = document.getElementById("chatbotClose");
+const clearButton = document.getElementById("clearChat");
+const chatWindow = document.getElementById("chatbotWindow");
+const chatForm = document.getElementById("chatbotForm");
+const chatInput = document.getElementById("chatbotText");
+const chatMessages = document.getElementById("chatbotMessages");
 
-    const toggle = document.getElementById("chatbotToggle");
-    const windowBox = document.getElementById("chatbotWindow");
-    const close = document.getElementById("chatbotClose");
-    const form = document.getElementById("chatbotForm");
-    const input = document.getElementById("chatbotText");
-    const messages = document.getElementById("chatbotMessages");
+const welcomeMessage = `
+Hi there! Welcome to Stitchease! 💛
 
-    // Open chatbot
-    toggle.addEventListener("click", () => {
-        windowBox.style.display = "flex";
-        toggle.style.display = "none";
-        input.focus();
+I'm Mira, your personal boutique assistant.
+
+Whether you need help planning an outfit, booking an appointment or checking your order, I'm here to help!
+
+What can I help you with today? 😊
+`;
+
+// Notify the main website when Mira opens or closes.
+function notifyParentChatbotState(isOpen) {
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage(
+            {
+                type: "STITCHEASE_CHATBOT_RESIZE",
+                open: isOpen
+            },
+            window.location.origin
+        );
+    }
+}
+
+toggle.addEventListener("click", () => {
+    const isOpening = !chatWindow.classList.contains("open");
+    chatWindow.classList.toggle("open", isOpening);
+    notifyParentChatbotState(isOpening);
+});
+
+closeButton.addEventListener("click", () => {
+    chatWindow.classList.remove("open");
+    notifyParentChatbotState(false);
+});
+
+function addMessage(message, type) {
+    const div = document.createElement("div");
+    div.className = type;
+    div.textContent = message;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function getMiraResponse(question) {
+    const q = question.toLowerCase().trim();
+
+    if (/^(hi|hello|hey|hii|good morning|good evening)\b/.test(q)) {
+        return "Hello! Lovely to see you here! 😊 I'm Mira, your Stitchease assistant. Are you planning a new outfit or would you like help with an existing order?";
+    }
+
+    if (q.includes("appointment") || q.includes("book") || q.includes("visit")) {
+        return "📅 BOOK AN APPOINTMENT\n\n1. Log in to your Stitchease account.\n2. Open the Book Appointment section.\n3. Select your preferred date and time.\n4. Add the purpose of your visit.\n5. Submit your booking.\n\nYou can check your appointment details in the My Appointments section. 💛";
+    }
+
+    if (q.includes("reschedule") || q.includes("change appointment")) {
+        return "Need to change your appointment? Please check your appointment details in your account and contact the boutique to arrange a new date or time. 😊";
+    }
+
+    if (q.includes("cancel appointment")) {
+        return "If you need to cancel an appointment, check the appointment section in your account for available cancellation options. You can also contact the boutique team for assistance.";
+    }
+
+    if (q.includes("measurement") || q.includes("size") || q.includes("measure")) {
+        return "📏 MEASUREMENTS GUIDE\n\nYou can save your measurements in My Profile.\n\nCommon measurements include:\n• Bust\n• Waist\n• Hip\n• Shoulder\n• Sleeve length\n• Dress length\n• Height\n\nUse centimetres for consistency. For accurate fitting, we recommend taking measurements carefully or getting assistance at the boutique.";
+    }
+
+    if (q.includes("custom order") || q.includes("place order") || q.includes("new order") || q.includes("custom outfit")) {
+        return "👗 CREATE YOUR CUSTOM OUTFIT\n\nGo to My Orders after logging in.\n\nYou can provide:\n• Outfit type\n• Preferred colour\n• Fabric choice\n• Occasion\n• Design and customization details\n• Expected duration\n\nSubmit your request and the boutique can review your requirements. Happy designing! ✨";
+    }
+
+    if (q.includes("track") || q.includes("status") || q.includes("progress") || q.includes("where is my order")) {
+        return "📦 TRACK YOUR ORDER\n\nLog in to your Stitchease account and open My Orders.\n\nYour order timeline can show:\n\n1. Placed\n2. Confirmed\n3. In Progress\n4. Ready\n5. Completed\n\nThe displayed status reflects the latest update made by the boutique.";
+    }
+
+    if (q.includes("wedding") || q.includes("party") || q.includes("festive") || q.includes("occasion")) {
+        return "✨ OUTFIT INSPIRATION\n\nFor special occasions, you could consider:\n\n• Wedding: Elegant lehenga or silk saree blouse.\n• Festive event: Embroidered kurti or anarkali.\n• Party: Stylish gown or contemporary dress.\n• Family function: Classic ethnic suit.\n\nChoose a style that feels comfortable and matches your occasion. You can share your preferred design in a custom order!";
+    }
+
+    if (q.includes("kurti") || q.includes("lehenga") || q.includes("saree") || q.includes("gown") || q.includes("dress") || q.includes("blouse")) {
+        return "👗 We can help you plan customized outfits such as kurtis, saree blouses, lehengas, gowns and dresses.\n\nTell me the occasion, preferred colour and style, and I can suggest some ideas!";
+    }
+
+    if (q.includes("fabric") || q.includes("material") || q.includes("cotton") || q.includes("silk") || q.includes("chiffon")) {
+        return "🧵 FABRIC GUIDE\n\nHere are some popular choices:\n\n• Cotton – Comfortable for everyday wear.\n• Silk – Elegant for festive occasions.\n• Chiffon – Lightweight and flowy.\n• Georgette – Great for dresses and occasion wear.\n• Linen – Breathable and comfortable.\n\nThe best choice depends on your outfit, occasion and comfort. You can discuss the final selection with the boutique.";
+    }
+
+    if (q.includes("price") || q.includes("cost") || q.includes("payment") || q.includes("expensive")) {
+        return "💰 PRICING & PAYMENT\n\nThe website provides an estimated price when you place a custom order. The final price may depend on the fabric, design and customization requirements.\n\nThe boutique will confirm the final amount after reviewing your order.";
+    }
+
+    if (q.includes("profile") || q.includes("account") || q.includes("login") || q.includes("register") || q.includes("sign up")) {
+        return "👤 YOUR STITCHEASE ACCOUNT\n\nYou can register or log in from the homepage.\n\nYour account helps you manage:\n• Personal details\n• Body measurements\n• Appointments\n• Custom orders\n• Order tracking\n\nKeep your profile updated for a smoother boutique experience!";
+    }
+
+    if (q.includes("contact") || q.includes("phone") || q.includes("boutique address") || q.includes("call")) {
+        return "💛 CONTACT SNK FASHIONHOUSE\n\nPhone: +91 98450 12938\nInstagram: @snk_fashionhouse\n\nInstagram: https://www.instagram.com/snk_fashionhouse/\n\nFor specific enquiries, please contact the boutique team directly.";
+    }
+
+    if (q.includes("service") || q.includes("what do you do") || q.includes("what can you do")) {
+        return "✨ STITCHEASE SERVICES\n\nWe help you with:\n\n• Custom outfit requests\n• Appointment booking\n• Measurement management\n• Outfit customization details\n• Order status tracking\n\nOur goal is to make your boutique experience simple and convenient!";
+    }
+
+    if (q.includes("thank")) {
+        return "You're very welcome! 💛 I'm always happy to help. Have a lovely day, and happy styling!";
+    }
+
+    if (q.includes("bye") || q.includes("goodbye")) {
+        return "Goodbye! Thank you for visiting Stitchease. Keep dreaming up beautiful outfits. See you soon! 💛";
+    }
+
+    if (q.includes("help")) {
+        return "Of course! 😊 I can help you with:\n\n📅 Appointments\n👗 Custom outfits\n📏 Measurements\n📦 Order tracking\n🧵 Fabric suggestions\n💰 Pricing information\n\nChoose one of the quick-help buttons or type your question!";
+    }
+
+    return "That's interesting! 😊 I may need a little more detail to help you properly.\n\nI can currently answer questions about appointments, custom outfits, measurements, fabrics, pricing, accounts and order tracking.";
+}
+
+function sendQuestion(question) {
+    if (!question.trim()) return;
+
+    addMessage(question, "user-message");
+
+    const typing = document.createElement("div");
+    typing.className = "typing";
+
+    for (let i = 0; i < 3; i++) {
+        const dot = document.createElement("span");
+        typing.appendChild(dot);
+    }
+
+    chatMessages.appendChild(typing);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    setTimeout(() => {
+        typing.remove();
+        addMessage(getMiraResponse(question), "bot-message");
+    }, 700);
+}
+
+chatForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const question = chatInput.value.trim();
+    if (!question) return;
+
+    chatInput.value = "";
+    sendQuestion(question);
+});
+
+document.querySelectorAll(".quick-btn").forEach(button => {
+    button.addEventListener("click", () => {
+        sendQuestion(button.dataset.question);
     });
+});
 
-    // Close chatbot
-    close.addEventListener("click", () => {
-        windowBox.style.display = "none";
-        toggle.style.display = "block";
-    });
+// CLEAR CHAT
+clearButton.addEventListener("click", () => {
+    chatMessages.innerHTML = "";
 
-    // Display message
-    function addMessage(message, className) {
+    addMessage(welcomeMessage, "bot-message");
 
-        const div = document.createElement("div");
-        div.className = className;
-        div.textContent = message;
+    const title = document.createElement("div");
+    title.className = "quick-title";
+    title.textContent = "QUICK HELP";
+    chatMessages.appendChild(title);
 
-        messages.appendChild(div);
-        messages.scrollTop = messages.scrollHeight;
-    }
+    const options = document.createElement("div");
+    options.className = "quick-options";
 
-    // Typing animation
-    function showTyping() {
+    const questions = [
+        ["📅 Appointments", "How do I book an appointment?"],
+        ["👗 Custom Orders", "How do I place a custom order?"],
+        ["📏 Measurements", "What measurements do I need?"],
+        ["📦 Track Order", "How can I track my order?"],
+        ["✨ Outfit Ideas", "Can you suggest an outfit for a wedding?"],
+        ["🧵 Fabrics", "What fabrics are suitable for a festive outfit?"]
+    ];
 
-        const typing = document.createElement("div");
-
-        typing.className = "typing";
-        typing.id = "typingIndicator";
-
-        typing.innerHTML = `
-            <span></span>
-            <span></span>
-            <span></span>
-        `;
-
-        messages.appendChild(typing);
-        messages.scrollTop = messages.scrollHeight;
-    }
-
-    function removeTyping() {
-
-        const typing = document.getElementById("typingIndicator");
-
-        if (typing) {
-            typing.remove();
-        }
-    }
-
-    // Chatbot responses
-    function getReply(message) {
-
-        const text = message.toLowerCase().trim();
-
-        // Appointment booking
-        if (
-            text.includes("appointment") ||
-            text.includes("book") ||
-            text.includes("visit")
-        ) {
-            return "Of course! 💗 Booking an appointment is easy. Log in to your Stitchease account, open the Book Appointment section, select your preferred date and time, and submit your booking. We look forward to seeing you! 🪡";
-        }
-
-        // Order tracking
-        if (
-            text.includes("order") ||
-            text.includes("track") ||
-            text.includes("delivery")
-        ) {
-            return "I'd love to help! 📦 Open the My Orders section in your account to view your custom order status. You can check whether it's Placed, Confirmed, In Progress, Ready or Completed. 💗";
-        }
-
-        // Measurements
-        if (
-            text.includes("measurement") ||
-            text.includes("size") ||
-            text.includes("body")
-        ) {
-            return "Let's get your perfect fit! 🧵 Log in to your account and open My Profile to add or update your body measurements, such as bust, waist, hips, shoulder and dress length.";
-        }
-
-        // Profile
-        if (
-            text.includes("profile") ||
-            text.includes("account") ||
-            text.includes("personal details")
-        ) {
-            return "You can manage your personal details through the My Profile section after logging in. Keep your information and measurements updated for a smoother customization experience! 💗";
-        }
-
-        // Outfit customization
-        if (
-            text.includes("custom") ||
-            text.includes("design") ||
-            text.includes("outfit") ||
-            text.includes("dress") ||
-            text.includes("fabric") ||
-            text.includes("colour") ||
-            text.includes("color")
-        ) {
-            return "Ooh, let's create something beautiful! 👗✨ Open Explore Customized Fashion and share your outfit type, preferred colour, fabric, occasion and design ideas. You can also describe special details you'd like our designer to include.";
-        }
-
-        // Fabric suggestions
-        if (
-            text.includes("silk") ||
-            text.includes("cotton") ||
-            text.includes("georgette") ||
-            text.includes("chiffon")
-        ) {
-            return "We can help you choose a fabric that suits your outfit and occasion! 🧵 Silk gives a rich festive look, cotton is comfortable for everyday wear, and georgette or chiffon offers a flowy appearance. What outfit are you planning?";
-        }
-
-        // Occasion
-        if (
-            text.includes("wedding") ||
-            text.includes("party") ||
-            text.includes("festive") ||
-            text.includes("occasion")
-        ) {
-            return "That sounds exciting! ✨ Tell us what outfit you're planning and the occasion. You can share your preferences in Explore Customized Fashion so your design can be tailored to your style.";
-        }
-
-        // Contact
-        if (
-            text.includes("contact") ||
-            text.includes("address") ||
-            text.includes("location") ||
-            text.includes("phone")
-        ) {
-            return "I'd be happy to help you connect with our boutique team! 💗 Please check the contact details provided by the Stitchease boutique for accurate address and phone information.";
-        }
-
-        // Greetings
-        if (/^(hi|hello|hey|hii|heyy)[!. ]*$/.test(text)) {
-            return "Hey there! 💗 Mira here! What are we creating today? Need help with an outfit, appointment or order? I'm all ears! ✨";
-        }
-
-        // Thanks
-        if (
-            text.includes("thank") ||
-            text.includes("thanks")
-        ) {
-            return "Aww, you're most welcome! 💗 It was lovely helping you. Come back anytime and let's make something beautiful! 🪡";
-        }
-
-        // Goodbye
-        if (
-            text.includes("bye") ||
-            text.includes("goodbye")
-        ) {
-            return "Bye for now! 💗 Thank you for visiting Stitchease. Keep shining and stay stylish! See you soon! ✨";
-        }
-
-        // Help
-        if (
-            text.includes("help") ||
-            text.includes("what can you do")
-        ) {
-            return "I'm Mira, your Stitchease style assistant! 🪡 I can guide you with outfit customization, appointment booking, measurements, order tracking and profile updates. Just ask me anything! 💗";
-        }
-
-        // Default response
-        return "Hmm, I'd love to help you with that! 💗 I can assist with appointments, outfit customization, measurements and order tracking. Could you tell me a little more about what you need?";
-    }
-
-    // Send message
-    function sendMessage(message) {
-
-        const cleanMessage = message.trim();
-
-        if (!cleanMessage) return;
-
-        addMessage(cleanMessage, "user-message");
-
-        input.value = "";
-
-        showTyping();
-
-        setTimeout(() => {
-
-            removeTyping();
-
-            const reply = getReply(cleanMessage);
-
-            addMessage(reply, "bot-message");
-
-        }, 900);
-    }
-
-    // Form submission
-    form.addEventListener("submit", (event) => {
-
-        event.preventDefault();
-
-        sendMessage(input.value);
-
-    });
-
-    // Quick reply buttons
-    document.querySelectorAll(".quick-btn").forEach(button => {
+    questions.forEach(([label, question]) => {
+        const button = document.createElement("button");
+        button.className = "quick-btn";
+        button.textContent = label;
+        button.dataset.question = question;
 
         button.addEventListener("click", () => {
-
-            const message = button.getAttribute("data-message");
-
-            sendMessage(message);
-
+            sendQuestion(question);
         });
 
+        options.appendChild(button);
     });
 
+    chatMessages.appendChild(options);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+});
 </script>
 
 </body>

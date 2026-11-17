@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +9,51 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- MIRA CHATBOT POSITIONING -->
+    <style>
+        #siteChatbot {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 90px;
+            height: 90px;
+            border: none;
+            background: transparent;
+            z-index: 999999;
+            overflow: hidden;
+            transition: width .25s ease, height .25s ease;
+        }
+
+        #siteChatbot.chatbot-open {
+            width: 400px;
+            height: 600px;
+        }
+
+        #siteChatbot iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+        }
+
+        @media (max-width: 480px) {
+            #siteChatbot {
+                right: 8px;
+                bottom: 8px;
+                width: 76px;
+                height: 76px;
+            }
+
+            #siteChatbot.chatbot-open {
+                width: calc(100vw - 16px);
+                height: min(600px, calc(100vh - 16px));
+            }
+        }
+    </style>
 </head>
+
 <body>
 
     <!-- LOGIN AND REGISTRATION -->
@@ -18,29 +63,23 @@
                 <span class="brand-icon"><i data-lucide="scissors"></i></span>
                 <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
             </a>
+
+            <div class="header-actions">
+                <a class="header-admin-login" href="/about">About Us</a>
+                <a class="header-admin-login" href="/admin">Boutique Admin Login</a>
+                <button class="header-login" onclick="showLogin()">Sign In / Login</button>
+            </div>
         </header>
 
         <main class="auth-layout">
             <div class="auth-intro">
                 <span class="eyebrow">MADE JUST FOR YOU</span>
                 <h1>Fashion that fits<br><em>your story.</em></h1>
+                <p>Your personal space for customized fashion, thoughtful details, and outfits made to feel like you.</p>
 
-                <!-- INTRODUCTION WITH MEASUREMENT IMAGE -->
-                <div class="intro-visual">
-                    <img
-                        src="stitchease-measurement-illustration.png"
-                        alt="Fashion designer taking body measurements"
-                        class="intro-image"
-                    >
-
-                    <div class="intro-copy">
-                        <p>Your personal space for customized fashion, thoughtful details, and outfits made to feel like you.</p>
-
-                        <div class="intro-note">
-                            <i data-lucide="heart"></i>
-                            <span>Designed around you. Stitched with care.</span>
-                        </div>
-                    </div>
+                <div class="intro-note">
+                    <i data-lucide="heart"></i>
+                    <span>Designed around you. Stitched with care.</span>
                 </div>
             </div>
 
@@ -65,10 +104,6 @@
                     <p class="auth-switch">New customer?
                         <a href="#" onclick="showRegister(); return false;">Create an account</a>
                     </p>
-
-                    <button class="text-button" onclick="showAdminLogin()">
-                        <i data-lucide="store"></i> Boutique Admin Login
-                    </button>
                 </div>
 
                 <div id="registerForm" hidden>
@@ -158,10 +193,10 @@
                     <span class="feature-link">Book a visit <i data-lucide="arrow-up-right"></i></span>
                 </button>
 
-                <button class="feature-card" onclick="showPage('designsSection')">
+                <button class="feature-card" onclick="window.location.href='/explore-fashion'">
                     <span class="feature-icon"><i data-lucide="sparkles"></i></span>
-                    <span class="feature-title">Explore Customized Fashion</span>
-                    <span class="feature-description">Share your style preferences for a personalized outfit.</span>
+                    <span class="feature-title">Explore Fashion</span>
+                    <span class="feature-description">Discover sarees, blouses and jhumkas. Shop or customise your style.</span>
                     <span class="feature-link">Explore styles <i data-lucide="arrow-up-right"></i></span>
                 </button>
 
@@ -205,7 +240,10 @@
             <form id="profileForm" class="form-card" onsubmit="event.preventDefault(); saveProfile();">
                 <div class="form-section-title">
                     <span class="form-icon"><i data-lucide="user-round"></i></span>
-                    <div><h2>Personal Details</h2><p>Keep your contact information up to date.</p></div>
+                    <div>
+                        <h2>Personal Details</h2>
+                        <p>Keep your contact information up to date.</p>
+                    </div>
                 </div>
 
                 <div class="form-grid">
@@ -229,21 +267,47 @@
 
                 <div class="form-section-title measurements-title">
                     <span class="form-icon"><i data-lucide="ruler"></i></span>
-                    <div><h2>Body Measurements</h2><p>Enter measurements in centimetres (cm). You can update them any time.</p></div>
+                    <div>
+                        <h2>Body Measurements</h2>
+                        <p>Enter measurements in centimetres (cm). You can update them any time.</p>
+                    </div>
                 </div>
 
                 <div class="form-grid">
-                    <div class="field"><label for="height">Height (cm)</label><input type="number" id="height" min="0.1" step="0.1" placeholder="e.g. 160"></div>
-                    <div class="field"><label for="shoulder">Shoulder (cm)</label><input type="number" id="shoulder" min="0.1" step="0.1" placeholder="e.g. 38"></div>
-                    <div class="field"><label for="bust">Bust (cm)</label><input type="number" id="bust" min="0.1" step="0.1" placeholder="e.g. 86"></div>
-                    <div class="field"><label for="waist">Waist (cm)</label><input type="number" id="waist" min="0.1" step="0.1" placeholder="e.g. 70"></div>
-                    <div class="field"><label for="hip">Hip (cm)</label><input type="number" id="hip" min="0.1" step="0.1" placeholder="e.g. 94"></div>
-                    <div class="field"><label for="sleeve">Sleeve length (cm)</label><input type="number" id="sleeve" min="0.1" step="0.1" placeholder="e.g. 56"></div>
-                    <div class="field"><label for="dressLength">Dress length (cm)</label><input type="number" id="dressLength" min="0.1" step="0.1" placeholder="e.g. 105"></div>
+                    <div class="field">
+                        <label for="height">Height (cm)</label>
+                        <input type="number" id="height" min="0.1" step="0.1" placeholder="e.g. 160">
+                    </div>
+                    <div class="field">
+                        <label for="shoulder">Shoulder (cm)</label>
+                        <input type="number" id="shoulder" min="0.1" step="0.1" placeholder="e.g. 38">
+                    </div>
+                    <div class="field">
+                        <label for="bust">Bust (cm)</label>
+                        <input type="number" id="bust" min="0.1" step="0.1" placeholder="e.g. 86">
+                    </div>
+                    <div class="field">
+                        <label for="waist">Waist (cm)</label>
+                        <input type="number" id="waist" min="0.1" step="0.1" placeholder="e.g. 70">
+                    </div>
+                    <div class="field">
+                        <label for="hip">Hip (cm)</label>
+                        <input type="number" id="hip" min="0.1" step="0.1" placeholder="e.g. 94">
+                    </div>
+                    <div class="field">
+                        <label for="sleeve">Sleeve length (cm)</label>
+                        <input type="number" id="sleeve" min="0.1" step="0.1" placeholder="e.g. 56">
+                    </div>
+                    <div class="field">
+                        <label for="dressLength">Dress length (cm)</label>
+                        <input type="number" id="dressLength" min="0.1" step="0.1" placeholder="e.g. 105">
+                    </div>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save My Details</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i data-lucide="save"></i> Save My Details
+                    </button>
                     <button type="button" class="btn btn-outline" onclick="loadProfile()">Reload Saved Details</button>
                 </div>
                 <p id="profileMessage" class="message" role="status"></p>
@@ -542,54 +606,56 @@
         </main>
     </section>
 
-    <script src="script.js"></script>
-    <!-- STITCHEASE CHATBOT -->
-<div id="chatbot">
-    <button id="chatbotToggle" aria-label="Open chat">
-        💬
-    </button>
+    <!-- =========================================
+         MIRA CHATBOT - AVAILABLE SITEWIDE
+    ========================================== -->
 
-    <div id="chatbotWindow" hidden>
-        <div class="chatbot-header">
-            <div>
-                <strong>Stitchease Assistant</strong>
-                <small>We're here to help!</small>
-            </div>
-            <button id="chatbotClose" aria-label="Close chat">×</button>
-        </div>
-
-        <div id="chatbotMessages" class="chatbot-messages">
-            <div class="bot-message">
-                Hi! Welcome to Stitchease 👋<br>
-                How can I help you today?
-            </div>
-        </div>
-
-        <form id="chatbotForm" class="chatbot-input">
-            <input
-                type="text"
-                id="chatbotText"
-                placeholder="Type your message..."
-                autocomplete="off"
-                required
-            >
-            <button type="submit">Send</button>
-        </form>
+    <div id="siteChatbot">
+        <iframe
+            id="chatbotFrame"
+            src="/chatbot"
+            title="Mira - Stitchease Assistant"
+            loading="eager"
+            allow="clipboard-write">
+        </iframe>
     </div>
-</div>
-<iframe
-    src="./chatbot.html"
-    title="Stitchease Chatbot"
-    style="
-        position: fixed;
-        right: 0;
-        bottom: 0;
-        width: 400px;
-        height: 520px;
-        border: none;
-        background: transparent;
-        z-index: 99999;
-    ">
-</iframe>
+
+    <!-- MAIN WEBSITE JAVASCRIPT -->
+    <script src="script.js"></script>
+
+    <!-- MIRA CHATBOT RESIZE COMMUNICATION -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const chatbotFrame = document.getElementById("chatbotFrame");
+            const siteChatbot = document.getElementById("siteChatbot");
+
+            window.addEventListener("message", function (event) {
+
+                // Only accept messages from this website's chatbot iframe.
+                if (event.source !== chatbotFrame.contentWindow) {
+                    return;
+                }
+
+                if (event.origin !== window.location.origin) {
+                    return;
+                }
+
+                if (!event.data ||
+                    event.data.type !== "STITCHEASE_CHATBOT_RESIZE") {
+                    return;
+                }
+
+                if (event.data.open === true) {
+                    siteChatbot.classList.add("chatbot-open");
+                } else {
+                    siteChatbot.classList.remove("chatbot-open");
+                }
+
+            });
+
+        });
+    </script>
+
 </body>
 </html>
