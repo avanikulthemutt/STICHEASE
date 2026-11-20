@@ -1,4 +1,3 @@
-
 const API_URL = window.location.origin;
 
 const PAGE_IDS = [
@@ -625,7 +624,7 @@ const ORDER_STATUSES = [
     "Completed"
 ];
 
-const ORDER_PRICES = {
+const ORDER_BASE_PRICES = {
     "Kurti": 1000,
     "Saree Blouse": 1200,
     "Lehenga": 3500,
@@ -633,6 +632,42 @@ const ORDER_PRICES = {
     "Dress": 1500,
     "Other": 1500
 };
+
+const FABRIC_EXTRA_PRICES = {
+    cotton: 0, rayon: 100, linen: 150, crepe: 150,
+    georgette: 200, chiffon: 200, net: 150, satin: 250,
+    velvet: 400, silk: 500, banarasi: 800
+};
+
+const DESIGN_WORK_PRICES = {
+    simple: 0,
+    moderate: 700,
+    heavy: 1500
+};
+
+function detectDesignComplexity(description) {
+    const value = String(description || "").toLowerCase();
+    const heavyWords = [
+        "heavy", "bridal", "zari", "embroidery", "embroidered",
+        "mirror work", "stone work", "stones", "sequins", "sequence",
+        "beads", "handwork", "kundan", "maggam", "cutdana"
+    ];
+    const moderateWords = [
+        "lace", "piping", "pleats", "frill", "ruffle", "border",
+        "cutwork", "lining", "gathering", "moderate"
+    ];
+    if (heavyWords.some(word => value.includes(word))) return "heavy";
+    if (moderateWords.some(word => value.includes(word))) return "moderate";
+    return "simple";
+}
+
+function getFabricExtraPrice(fabric) {
+    const value = String(fabric || "").toLowerCase();
+    for (const [name, price] of Object.entries(FABRIC_EXTRA_PRICES)) {
+        if (value.includes(name)) return price;
+    }
+    return value ? 100 : 0;
+}
 
 function formatOrderDate(dateString) {
     if (!dateString) return "Not available";
@@ -661,26 +696,22 @@ function calculateCompletionDate(createdAt, duration) {
 }
 
 function calculateOrderPrice() {
-    const type =
-        document.getElementById("orderOutfitType")?.value || "";
+    const type = document.getElementById("orderOutfitType")?.value || "";
+    const fabric = document.getElementById("orderFabric")?.value || "";
+    const description = document.getElementById("orderDescription")?.value || "";
+    const duration = Number(document.getElementById("orderDuration")?.value || 5);
 
-    const duration = Number(
-        document.getElementById("orderDuration")?.value || 5
-    );
-
-    const basePrice = ORDER_PRICES[type] || 1000;
-
-    const estimate = Math.round(
-        basePrice + Math.max(0, 7 - duration) * 50
-    );
+    const basePrice = ORDER_BASE_PRICES[type] || 1000;
+    const fabricExtra = getFabricExtraPrice(fabric);
+    const complexity = detectDesignComplexity(description);
+    const designExtra = DESIGN_WORK_PRICES[complexity];
+    const rushExtra = Math.max(0, 7 - duration) * 50;
+    const estimate = Math.round(basePrice + fabricExtra + designExtra + rushExtra);
 
     const priceElement = document.getElementById("orderPrice");
-
     if (priceElement) {
-        priceElement.textContent =
-            `₹${estimate.toLocaleString("en-IN")}`;
+        priceElement.textContent = `₹${estimate.toLocaleString("en-IN")}`;
     }
-
     return estimate;
 }
 
@@ -1025,10 +1056,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (durationSelect) {
-        durationSelect.addEventListener(
-            "change",
-            calculateOrderPrice
-        );
+        durationSelect.addEventListener("change", calculateOrderPrice);
+    }
+
+    const fabricSelect = document.getElementById("orderFabric");
+    const designDescription = document.getElementById("orderDescription");
+
+    if (fabricSelect) {
+        fabricSelect.addEventListener("change", calculateOrderPrice);
+        fabricSelect.addEventListener("input", calculateOrderPrice);
+    }
+
+    if (designDescription) {
+        designDescription.addEventListener("input", calculateOrderPrice);
     }
 
     calculateOrderPrice();

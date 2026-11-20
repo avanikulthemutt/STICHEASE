@@ -17,15 +17,18 @@ app = Flask(__name__)
 @app.route("/")
 def customer_home():
     return send_from_directory(app.root_path, "index.html")
+
+
 @app.route("/about")
 def about_page():
     return send_from_directory(app.root_path, "about.html")
+
 
 @app.route("/admin")
 def admin_home():
     return send_from_directory(app.root_path, "admin.html")
 
- 
+
 @app.route("/chatbot")
 def chatbot_home():
     return send_from_directory(app.root_path, "chatbot.html")
@@ -464,10 +467,21 @@ def book_customer_appointment():
             str(data.get("date") or "").strip(),
             "%Y-%m-%d"
         ).date()
-        appointment_time = datetime.strptime(
-            str(data.get("time") or "").strip(),
-            "%H:%M"
-        ).time()
+        time_value = str(data.get("time") or "").strip()
+        appointment_time = None
+
+        for time_format in ("%H:%M", "%H:%M:%S", "%I:%M %p", "%I:%M%p"):
+            try:
+                appointment_time = datetime.strptime(
+                    time_value, time_format
+                ).time()
+                break
+            except ValueError:
+                continue
+
+        if appointment_time is None:
+            raise ValueError("Invalid appointment time")
+
     except (ValueError, TypeError):
         return jsonify({
             "error": "Please select a valid appointment date and time."
@@ -771,6 +785,230 @@ def current_admin():
 
         return jsonify({
             "error": "Could not verify admin session."
+        }), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+# ---------------- CUSTOMER CUSTOM ORDERS ----------------
+
+ORDER_BASE_PRICES = {
+    "Kurti": 1000,
+    "Saree Blouse": 1200,
+    "Lehenga": 3500,
+    "Gown": 2800,
+    "Dress": 1500,
+    "Other": 1500
+}
+
+FABRIC_EXTRA_PRICES = {
+    "cotton": 0,
+    "rayon": 100,
+    "linen": 150,
+    "crepe": 150,
+    "georgette": 200,
+    "chiffon": 200,
+    "net": 150,
+    "satin": 250,
+    "velvet": 400,
+    "silk": 500,
+    "banarasi": 800
+}
+
+
+def detect_design_complexity(description):
+    value = str(description or "").lower()
+
+    heavy_words = [
+        "heavy", "bridal", "zari", "embroidery", "embroidered",
+        "mirror work", "stone work", "stones", "sequins", "sequence",
+        "beads", "handwork", "kundan", "maggam", "cutdana"
+    ]
+
+    moderate_words = [
+        "lace", "piping", "pleats", "frill", "ruffle", "border",
+        "cutwork", "lining", "gathering", "moderate"
+    ]
+
+    if any(word in value for word in heavy_words):
+        return "heavy"
+
+    if any(word in value for word in moderate_words):
+        return "moderate"
+
+    return "simple"
+
+
+def calculate_custom_order_price(outfit_type, fabric, description, duration):
+    base_price = ORDER_BASE_PRICES.get(outfit_type, 1000)
+
+    fabric_value = str(fabric or "").lower()
+    fabric_extra = 100 if fabric_value else 0
+
+    for fabric_name, extra in FABRIC_EXTRA_PRICES.items():
+        if fabric_name in fabric_value:
+            fabric_extra = extra
+            break
+
+    complexity = detect_design_complexity(description)
+
+    design_extra = {
+        "simple": 0,
+        "moderate": 700,
+        "heavy": 1500
+    }[complexity]
+
+    rush_extra = max(0, 7 - int(duration)) * 50
+
+    return int(base_price + fabric_extra + design_extra + rush_extra)
+
+
+@app.route("/api/orders", methods=["POST"])
+def create_custom_order():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        customer_id = int(data.get("customer_id"))
+        outfit_type = str(data.get("outfit_type") or "").strip()
+        colour = str(data.get("colour") or "").strip()
+        fabric = str(data.get("fabric") or "").strip()
+        occasion = str(data.get("occasion") or "").strip()
+        description = str(data.get("description") or "").strip()
+        duration = int(data.get("duration_days") or 5)
+        payment_mode = str(data.get("payment_mode") or "").strip()
+
+    except (TypeError, ValueError):
+        return jsonify({
+            "error": "Please enter valid order details."
+        }), 400
+
+    if not outfit_type or not colour or not fabric or not payment_mode:
+        return jsonify({
+            "error": "Please complete the required order details."
+        }), 400
+
+    if duration not in (3, 5, 7, 10, 14):
+        return jsonify({
+            "error": "Please choose a valid customization duration."
+        }), 400
+
+    estimated_price = calculate_custom_order_price(
+        outfit_type,
+        fabric,
+        description,
+        duration
+    )
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "SELECT id FROM customers WHERE id = %s",
+            (customer_id,)
+        )
+
+        if not cursor.fetchone():
+            return jsonify({
+                "error": "Customer account not found. Please log in again."
+            }), 404
+
+        cursor.execute("""
+            INSERT INTO custom_orders (
+                customer_id,
+                outfit_type,
+                colour,
+                fabric,
+                occasion,
+                description,
+                duration_days,
+                payment_mode,
+                estimated_price,
+                status
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            customer_id,
+            outfit_type,
+            colour,
+            fabric,
+            occasion,
+            description,
+            duration,
+            payment_mode,
+            estimated_price,
+            "Placed"
+        ))
+
+        order_id = cursor.lastrowid
+        connection.commit()
+
+        return jsonify({
+            "message": "Your custom order has been placed successfully!",
+            "order_id": order_id,
+            "estimated_price": estimated_price
+        }), 201
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Creating custom order failed")
+
+        return jsonify({
+            "error": "Could not place order. Check the Flask terminal."
+        }), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/orders/<int:customer_id>", methods=["GET"])
+def get_customer_custom_orders(customer_id):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                id,
+                customer_id,
+                outfit_type,
+                colour,
+                fabric,
+                occasion,
+                description,
+                duration_days,
+                payment_mode,
+                estimated_price,
+                status,
+                created_at
+            FROM custom_orders
+            WHERE customer_id = %s
+            ORDER BY created_at DESC
+        """, (customer_id,))
+
+        orders = [
+            convert_dates(row)
+            for row in cursor.fetchall()
+        ]
+
+        return jsonify({
+            "orders": orders
+        })
+
+    except Exception:
+        app.logger.exception("Loading customer orders failed")
+
+        return jsonify({
+            "error": "Could not load your orders."
         }), 500
 
     finally:
