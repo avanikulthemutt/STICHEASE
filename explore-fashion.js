@@ -75,6 +75,9 @@ let measurements = readSavedMeasurements();
 let savedDesigns = readSavedDesigns();
 let toastTimer = null;
 
+/* NEW: Price stays hidden until customisation begins. */
+let hasStartedDesigning = false;
+
 
 /* =========================================
    REMOVE OLD PHOTO AND FACE FEATURES
@@ -232,6 +235,8 @@ function createColourSwatches() {
             design.colour = selected.value;
             design.colourName = selected.name;
 
+            hasStartedDesigning = true;
+
             createColourSwatches();
             renderDesign();
         });
@@ -263,6 +268,8 @@ function initialiseDesignOptions() {
             }
 
             design[optionKey] = value;
+
+            hasStartedDesigning = true;
 
             document.querySelectorAll(
                 `[data-key="${optionKey}"]`
@@ -608,9 +615,6 @@ function getKurtiPath() {
     `;
 }
 
-/* Blouse ends higher so the lehenga skirt
-   is clearly visible as a separate garment. */
-
 function getBlousePath() {
     return `
         M92 103
@@ -623,8 +627,6 @@ function getBlousePath() {
     `;
 }
 
-/* Co-ord top has its own short hem. */
-
 function getCoOrdTopPath() {
     return `
         M92 103
@@ -636,9 +638,6 @@ function getCoOrdTopPath() {
         Z
     `;
 }
-
-/* Two individually shaped trouser legs.
-   The waistband begins below the top hem. */
 
 function getCoOrdBottomPaths() {
     return [
@@ -662,8 +661,6 @@ function getCoOrdBottomPaths() {
         `
     ];
 }
-
-/* Lehenga skirt starts below the blouse. */
 
 function getLehengaSkirtPath() {
     return `
@@ -868,9 +865,11 @@ function renderDesign() {
         $("selectedColour").textContent = design.colourName;
     }
 
+    /* UPDATED PRICE DISPLAY */
     if ($("estimatedPrice")) {
-        $("estimatedPrice").textContent =
-            formatMoney(calculatePrice());
+        $("estimatedPrice").textContent = hasStartedDesigning
+            ? formatMoney(calculatePrice())
+            : "Design your outfit to see the estimated price";
     }
 
     updateMeasurementPreview();
@@ -1249,6 +1248,10 @@ function editSavedDesign(id) {
 
     loadMeasurementsIntoInputs();
     createColourSwatches();
+
+    /* Show price when loading an existing saved design. */
+    hasStartedDesigning = true;
+
     renderDesign();
 
     showToast("Design loaded! You can continue customising it.");
