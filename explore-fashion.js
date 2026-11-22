@@ -57,12 +57,12 @@ const measurementFields = {
 };
 
 const measurementLimits = {
-    bust: [30, 250],
-    waist: [30, 250],
-    hip: [30, 250],
-    shoulder: [15, 100],
-    sleeve: [0, 150],
-    garmentLength: [20, 250]
+    bust: [1, 100],
+    waist: [1, 100],
+    hip: [1, 100],
+    shoulder: [1, 100],
+    sleeve: [1, 100],
+    garmentLength: [1, 100]
 };
 
 let savedDesigns = readSavedDesigns();
