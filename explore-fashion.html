@@ -5,30 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customisation Studio | STITCHEASE</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="/explore-fashion.css">
 </head>
 <body>
-
 <header class="topbar">
     <a href="/" class="logo">Stitchease<span>.</span></a>
-
     <nav>
         <a href="/">Home</a>
         <a href="/explore-fashion" class="active">Explore Fashion</a>
         <a href="/#appointmentSection">Book appointment</a>
         <a href="/#customerDashboard">My account</a>
     </nav>
-
     <a href="/#customerDashboard" class="account-link">My account ↗</a>
 </header>
 
 <main class="studio-page">
-
     <section class="page-heading">
         <div>
             <p class="eyebrow">DESIGNED AROUND YOU</p>
@@ -44,8 +38,6 @@
     </section>
 
     <section class="studio-grid">
-
-        <!-- LEFT: CUSTOMISATION OPTIONS -->
         <aside class="panel controls-panel">
             <div class="panel-heading">
                 <span class="step-number">01</span>
@@ -116,9 +108,62 @@
                     <button type="button" class="option" data-key="print" data-value="Floral">Floral</button>
                 </div>
             </div>
+
+            <!-- MEASUREMENTS -->
+            <div class="control-group measurements-group">
+                <h3>Your measurements <span class="cm-tag">CM</span></h3>
+                <p class="measurement-help">
+                    Enter your measurements to adjust the outfit preview and share tailoring details with the boutique.
+                </p>
+
+                <div class="measurement-grid">
+                    <label>
+                        Bust
+                        <input type="number" id="measureBust" min="40" max="180" step="0.5" placeholder="e.g. 90">
+                    </label>
+                    <label>
+                        Waist
+                        <input type="number" id="measureWaist" min="40" max="180" step="0.5" placeholder="e.g. 75">
+                    </label>
+                    <label>
+                        Hip
+                        <input type="number" id="measureHip" min="40" max="200" step="0.5" placeholder="e.g. 96">
+                    </label>
+                    <label>
+                        Shoulder
+                        <input type="number" id="measureShoulder" min="20" max="65" step="0.5" placeholder="e.g. 38">
+                    </label>
+                    <label>
+                        Sleeve length
+                        <input type="number" id="measureSleeve" min="0" max="100" step="0.5" placeholder="e.g. 45">
+                    </label>
+                    <label>
+                        Garment length
+                        <input type="number" id="measureLength" min="20" max="180" step="0.5" placeholder="e.g. 95">
+                    </label>
+                </div>
+
+                <label class="fit-label" for="fitPreference">Preferred fit</label>
+                <select id="fitPreference" class="fit-select">
+                    <option value="Regular">Regular fit</option>
+                    <option value="Slim">Slim fit</option>
+                    <option value="Relaxed">Relaxed fit</option>
+                </select>
+
+                <div class="measurement-actions">
+                    <button type="button" class="gold-button" id="applyMeasurements">Apply measurements</button>
+                    <button type="button" class="outline-button" id="clearMeasurements">Clear</button>
+                </div>
+
+                <p class="measurement-status" id="measurementStatus" aria-live="polite">
+                    Measurements are optional. Add them to personalise your preview.
+                </p>
+                <p class="measurement-note">
+                    Please confirm final measurements with the boutique before stitching.
+                </p>
+            </div>
         </aside>
 
-        <!-- CENTRE: LIVE PREVIEW -->
         <section class="panel preview-panel">
             <div class="preview-topline">
                 <div>
@@ -149,23 +194,24 @@
                     <path id="leftArm" d="M91 112 L66 185 L78 190 L105 140Z" fill="#E9B99A"/>
                     <path id="rightArm" d="M169 112 L194 185 L182 190 L155 140Z" fill="#E9B99A"/>
 
-                    <path id="leftSleeve" d="" fill="#0B3D5C"/>
-                    <path id="rightSleeve" d="" fill="#0B3D5C"/>
-
-                    <path id="garmentShape" d="M92 103 Q130 91 168 103 L160 170 L190 325 L70 325 L100 170Z" fill="#0B3D5C"/>
-                    <path id="garmentPattern" d="" fill="none"/>
-
-                    <path id="neckShape" d="M111 101 Q130 128 149 101Z" fill="#E9B99A"/>
-                    <path d="M100 170 Q130 180 160 170" stroke="#FFC928" stroke-width="2" fill="none"/>
+                    <g id="garmentGroup">
+                        <path id="leftSleeve" d="" fill="#0B3D5C"/>
+                        <path id="rightSleeve" d="" fill="#0B3D5C"/>
+                        <path id="garmentShape" d="M92 103 Q130 91 168 103 L160 170 L190 325 L70 325 L100 170Z" fill="#0B3D5C"/>
+                        <path id="garmentPattern" d="" fill="none"/>
+                        <path id="neckShape" d="M111 101 Q130 128 149 101Z" fill="#E9B99A"/>
+                        <path d="M100 170 Q130 180 160 170" stroke="#FFC928" stroke-width="2" fill="none"/>
+                    </g>
 
                     <path id="leftLeg" d="M91 320 L124 320 L120 425 L91 425Z" fill="#E7DDC9"/>
                     <path id="rightLeg" d="M136 320 L169 320 L169 425 L140 425Z" fill="#E7DDC9"/>
-
                     <path d="M89 425 L122 425 L122 434 L83 434Z" fill="#071B35"/>
                     <path d="M140 425 L171 425 L178 434 L140 434Z" fill="#071B35"/>
                 </svg>
 
-                <div class="preview-caption">Illustrative design preview · Final fit confirmed at the boutique</div>
+                <div class="preview-caption" id="previewCaption">
+                    Illustrative design preview · Final fit confirmed at the boutique
+                </div>
             </div>
 
             <div class="price-strip">
@@ -186,7 +232,6 @@
             </p>
         </section>
 
-        <!-- RIGHT: AI STUDIO -->
         <aside class="panel ai-panel">
             <div class="panel-heading">
                 <span class="step-number">02</span>
@@ -199,13 +244,11 @@
             <div class="ai-card">
                 <h3><span class="gold-dot"></span> Style match</h3>
                 <p class="card-description">Choose an occasion for a styling suggestion.</p>
-
                 <div class="occasion-options">
                     <button type="button" class="occasion active" data-occasion="Wedding guest">Wedding guest</button>
                     <button type="button" class="occasion" data-occasion="Festive">Festive</button>
                     <button type="button" class="occasion" data-occasion="Office">Office</button>
                 </div>
-
                 <div class="suggestion-box" id="styleSuggestion">
                     Pick an occasion and we’ll suggest a design to match.
                 </div>
@@ -216,18 +259,15 @@
                 <p class="card-description">
                     Upload an outfit image to preview it and extract its main colours.
                 </p>
-
                 <label class="reference-upload" for="referenceUpload">
                     <span>＋</span>
                     <strong>Upload reference photo</strong>
                     <small>JPG, PNG or WEBP · Max 10 MB</small>
                 </label>
                 <input type="file" id="referenceUpload" accept="image/*">
-
                 <div class="reference-preview" id="referencePreview" hidden>
                     <img id="referenceImage" alt="Your reference outfit">
                 </div>
-
                 <div class="palette" id="referencePalette"></div>
                 <p class="reference-status" id="referenceStatus" aria-live="polite"></p>
             </div>
@@ -237,7 +277,6 @@
                 <p class="card-description">
                     Upload a clear front-facing photo to detect facial landmarks and receive styling suggestions.
                 </p>
-
                 <label class="reference-upload" for="faceUpload">
                     <span>♡</span>
                     <strong>Upload your photo</strong>
@@ -247,25 +286,17 @@
 
                 <div class="face-preview" id="facePreview" hidden>
                     <img id="faceImage" alt="Uploaded photo for face analysis">
+                    <canvas id="faceCanvas" aria-label="Detected facial landmarks"></canvas>
                 </div>
 
-                <button type="button" class="navy-button" id="analyseFace">
-                    Analyse my face
-                </button>
-
-                <div class="face-progress">
-                    <span id="faceProgress"></span>
-                </div>
-
-                <p class="face-status" id="faceStatus" aria-live="polite">
-                    Upload a photo to begin.
-                </p>
+                <button type="button" class="navy-button" id="analyseFace">Analyse my face</button>
+                <div class="face-progress"><span id="faceProgress"></span></div>
+                <p class="face-status" id="faceStatus" aria-live="polite">Upload a photo to begin.</p>
 
                 <div class="face-result" id="faceResult" hidden>
                     <p class="result-label">YOUR STYLE PROFILE</p>
                     <h4 id="faceShape">Face shape</h4>
                     <p id="faceDescription"></p>
-
                     <div class="face-tip">
                         <small>Suggested neckline</small>
                         <strong id="faceNeckline"></strong>
@@ -284,10 +315,8 @@
                 </div>
             </div>
         </aside>
-
     </section>
 
-    <!-- SAVED DESIGNS -->
     <section class="saved-section" id="savedDesignsSection">
         <div class="saved-heading">
             <div>
@@ -296,7 +325,6 @@
             </div>
             <span id="savedCount">0 designs saved</span>
         </div>
-
         <div class="saved-grid" id="savedDesigns">
             <div class="empty-saved">
                 <span>♡</span>
@@ -304,7 +332,6 @@
             </div>
         </div>
     </section>
-
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
