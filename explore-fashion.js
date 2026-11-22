@@ -1,7 +1,7 @@
 
 /* =========================================
    STITCHEASE - CUSTOMISATION STUDIO
-   Complete version with Saved Designs Gallery
+   Updated outfit previews + Saved Designs
 ========================================= */
 
 const $ = id => document.getElementById(id);
@@ -25,7 +25,8 @@ const colours = [
     { name: "Mustard", value: "#D9A441" },
     { name: "Blush", value: "#E8B4B8" },
     { name: "Black", value: "#252525" },
-    { name: "Ivory", value: "#D9D0BA" }
+    { name: "Ivory", value: "#D9D0BA" },
+    { name: "Gold", value: "#D6A400" }
 ];
 
 const garmentPrices = {
@@ -86,6 +87,18 @@ function removeUnwantedFeatures() {
         if (input) {
             const card = input.closest(".ai-card");
             if (card) card.remove();
+        }
+    });
+
+    document.querySelectorAll(
+        ".reference-upload, .reference-preview, .face-preview, .face-result, .face-progress"
+    ).forEach(element => {
+        const card = element.closest(".ai-card");
+
+        if (card) {
+            card.remove();
+        } else {
+            element.remove();
         }
     });
 
@@ -534,7 +547,9 @@ function getOrCreateBottomGroup() {
 function clearBottomGroup() {
     const group = $("separateBottom");
 
-    if (group) group.innerHTML = "";
+    if (group) {
+        group.innerHTML = "";
+    }
 }
 
 function getPatternFill() {
@@ -556,8 +571,9 @@ function addBottomGarment(pathData, colour) {
     group.appendChild(createSVGElement("path", {
         d: pathData,
         fill: colour,
-        stroke: "rgba(0,0,0,0.08)",
-        "stroke-width": "1"
+        stroke: "rgba(0,0,0,0.12)",
+        "stroke-width": "1.2",
+        "stroke-linejoin": "round"
     }));
 
     group.appendChild(createSVGElement("path", {
@@ -592,53 +608,72 @@ function getKurtiPath() {
     `;
 }
 
+/* Blouse ends higher so the lehenga skirt
+   is clearly visible as a separate garment. */
+
 function getBlousePath() {
     return `
         M92 103
         Q130 91 168 103
-        L160 170
-        L174 238
-        L86 238
-        L100 170
+        L160 166
+        L170 207
+        L90 207
+        L100 166
         Z
     `;
 }
+
+/* Co-ord top has its own short hem. */
 
 function getCoOrdTopPath() {
     return `
         M92 103
         Q130 91 168 103
-        L160 170
-        L174 232
-        L86 232
-        L100 170
+        L160 166
+        L170 207
+        L90 207
+        L100 166
         Z
     `;
 }
 
+/* Two individually shaped trouser legs.
+   The waistband begins below the top hem. */
+
 function getCoOrdBottomPaths() {
     return [
         `
-        M86 226
-        L126 226
-        L120 425
-        L88 425
-        L76 285
+        M83 231
+        Q102 226 124 231
+        L119 270
+        L113 420
+        L78 420
+        L73 275
         Z
         `,
         `
-        M134 226
-        L174 226
-        L184 285
-        L172 425
-        L140 425
+        M136 231
+        Q158 226 177 231
+        L187 275
+        L182 420
+        L147 420
+        L141 270
         Z
         `
     ];
 }
 
-function getBlouseForLehengaPath() {
-    return getBlousePath();
+/* Lehenga skirt starts below the blouse. */
+
+function getLehengaSkirtPath() {
+    return `
+        M87 231
+        Q130 243 173 231
+        Q180 285 207 405
+        Q130 425 53 405
+        Q80 285 87 231
+        Z
+    `;
 }
 
 function getSleevePaths() {
@@ -671,6 +706,61 @@ function getNeckPath() {
 
 
 /* =========================================
+   OUTFIT DETAILS
+========================================= */
+
+function addOutfitDetails() {
+    const group = $("garmentGroup");
+    if (!group) return;
+
+    let detailGroup = $("outfitDetailGroup");
+
+    if (!detailGroup) {
+        detailGroup = createSVGElement("g", {
+            id: "outfitDetailGroup",
+            fill: "none",
+            stroke: "#FCE9A5",
+            "stroke-width": "2",
+            "stroke-linecap": "round"
+        });
+
+        group.appendChild(detailGroup);
+    }
+
+    detailGroup.innerHTML = "";
+
+    if (design.garment === "Co-ord set") {
+        detailGroup.appendChild(createSVGElement("path", {
+            d: "M91 207 Q130 214 169 207"
+        }));
+
+        detailGroup.appendChild(createSVGElement("path", {
+            d: "M83 231 Q130 239 177 231"
+        }));
+
+    } else if (design.garment === "Lehenga") {
+        detailGroup.appendChild(createSVGElement("path", {
+            d: "M90 207 Q130 214 170 207"
+        }));
+
+        detailGroup.appendChild(createSVGElement("path", {
+            d: "M87 231 Q130 243 173 231"
+        }));
+
+        detailGroup.appendChild(createSVGElement("path", {
+            d: "M75 330 Q130 344 185 330",
+            "stroke-width": "1.5"
+        }));
+
+    } else if (design.garment === "Kurti") {
+        detailGroup.appendChild(createSVGElement("path", {
+            d: "M100 170 Q130 180 160 170"
+        }));
+    }
+}
+
+
+/* =========================================
    RENDER OUTFIT
 ========================================= */
 
@@ -693,17 +783,12 @@ function renderGarment() {
         garmentPath = getBlousePath();
 
     } else if (design.garment === "Lehenga") {
-        garmentPath = getBlouseForLehengaPath();
+        garmentPath = getBlousePath();
 
-        const skirtPath = `
-            M96 226
-            Q130 238 164 226
-            L205 365
-            L55 365
-            Z
-        `;
-
-        addBottomGarment(skirtPath, colour);
+        addBottomGarment(
+            getLehengaSkirtPath(),
+            colour
+        );
 
     } else if (design.garment === "Co-ord set") {
         garmentPath = getCoOrdTopPath();
@@ -712,17 +797,6 @@ function renderGarment() {
 
         addBottomGarment(leftLeg, colour);
         addBottomGarment(rightLeg, colour);
-
-        const bottomGroup = $("separateBottom");
-
-        if (bottomGroup) {
-            bottomGroup.appendChild(createSVGElement("path", {
-                d: "M87 226 Q130 237 173 226 L174 239 Q130 250 86 239Z",
-                fill: colour,
-                stroke: "#FCE9A5",
-                "stroke-width": "2"
-            }));
-        }
 
     } else {
         garmentPath = getKurtiPath();
@@ -746,37 +820,11 @@ function renderGarment() {
         rightSleeve.setAttribute("fill", colour);
     }
 
-    if (neck) neck.setAttribute("d", getNeckPath());
-
-    let waistDetail = $("waistDetail");
-
-    if (!waistDetail) {
-        waistDetail = createSVGElement("path", {
-            id: "waistDetail",
-            fill: "none",
-            stroke: "#FCE9A5",
-            "stroke-width": "2"
-        });
-
-        $("garmentGroup")?.appendChild(waistDetail);
+    if (neck) {
+        neck.setAttribute("d", getNeckPath());
     }
 
-    if (
-        design.garment === "Kurti" ||
-        design.garment === "Lehenga" ||
-        design.garment === "Co-ord set"
-    ) {
-        waistDetail.setAttribute(
-            "d",
-            design.garment === "Co-ord set"
-                ? "M94 225 Q130 237 166 225"
-                : "M100 170 Q130 180 160 170"
-        );
-
-        waistDetail.style.display = "block";
-    } else if (waistDetail) {
-        waistDetail.style.display = "none";
-    }
+    addOutfitDetails();
 }
 
 
@@ -936,26 +984,55 @@ function createSavedDesignPreview(item) {
 
     if (d.garment === "Co-ord set") {
         outfit = `
-            <path d="M65 35 Q100 20 135 35 L130 90
-                L145 110 L55 110 L70 90Z" fill="${colour}"/>
-            <path d="M60 110 L95 110 L90 220 L62 220Z"
+            <path d="
+                M65 35 Q100 20 135 35
+                L130 80 L140 105
+                L60 105 L70 80 Z"
                 fill="${colour}"/>
-            <path d="M105 110 L140 110 L138 220 L110 220Z"
+
+            <path d="
+                M60 122 Q78 117 94 122
+                L90 145 L86 220
+                L58 220 L55 145 Z"
                 fill="${colour}"/>
+
+            <path d="
+                M106 122 Q122 117 140 122
+                L145 145 L142 220
+                L114 220 L110 145 Z"
+                fill="${colour}"/>
+
+            <path d="M60 105 Q100 112 140 105"
+                fill="none" stroke="#FCE9A5" stroke-width="2"/>
         `;
+
     } else if (d.garment === "Lehenga") {
         outfit = `
-            <path d="M65 35 Q100 20 135 35 L130 90
-                L145 105 L55 105 L70 90Z" fill="${colour}"/>
-            <path d="M65 105 Q100 120 135 105 L170 220
-                L30 220Z" fill="${colour}"/>
+            <path d="
+                M65 35 Q100 20 135 35
+                L130 80 L140 102
+                L60 102 L70 80 Z"
+                fill="${colour}"/>
+
+            <path d="
+                M65 120 Q100 132 135 120
+                Q145 170 170 220
+                Q100 235 30 220
+                Q55 170 65 120 Z"
+                fill="${colour}"/>
+
+            <path d="M65 102 Q100 110 135 102"
+                fill="none" stroke="#FCE9A5" stroke-width="2"/>
         `;
+
     } else {
         const bottom = d.garment === "Blouse" ? 145 : 220;
 
         outfit = `
-            <path d="M65 35 Q100 20 135 35 L130 90
-                L145 ${bottom} L55 ${bottom} L70 90Z"
+            <path d="
+                M65 35 Q100 20 135 35
+                L130 90 L145 ${bottom}
+                L55 ${bottom} L70 90 Z"
                 fill="${colour}"/>
         `;
     }
