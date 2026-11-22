@@ -377,7 +377,7 @@ function renderOrders() {
                 </td>
                 <td>
                     <select onchange="updateOrderStatus('${escapeHTML(id)}', this.value)"
-                        style="padding:8px;border:1px solid #DCE3EC;border-radius:7px;">
+                        class="payment-status-select">
                         ${ORDER_STATUSES.map(status => `
                             <option value="${status}"
                                 ${String(getValue(order, "status")).toLowerCase() === status.toLowerCase() ? "selected" : ""}>
