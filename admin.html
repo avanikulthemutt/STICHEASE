@@ -11,16 +11,16 @@
 
     <style>
         :root {
-            --cream: #FFF8E8;
-            --ivory: #FFFEF7;
-            --beige: #FFF1CC;
-            --beige-dark: #F2DFA8;
-            --brown: #3F3A30;
-            --brown-dark: #292820;
-            --gold: #E8B943;
-            --gold-light: #FFF0BF;
-            --ink: #343127;
-            --muted: #777263;
+            --cream: #FFF9EA;
+            --ivory: #FFFEFA;
+            --beige: #FFF1C9;
+            --beige-dark: #F5D978;
+            --brown: #303030;
+            --brown-dark: #292929;
+            --gold: #E9B936;
+            --gold-light: #FFF0BD;
+            --ink: #303030;
+            --muted: #777777;
             --line: #EDE4D1;
             --green: #477653;
             --green-bg: #E8F1E6;
@@ -186,8 +186,8 @@
         .auth-section {
             min-height: 100vh;
             background:
-                radial-gradient(circle at 12% 12%, rgba(179,138,72,.13), transparent 32%),
-                radial-gradient(circle at 90% 90%, rgba(222,210,190,.45), transparent 35%),
+                radial-gradient(circle at 12% 12%, rgba(233,185,54,.16), transparent 32%),
+                radial-gradient(circle at 90% 90%, rgba(255,240,189,.55), transparent 35%),
                 var(--cream);
             display: flex;
             flex-direction: column;
@@ -252,7 +252,7 @@
             background: var(--ivory);
             border: 1px solid var(--line);
             border-radius: 20px;
-            box-shadow: 0 20px 55px rgba(91,72,45,.09);
+            box-shadow: 0 20px 55px rgba(50,50,50,.08);
         }
 
         .auth-card h2 {
@@ -305,7 +305,7 @@
         .field textarea {
             width: 100%;
             padding: 12px 13px;
-            background: #FCFAF6;
+            background: #FFFEFA;
             border: 1px solid var(--line);
             border-radius: 9px;
             outline: none;
@@ -323,7 +323,7 @@
         .field select:focus,
         .field textarea:focus {
             border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(179,138,72,.12);
+            box-shadow: 0 0 0 3px rgba(233,185,54,.15);
         }
 
         .auth-message,
@@ -354,7 +354,7 @@
         .sidebar {
             width: 250px;
             min-width: 250px;
-            background: #F0EADF;
+            background: #FFF4D9;
             border-right: 1px solid var(--line);
             color: var(--brown-dark);
             padding: 24px 16px;
@@ -369,7 +369,7 @@
 
         .sidebar-label {
             padding: 23px 12px 11px;
-            color: #A1927E;
+            color: #777777;
             font-size: 9px;
             font-weight: 700;
             letter-spacing: 1.7px;
@@ -387,7 +387,7 @@
             gap: 12px;
             width: 100%;
             padding: 11px 13px;
-            color: #766852;
+            color: #555555;
             background: transparent;
             border: none;
             border-radius: 9px;
@@ -403,7 +403,7 @@
         }
 
         .nav-link:hover {
-            background: #E8DFD0;
+            background: #FFF0C7;
             color: var(--brown-dark);
         }
 
@@ -532,8 +532,8 @@
             align-items: center;
             padding: 30px 34px;
             border-radius: 16px;
-            background: linear-gradient(110deg, #E9DDC9, #F3EBDD);
-            border: 1px solid #E2D5C0;
+            background: linear-gradient(110deg, #FFF0C7, #FFF8E8);
+            border: 1px solid #F3E3B8;
             color: var(--brown-dark);
             margin-bottom: 27px;
         }
@@ -550,13 +550,13 @@
         }
 
         .welcome-card p {
-            color: #82735F;
+            color: #666666;
             font-size: 12px;
             line-height: 1.7;
         }
 
         .welcome-decoration {
-            color: #B38A48;
+            color: #E9B936;
             opacity: .75;
             padding-right: 20px;
         }
@@ -672,18 +672,18 @@
         th {
             padding: 13px 12px;
             text-align: left;
-            color: #928675;
+            color: #777777;
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: .6px;
-            background: #F7F3EB;
+            background: #FFF9EA;
         }
 
         td {
             padding: 13px 12px;
-            color: #625644;
-            border-bottom: 1px solid #F0EBE2;
+            color: #555555;
+            border-bottom: 1px solid #F2EBD9;
             font-size: 11px;
         }
 
@@ -692,7 +692,7 @@
         }
 
         tbody tr:hover {
-            background: #FCFAF6;
+            background: #FFFEFA;
         }
 
         .status {
@@ -700,7 +700,7 @@
             padding: 6px 10px;
             border-radius: 20px;
             background: var(--gold-light);
-            color: #80643B;
+            color: #8A6A16;
             font-size: 10px;
             font-weight: 700;
         }
@@ -722,8 +722,8 @@
         .status.in-progress,
         .status.confirmed,
         .status.low-stock {
-            background: #F3EBD9;
-            color: #96713B;
+            background: #FFF0C7;
+            color: #8A6A16;
         }
 
         .empty-state {
@@ -743,7 +743,7 @@
 
         .progress-item {
             padding: 15px 10px;
-            background: #F7F3EB;
+            background: #FFF9EA;
             border: 1px solid #F0E9DC;
             border-radius: 10px;
             text-align: center;
@@ -800,7 +800,7 @@
         .search-input {
             width: min(300px, 100%);
             padding: 10px 12px;
-            background: #FCFAF6;
+            background: #FFFEFA;
             border: 1px solid var(--line);
             border-radius: 8px;
             outline: none;
@@ -884,7 +884,7 @@
                 position: fixed;
                 inset: 0;
                 z-index: 20;
-                background: rgba(60,45,25,.35);
+                background: rgba(40,40,40,.25);
             }
 
             .mobile-menu {
