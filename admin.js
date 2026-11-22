@@ -281,6 +281,7 @@ async function loadDashboard() {
         renderOrders();
         renderAppointments();
         renderCustomers();
+        renderPayments();
 
     } catch (error) {
         console.error("Dashboard loading error:", error);
@@ -512,6 +513,116 @@ function renderCustomers() {
     `).join("");
 }
 
+
+
+
+// ---------------- PAYMENT MANAGEMENT ----------------
+
+function formatRupees(amount) {
+    const value = Number(amount || 0);
+
+    return "₹" + value.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function renderPayments() {
+    const table = document.getElementById("paymentsTable");
+
+    if (!table) return;
+
+    const orders = dashboardData.orders || [];
+
+    const paidOrders = orders.filter(order =>
+        String(getValue(order, "payment_status") || "Pending").toLowerCase() === "paid"
+    );
+
+    const pendingOrders = orders.filter(order =>
+        String(getValue(order, "payment_status") || "Pending").toLowerCase() === "pending"
+    );
+
+    const paidTotal = paidOrders.reduce((sum, order) =>
+        sum + Number(getValue(order, "estimated_price") || 0), 0
+    );
+
+    const pendingTotal = pendingOrders.reduce((sum, order) =>
+        sum + Number(getValue(order, "estimated_price") || 0), 0
+    );
+
+    const allTotal = orders.reduce((sum, order) =>
+        sum + Number(getValue(order, "estimated_price") || 0), 0
+    );
+
+    setText("paymentTotalOrders", orders.length);
+    setText("paymentTotalAmount", formatRupees(allTotal));
+    setText("paymentPaidAmount", formatRupees(paidTotal));
+    setText("paymentPendingAmount", formatRupees(pendingTotal));
+
+    if (!orders.length) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-state">
+                    No order payment records available yet.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    table.innerHTML = orders.map(order => {
+        const id = getValue(order, "id", "order_id");
+        const status = getValue(order, "payment_status") || "Pending";
+
+        return `
+            <tr>
+                <td>#${escapeHTML(id)}</td>
+                <td>${escapeHTML(getValue(order, "customer_name", "name") || "Customer")}</td>
+                <td>${escapeHTML(getValue(order, "outfit_type", "outfit") || "—")}</td>
+                <td>${escapeHTML(getValue(order, "payment_mode") || "Not specified")}</td>
+                <td>${formatRupees(getValue(order, "estimated_price"))}</td>
+                <td>
+                    <span class="status ${getStatusClass(status)}">
+                        ${escapeHTML(status)}
+                    </span>
+                </td>
+                <td>
+                    <select
+                        onchange="updatePaymentStatus('${escapeHTML(id)}', this.value)"
+                        aria-label="Update payment status for order ${escapeHTML(id)}"
+                        style="padding:8px;border:1px solid #DCE3EC;border-radius:7px;"
+                    >
+                        ${["Pending", "Paid", "Partially Paid", "Refunded"].map(option => `
+                            <option value="${option}"
+                                ${status.toLowerCase() === option.toLowerCase() ? "selected" : ""}>
+                                ${option}
+                            </option>
+                        `).join("")}
+                    </select>
+                </td>
+            </tr>
+        `;
+    }).join("");
+}
+
+async function updatePaymentStatus(orderId, paymentStatus) {
+    try {
+        await apiRequest(
+            `/api/admin/payments/${encodeURIComponent(orderId)}`,
+            {
+                method: "PATCH",
+                body: JSON.stringify({ payment_status: paymentStatus })
+            }
+        );
+
+        alert("Payment status updated successfully.");
+        await loadDashboard();
+
+    } catch (error) {
+        alert(error.message);
+        await loadDashboard();
+    }
+}
 
 // ---------------- LOGOUT ----------------
 

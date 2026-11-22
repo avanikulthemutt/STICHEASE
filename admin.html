@@ -1980,14 +1980,77 @@ input, select, textarea, .search-input {
                         <div>
                             <span class="eyebrow">BUSINESS OVERVIEW</span>
                             <h1>Payments</h1>
-                            <p>Review payment information for boutique orders.</p>
+                            <p>Track order amounts, payment methods and payment status.</p>
                         </div>
                     </div>
-                    <div class="section-placeholder">
-                        <div class="placeholder-icon"><i data-lucide="wallet"></i></div>
-                        <h2>Payment Management</h2>
-                        <p>Payment management can be connected when payment processing is introduced.</p>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i data-lucide="receipt"></i></div>
+                            <div>
+                                <p>Total Orders</p>
+                                <h2 id="paymentTotalOrders">0</h2>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"><i data-lucide="wallet"></i></div>
+                            <div>
+                                <p>Total Order Value</p>
+                                <h2 id="paymentTotalAmount">₹0.00</h2>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"><i data-lucide="badge-check"></i></div>
+                            <div>
+                                <p>Marked as Paid</p>
+                                <h2 id="paymentPaidAmount">₹0.00</h2>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"><i data-lucide="clock"></i></div>
+                            <div>
+                                <p>Pending Payments</p>
+                                <h2 id="paymentPendingAmount">₹0.00</h2>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="content-card">
+                        <div class="section-header">
+                            <div>
+                                <h2>Order Payment Records</h2>
+                                <p>Update the payment status after confirming payment with the customer.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Outfit</th>
+                                        <th>Payment Method</th>
+                                        <th>Amount</th>
+                                        <th>Payment Status</th>
+                                        <th>Update Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentsTable">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">Loading payment records...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <p class="small-note">
+                        Payment statuses are maintained manually by the boutique. No online payment is processed here.
+                    </p>
                 </section>
 
 

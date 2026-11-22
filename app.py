@@ -1061,12 +1061,22 @@ def admin_dashboard():
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
+        # Add payment tracking column safely if it does not exist.
+        cursor.execute("SHOW COLUMNS FROM custom_orders LIKE 'payment_status'")
+        if not cursor.fetchone():
+            cursor.execute("""
+                ALTER TABLE custom_orders
+                ADD COLUMN payment_status VARCHAR(30)
+                NOT NULL DEFAULT 'Pending'
+            """)
+
         cursor.execute("""
             SELECT
                 co.id, co.customer_id, c.name AS customer_name,
                 co.outfit_type, co.colour, co.fabric, co.occasion,
                 co.description, co.duration_days, co.payment_mode,
-                co.estimated_price, co.status, co.created_at
+                co.estimated_price, co.payment_status,
+                co.status, co.created_at
             FROM custom_orders co
             LEFT JOIN customers c ON co.customer_id = c.id
             ORDER BY co.created_at DESC
@@ -1129,6 +1139,76 @@ def admin_dashboard():
 
         return jsonify({
             "error": "Could not load dashboard data. Check the Flask terminal."
+        }), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+
+
+# ====================================================
+#                 ADMIN PAYMENT MANAGEMENT
+# ====================================================
+
+@app.route("/api/admin/payments/<int:order_id>", methods=["PATCH"])
+def update_admin_payment(order_id):
+    if not admin_required():
+        return jsonify({
+            "error": "Please log in as an administrator."
+        }), 401
+
+    data = request.get_json(silent=True) or {}
+    payment_status = str(data.get("payment_status") or "").strip()
+
+    allowed_statuses = [
+        "Pending",
+        "Paid",
+        "Partially Paid",
+        "Refunded"
+    ]
+
+    if payment_status not in allowed_statuses:
+        return jsonify({"error": "Invalid payment status."}), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            UPDATE custom_orders
+            SET payment_status = %s
+            WHERE id = %s
+        """, (payment_status, order_id))
+
+        if cursor.rowcount == 0:
+            cursor.execute(
+                "SELECT id FROM custom_orders WHERE id = %s",
+                (order_id,)
+            )
+
+            if not cursor.fetchone():
+                return jsonify({
+                    "error": "Custom order not found."
+                }), 404
+
+        connection.commit()
+
+        return jsonify({
+            "message": "Payment status updated successfully."
+        })
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Updating payment status failed")
+
+        return jsonify({
+            "error": "Could not update payment status."
         }), 500
 
     finally:
