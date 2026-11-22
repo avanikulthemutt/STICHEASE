@@ -2,6 +2,7 @@
 const API_BASE = "";
 
 let currentAdmin = null;
+let measurementRecords = [];
 
 let dashboardData = {
     appointments: [],
@@ -250,8 +251,108 @@ function showPage(pageId) {
     document.getElementById("mobileOverlay").classList.remove("show");
 
     refreshIcons();
+
+    if (pageId === "measurements") {
+        loadMeasurements();
+    }
 }
 
+
+
+// ---------------- CUSTOMER MEASUREMENTS ----------------
+
+async function loadMeasurements() {
+    const table = document.getElementById("measurementsTable");
+    if (!table) return;
+
+    table.innerHTML = `
+        <tr><td colspan="12" class="empty-state">
+            Loading customer measurements...
+        </td></tr>
+    `;
+
+    try {
+        const data = await apiRequest("/api/admin/measurements");
+
+        measurementRecords = data.measurements || [];
+
+        renderMeasurements();
+
+    } catch (error) {
+        console.error("Measurements loading error:", error);
+
+        table.innerHTML = `
+            <tr><td colspan="12" class="empty-state">
+                ${escapeHTML(error.message)}
+            </td></tr>
+        `;
+
+        setText("measurementCount", "Unable to load records");
+    }
+}
+
+function renderMeasurements() {
+    const table = document.getElementById("measurementsTable");
+    const searchInput = document.getElementById("measurementSearch");
+
+    if (!table) return;
+
+    const search = (searchInput?.value || "").trim().toLowerCase();
+
+    const filtered = measurementRecords.filter(record => {
+        const searchable = [
+            record.customer_id,
+            record.customer_name,
+            record.email,
+            record.phone,
+            record.address
+        ].join(" ").toLowerCase();
+
+        return searchable.includes(search);
+    });
+
+    setText(
+        "measurementCount",
+        `${filtered.length} ${filtered.length === 1 ? "record" : "records"}`
+    );
+
+    if (!filtered.length) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="12" class="empty-state">
+                    ${measurementRecords.length
+                        ? "No matching customer measurements found."
+                        : "No customer measurements have been saved yet."}
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const fields = [
+        "customer_id",
+        "customer_name",
+        "email",
+        "phone",
+        "address",
+        "height_cm",
+        "shoulder_cm",
+        "bust_cm",
+        "waist_cm",
+        "hip_cm",
+        "sleeve_cm",
+        "dress_length_cm"
+    ];
+
+    table.innerHTML = filtered.map(record => `
+        <tr>
+            ${fields.map(field => {
+                const value = getValue(record, field);
+                return `<td>${escapeHTML(value === "" ? "—" : value)}</td>`;
+            }).join("")}
+        </tr>
+    `).join("");
+}
 
 // ---------------- MOBILE SIDEBAR ----------------
 
@@ -755,6 +856,13 @@ function refreshIcons() {
 // ---------------- INITIALIZE ----------------
 
 document.addEventListener("DOMContentLoaded", function () {
+
+    const measurementSearch = document.getElementById("measurementSearch");
+
+    if (measurementSearch) {
+        measurementSearch.addEventListener("input", renderMeasurements);
+    }
+
 
     document.getElementById("adminLoginForm")
         .addEventListener("submit", handleAdminLogin);
