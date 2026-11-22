@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,19 +11,24 @@
 
     <style>
         :root {
-            --navy: #071B35;
-            --deep: #051329;
-            --secondary: #102B4C;
-            --yellow: #FFC928;
+            --cream: #F8F5EE;
+            --ivory: #FFFEFA;
+            --beige: #EEE7D9;
+            --beige-dark: #DED2BE;
+            --brown: #705B43;
+            --brown-dark: #4E4030;
+            --gold: #B38A48;
+            --gold-light: #F3E7CC;
+            --ink: #514638;
+            --muted: #928675;
+            --line: #E9E1D4;
+            --green: #477653;
+            --green-bg: #E8F1E6;
+            --red: #A84E43;
+            --red-bg: #F8E9E5;
+            --blue-bg: #EFEAE1;
             --white: #FFFFFF;
-            --muted: #AEBBCD;
-            --line: #29415E;
-            --green: #72D69A;
-            --red: #FF8585;
-            --card: #102B4C;
-            --page: #F5F7FA;
-            --ink: #071B35;
-            --soft: #EAF0F6;
+            --shadow: 0 5px 22px rgba(91, 72, 45, .055);
         }
 
         * {
@@ -35,7 +39,7 @@
 
         body {
             font-family: "DM Sans", sans-serif;
-            background: var(--page);
+            background: var(--cream);
             color: var(--ink);
             min-height: 100vh;
         }
@@ -58,18 +62,18 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            color: var(--white);
+            color: var(--brown-dark);
             text-decoration: none;
         }
 
         .brand-icon {
-            width: 43px;
-            height: 43px;
+            width: 44px;
+            height: 44px;
             display: grid;
             place-items: center;
-            border-radius: 13px;
-            background: var(--yellow);
-            color: var(--navy);
+            border-radius: 14px;
+            background: var(--gold-light);
+            color: var(--brown);
         }
 
         .brand-icon i {
@@ -80,42 +84,97 @@
         .brand strong {
             display: block;
             font-family: "Playfair Display", serif;
-            font-size: 22px;
+            font-size: 23px;
         }
 
         .brand small {
             display: block;
-            margin-top: 2px;
+            margin-top: 3px;
             color: var(--muted);
-            font-size: 10px;
-            letter-spacing: 1.2px;
+            font-size: 9px;
+            letter-spacing: 1.5px;
         }
 
         .eyebrow {
-            color: #A77B00;
+            color: var(--gold);
             font-size: 10px;
             font-weight: 700;
-            letter-spacing: 2px;
+            letter-spacing: 1.8px;
         }
 
-        /* WEBSITE NAVIGATION LINKS */
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* BUTTONS */
+
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 9px;
+            padding: 12px 18px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .btn-primary {
+            background: var(--brown);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--brown-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--gold-light);
+            color: var(--brown-dark);
+            border-color: var(--beige-dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--beige);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-danger {
+            background: var(--red-bg);
+            color: var(--red);
+            border-color: #EED3CD;
+        }
+
+        .btn-small {
+            padding: 8px 11px;
+            font-size: 11px;
+        }
+
+        /* WEBSITE LINK */
 
         .website-back-link {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
-            margin-top: 20px;
-            color: var(--navy);
+            margin-top: 21px;
+            color: var(--brown);
             text-decoration: none;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             transition: .2s;
         }
 
         .website-back-link:hover {
-            color: #A77B00;
-            transform: translateY(-2px);
+            color: var(--gold);
         }
 
         .website-back-link i {
@@ -123,13 +182,14 @@
             height: 16px;
         }
 
-        /* LOGIN AND REGISTER */
+        /* LOGIN */
 
         .auth-section {
             min-height: 100vh;
             background:
-                radial-gradient(circle at 10% 15%, rgba(255,201,40,.12), transparent 30%),
-                linear-gradient(135deg, var(--deep), var(--navy) 65%, #163657);
+                radial-gradient(circle at 12% 12%, rgba(179,138,72,.13), transparent 32%),
+                radial-gradient(circle at 90% 90%, rgba(222,210,190,.45), transparent 35%),
+                var(--cream);
             display: flex;
             flex-direction: column;
         }
@@ -141,7 +201,7 @@
         .auth-layout {
             flex: 1;
             width: min(1100px, 90%);
-            margin: 35px auto 60px;
+            margin: 30px auto 55px;
             display: grid;
             grid-template-columns: 1fr 440px;
             align-items: center;
@@ -149,11 +209,11 @@
         }
 
         .auth-intro .eyebrow {
-            color: var(--yellow);
+            color: var(--gold);
         }
 
         .auth-intro h1 {
-            color: white;
+            color: var(--brown-dark);
             font-family: "Playfair Display", serif;
             font-size: clamp(42px, 5vw, 65px);
             line-height: 1.15;
@@ -161,13 +221,13 @@
         }
 
         .auth-intro h1 em {
-            color: var(--yellow);
+            color: var(--gold);
             font-weight: 500;
         }
 
         .auth-intro p {
-            max-width: 440px;
-            color: #C1CDDC;
+            max-width: 450px;
+            color: var(--muted);
             line-height: 1.9;
             font-size: 14px;
         }
@@ -176,38 +236,41 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-top: 35px;
-            color: var(--yellow);
+            margin-top: 32px;
+            color: var(--brown);
             font-size: 13px;
+            font-weight: 600;
+        }
+
+        .auth-note i {
+            width: 20px;
+            height: 20px;
+            color: var(--gold);
         }
 
         .auth-card {
             padding: 38px;
-            background: white;
-            border-radius: 22px;
-            box-shadow: 0 25px 70px rgba(0,0,0,.2);
+            background: var(--ivory);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: 0 20px 55px rgba(91,72,45,.09);
         }
 
         .auth-card h2 {
             font-family: "Playfair Display", serif;
             font-size: 29px;
-            color: var(--navy);
+            color: var(--brown-dark);
             margin: 12px 0 8px;
-        }
-
-        .muted {
-            color: #748196;
-            font-size: 13px;
-            line-height: 1.7;
         }
 
         .auth-tabs {
             display: grid;
             grid-template-columns: 1fr 1fr;
             padding: 5px;
-            background: #F0F3F7;
+            background: var(--cream);
+            border: 1px solid var(--line);
             border-radius: 10px;
-            margin: 25px 0;
+            margin-bottom: 25px;
             gap: 5px;
         }
 
@@ -215,25 +278,25 @@
             border: none;
             border-radius: 8px;
             background: transparent;
-            color: #637187;
+            color: var(--muted);
             padding: 11px;
             font-size: 13px;
             font-weight: 700;
         }
 
         .auth-tabs button.active {
-            background: var(--navy);
-            color: var(--yellow);
+            background: var(--brown);
+            color: white;
         }
 
         .field {
-            margin-bottom: 17px;
+            margin-bottom: 16px;
         }
 
         .field label {
             display: block;
             margin-bottom: 8px;
-            color: var(--navy);
+            color: var(--brown-dark);
             font-size: 12px;
             font-weight: 700;
         }
@@ -242,53 +305,31 @@
         .field select,
         .field textarea {
             width: 100%;
-            padding: 13px 14px;
-            background: #F8FAFC;
-            border: 1px solid #DCE3EC;
+            padding: 12px 13px;
+            background: #FCFAF6;
+            border: 1px solid var(--line);
             border-radius: 9px;
             outline: none;
-            color: var(--navy);
-            font-size: 13px;
+            color: var(--ink);
+            font-size: 12px;
             transition: .2s;
+        }
+
+        .field textarea {
+            min-height: 85px;
+            resize: vertical;
         }
 
         .field input:focus,
         .field select:focus,
         .field textarea:focus {
-            border-color: #D5A600;
-            box-shadow: 0 0 0 3px rgba(255,201,40,.15);
-        }
-
-        .btn {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            gap: 9px;
-            padding: 12px 19px;
-            border: none;
-            border-radius: 9px;
-            font-size: 13px;
-            font-weight: 700;
-            transition: .2s;
-        }
-
-        .btn-primary {
-            background: var(--yellow);
-            color: var(--navy);
-        }
-
-        .btn-primary:hover {
-            background: #F2B900;
-            transform: translateY(-1px);
-        }
-
-        .btn-full {
-            width: 100%;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(179,138,72,.12);
         }
 
         .auth-message,
         .message {
-            margin-top: 15px;
+            margin-top: 13px;
             font-size: 12px;
             line-height: 1.6;
         }
@@ -296,11 +337,11 @@
         .auth-footer {
             padding: 22px;
             text-align: center;
-            color: #AEBBCD;
-            font-size: 12px;
+            color: var(--muted);
+            font-size: 11px;
         }
 
-        /* ADMIN DASHBOARD */
+        /* DASHBOARD SHELL */
 
         #dashboardSection {
             min-height: 100vh;
@@ -312,41 +353,42 @@
         }
 
         .sidebar {
-            width: 255px;
-            min-width: 255px;
-            background: var(--navy);
-            color: white;
-            padding: 25px 17px;
+            width: 250px;
+            min-width: 250px;
+            background: #F0EADF;
+            border-right: 1px solid var(--line);
+            color: var(--brown-dark);
+            padding: 24px 16px;
             display: flex;
             flex-direction: column;
         }
 
         .sidebar-brand {
-            padding: 0 10px 27px;
-            border-bottom: 1px solid var(--line);
+            padding: 0 10px 24px;
+            border-bottom: 1px solid var(--beige-dark);
         }
 
         .sidebar-label {
-            padding: 25px 12px 12px;
-            color: #8294AB;
+            padding: 23px 12px 11px;
+            color: #A1927E;
             font-size: 9px;
             font-weight: 700;
-            letter-spacing: 1.8px;
+            letter-spacing: 1.7px;
         }
 
         .sidebar-nav {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 13px;
+            gap: 12px;
             width: 100%;
-            padding: 12px 13px;
-            color: #C2CCDA;
+            padding: 11px 13px;
+            color: #766852;
             background: transparent;
             border: none;
             border-radius: 9px;
@@ -362,24 +404,20 @@
         }
 
         .nav-link:hover {
-            background: #173656;
-            color: white;
+            background: #E8DFD0;
+            color: var(--brown-dark);
         }
 
         .nav-link.active {
-            background: var(--yellow);
-            color: var(--navy);
+            background: var(--brown);
+            color: white;
             font-weight: 700;
         }
 
         .sidebar-bottom {
             margin-top: auto;
-            padding-top: 25px;
-            border-top: 1px solid var(--line);
-        }
-
-        .sidebar-bottom .nav-link {
-            color: #C2CCDA;
+            padding-top: 20px;
+            border-top: 1px solid var(--beige-dark);
         }
 
         .sidebar-bottom a.nav-link {
@@ -389,26 +427,28 @@
         .admin-main {
             min-width: 0;
             flex: 1;
-            padding: 0 32px 40px;
+            padding: 0 32px 45px;
         }
 
+        /* TOP BAR */
+
         .topbar {
-            min-height: 84px;
+            min-height: 82px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #E3E8EF;
+            border-bottom: 1px solid var(--line);
             gap: 20px;
         }
 
         .topbar-title h2 {
             font-family: "Playfair Display", serif;
             font-size: 23px;
-            color: var(--navy);
+            color: var(--brown-dark);
         }
 
         .topbar-title p {
-            color: #8290A2;
+            color: var(--muted);
             font-size: 11px;
             margin-top: 4px;
         }
@@ -423,7 +463,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: var(--navy);
+            color: var(--brown-dark);
             font-size: 12px;
             font-weight: 700;
         }
@@ -434,8 +474,9 @@
             width: 38px;
             height: 38px;
             border-radius: 50%;
-            background: var(--yellow);
-            color: var(--navy);
+            background: var(--gold-light);
+            border: 1px solid var(--beige-dark);
+            color: var(--brown);
             font-weight: 700;
         }
 
@@ -444,9 +485,9 @@
             place-items: center;
             width: 38px;
             height: 38px;
-            background: white;
-            border: 1px solid #E2E8F0;
-            color: var(--navy);
+            background: var(--ivory);
+            border: 1px solid var(--line);
+            color: var(--brown);
             border-radius: 9px;
         }
 
@@ -457,7 +498,7 @@
         /* PAGE CONTENT */
 
         .page-content {
-            padding-top: 30px;
+            padding-top: 29px;
         }
 
         .page-heading {
@@ -465,21 +506,24 @@
             justify-content: space-between;
             align-items: flex-end;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
 
         .page-heading h1 {
-            margin-top: 9px;
-            color: var(--navy);
+            margin-top: 8px;
+            color: var(--brown-dark);
             font-family: "Playfair Display", serif;
-            font-size: 31px;
+            font-size: 30px;
         }
 
         .page-heading p {
             margin-top: 7px;
-            color: #77869A;
+            color: var(--muted);
             font-size: 12px;
+            line-height: 1.6;
         }
+
+        /* WELCOME */
 
         .welcome-card {
             position: relative;
@@ -488,31 +532,33 @@
             justify-content: space-between;
             align-items: center;
             padding: 30px 34px;
-            border-radius: 17px;
-            background: linear-gradient(110deg, var(--navy), #173D63);
-            color: white;
+            border-radius: 16px;
+            background: linear-gradient(110deg, #E9DDC9, #F3EBDD);
+            border: 1px solid #E2D5C0;
+            color: var(--brown-dark);
             margin-bottom: 27px;
         }
 
         .welcome-card .eyebrow {
-            color: var(--yellow);
+            color: var(--gold);
         }
 
         .welcome-card h1 {
             margin: 12px 0 8px;
             font-family: "Playfair Display", serif;
             font-size: 30px;
+            color: var(--brown-dark);
         }
 
         .welcome-card p {
-            color: #C0CDDC;
+            color: #82735F;
             font-size: 12px;
             line-height: 1.7;
         }
 
         .welcome-decoration {
-            color: var(--yellow);
-            opacity: .9;
+            color: #B38A48;
+            opacity: .75;
             padding-right: 20px;
         }
 
@@ -527,16 +573,16 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 17px;
-            margin-bottom: 28px;
+            gap: 16px;
+            margin-bottom: 27px;
         }
 
         .stat-card {
-            background: white;
-            border: 1px solid #E7ECF2;
+            background: var(--ivory);
+            border: 1px solid var(--line);
             border-radius: 13px;
             padding: 20px;
-            box-shadow: 0 4px 15px rgba(7,27,53,.025);
+            box-shadow: var(--shadow);
         }
 
         .stat-top {
@@ -550,9 +596,9 @@
             place-items: center;
             width: 39px;
             height: 39px;
-            background: #FFF4CE;
-            color: #8B6500;
-            border-radius: 10px;
+            background: var(--gold-light);
+            color: var(--brown);
+            border-radius: 11px;
         }
 
         .stat-icon i {
@@ -561,26 +607,26 @@
         }
 
         .stat-card h3 {
-            margin-top: 17px;
-            color: var(--navy);
+            margin-top: 16px;
+            color: var(--brown-dark);
             font-size: 27px;
         }
 
         .stat-card p {
             margin-top: 5px;
-            color: #8290A2;
+            color: var(--muted);
             font-size: 11px;
         }
 
-        /* PANELS AND TABLES */
+        /* PANELS */
 
         .panel {
-            background: white;
-            border: 1px solid #E7ECF2;
+            background: var(--ivory);
+            border: 1px solid var(--line);
             border-radius: 13px;
             padding: 22px;
-            margin-bottom: 22px;
-            box-shadow: 0 4px 15px rgba(7,27,53,.025);
+            margin-bottom: 21px;
+            box-shadow: var(--shadow);
         }
 
         .panel-header {
@@ -588,17 +634,17 @@
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 19px;
         }
 
         .panel-header h2 {
-            color: var(--navy);
+            color: var(--brown-dark);
             font-family: "Playfair Display", serif;
             font-size: 20px;
         }
 
         .panel-header p {
-            color: #8996A7;
+            color: var(--muted);
             font-size: 11px;
             margin-top: 5px;
         }
@@ -606,10 +652,12 @@
         .text-link {
             border: none;
             background: transparent;
-            color: #8A6700;
+            color: var(--gold);
             font-size: 11px;
             font-weight: 700;
         }
+
+        /* TABLES */
 
         .table-wrap {
             width: 100%;
@@ -625,18 +673,18 @@
         th {
             padding: 13px 12px;
             text-align: left;
-            color: #7E8BA0;
+            color: #928675;
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: .7px;
-            background: #F7F9FC;
+            letter-spacing: .6px;
+            background: #F7F3EB;
         }
 
         td {
-            padding: 14px 12px;
-            color: #35445A;
-            border-bottom: 1px solid #EDF0F4;
+            padding: 13px 12px;
+            color: #625644;
+            border-bottom: 1px solid #F0EBE2;
             font-size: 11px;
         }
 
@@ -644,37 +692,44 @@
             border-bottom: none;
         }
 
+        tbody tr:hover {
+            background: #FCFAF6;
+        }
+
         .status {
             display: inline-block;
             padding: 6px 10px;
             border-radius: 20px;
-            background: #FFF4CE;
-            color: #795A00;
+            background: var(--gold-light);
+            color: #80643B;
             font-size: 10px;
             font-weight: 700;
         }
 
         .status.completed,
         .status.delivered,
-        .status.ready {
-            background: #E2F6EA;
-            color: #267347;
+        .status.ready,
+        .status.available {
+            background: var(--green-bg);
+            color: var(--green);
         }
 
-        .status.cancelled {
-            background: #FDE9E9;
-            color: #B13D3D;
+        .status.cancelled,
+        .status.out-of-stock {
+            background: var(--red-bg);
+            color: var(--red);
         }
 
         .status.in-progress,
-        .status.confirmed {
-            background: #E7EFFB;
-            color: #315C96;
+        .status.confirmed,
+        .status.low-stock {
+            background: #F3EBD9;
+            color: #96713B;
         }
 
         .empty-state {
             padding: 25px;
-            color: #8A96A7;
+            color: var(--muted);
             text-align: center;
             font-size: 12px;
         }
@@ -689,32 +744,84 @@
 
         .progress-item {
             padding: 15px 10px;
-            background: #F7F9FC;
+            background: #F7F3EB;
+            border: 1px solid #F0E9DC;
             border-radius: 10px;
             text-align: center;
         }
 
         .progress-item strong {
             display: block;
-            color: var(--navy);
+            color: var(--brown-dark);
             font-size: 22px;
         }
 
         .progress-item span {
             display: block;
             margin-top: 5px;
-            color: #8390A1;
+            color: var(--muted);
             font-size: 10px;
         }
 
-        /* OTHER SECTIONS */
+        /* MODULE FORMS */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0 16px;
+        }
+
+        .form-grid .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .module-note {
+            margin-bottom: 17px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            width: min(300px, 100%);
+            padding: 10px 12px;
+            background: #FCFAF6;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            outline: none;
+            color: var(--ink);
+            font-size: 12px;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold);
+        }
+
+        /* PLACEHOLDER MODULES */
 
         .section-placeholder {
-            background: white;
-            border: 1px solid #E7ECF2;
+            background: var(--ivory);
+            border: 1px solid var(--line);
             border-radius: 13px;
             padding: 45px 25px;
             text-align: center;
+            box-shadow: var(--shadow);
         }
 
         .section-placeholder .placeholder-icon {
@@ -723,21 +830,21 @@
             display: grid;
             place-items: center;
             margin: 0 auto 17px;
-            background: #FFF4CE;
-            color: #8B6500;
+            background: var(--gold-light);
+            color: var(--brown);
             border-radius: 15px;
         }
 
         .section-placeholder h2 {
             font-family: "Playfair Display", serif;
-            color: var(--navy);
+            color: var(--brown-dark);
             font-size: 22px;
         }
 
         .section-placeholder p {
             margin: 9px auto 0;
-            max-width: 400px;
-            color: #8390A1;
+            max-width: 420px;
+            color: var(--muted);
             font-size: 12px;
             line-height: 1.7;
         }
@@ -778,7 +885,7 @@
                 position: fixed;
                 inset: 0;
                 z-index: 20;
-                background: rgba(0,0,0,.45);
+                background: rgba(60,45,25,.35);
             }
 
             .mobile-menu {
@@ -786,11 +893,11 @@
             }
 
             .admin-main {
-                padding: 0 17px 30px;
+                padding: 0 16px 30px;
             }
 
             .topbar {
-                min-height: 72px;
+                min-height: 70px;
             }
 
             .topbar-title h2 {
@@ -837,7 +944,7 @@
                 grid-template-columns: 1fr;
                 width: min(450px, 90%);
                 margin-top: 20px;
-                gap: 30px;
+                gap: 28px;
             }
 
             .auth-intro h1 {
@@ -850,6 +957,14 @@
 
             .auth-card {
                 padding: 26px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid .field.full {
+                grid-column: auto;
             }
         }
 
@@ -869,6 +984,10 @@
             .welcome-card h1 {
                 font-size: 21px;
             }
+
+            .page-heading {
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -879,7 +998,7 @@
 
     <section id="adminAuthSection" class="auth-section">
         <header class="auth-header">
-            <a href="#" class="brand">
+            <a href="/" class="brand">
                 <span class="brand-icon"><i data-lucide="scissors"></i></span>
                 <span>
                     <strong>Stitchease</strong>
@@ -889,14 +1008,14 @@
         </header>
 
         <main class="auth-layout">
-
             <div class="auth-intro">
                 <span class="eyebrow">BOUTIQUE MANAGEMENT</span>
                 <h1>Every detail,<br><em>beautifully managed.</em></h1>
                 <p>
                     Welcome to your Stitchease boutique workspace.
-                    Manage customer appointments, custom orders and
-                    the little details that make every outfit special.
+                    Manage customer appointments, custom orders,
+                    fabrics, measurements and your tailoring team
+                    in one place.
                 </p>
 
                 <div class="auth-note">
@@ -906,11 +1025,9 @@
             </div>
 
             <div class="auth-card">
-
                 <div class="auth-tabs">
                     <button type="button" id="loginTab" class="active"
                         onclick="showAdminLoginForm()">Login</button>
-
                     <button type="button" id="registerTab"
                         onclick="showAdminRegisterForm()">Register</button>
                 </div>
@@ -969,12 +1086,10 @@
                     <p id="adminRegisterMessage" class="auth-message" role="status"></p>
                 </form>
 
-                <!-- BACK TO CUSTOMER WEBSITE -->
                 <a href="/" class="website-back-link">
                     <i data-lucide="arrow-left"></i>
                     Back to Stitchease Website
                 </a>
-
             </div>
         </main>
 
@@ -987,15 +1102,13 @@
     <!-- ADMIN DASHBOARD -->
 
     <section id="dashboardSection" hidden>
-
         <div class="admin-shell">
 
             <!-- SIDEBAR -->
 
             <aside class="sidebar" id="adminSidebar">
-
                 <div class="sidebar-brand">
-                    <a href="#" class="brand">
+                    <a href="/" class="brand">
                         <span class="brand-icon"><i data-lucide="scissors"></i></span>
                         <span>
                             <strong>Stitchease</strong>
@@ -1007,88 +1120,65 @@
                 <div class="sidebar-label">WORKSPACE</div>
 
                 <nav class="sidebar-nav">
-
                     <button class="nav-link active" onclick="showPage('dashboard')">
-                        <i data-lucide="layout-dashboard"></i>
-                        Dashboard
+                        <i data-lucide="layout-dashboard"></i> Dashboard
                     </button>
 
                     <button class="nav-link" onclick="showPage('orders')">
-                        <i data-lucide="shopping-bag"></i>
-                        Orders
+                        <i data-lucide="shopping-bag"></i> Orders
                     </button>
 
                     <button class="nav-link" onclick="showPage('trials')">
-                        <i data-lucide="calendar-days"></i>
-                        Appointments
+                        <i data-lucide="calendar-days"></i> Appointments
                     </button>
 
                     <button class="nav-link" onclick="showPage('customers')">
-                        <i data-lucide="users"></i>
-                        Customers
+                        <i data-lucide="users"></i> Customers
                     </button>
 
                     <div class="sidebar-label">BOUTIQUE MANAGEMENT</div>
 
-                    <button class="nav-link" onclick="showPage('designs')">
-                        <i data-lucide="sparkles"></i>
-                        Designs
-                    </button>
-
                     <button class="nav-link" onclick="showPage('fabrics')">
-                        <i data-lucide="layers"></i>
-                        Fabrics
+                        <i data-lucide="layers"></i> Fabrics & Stock
                     </button>
 
                     <button class="nav-link" onclick="showPage('measurements')">
-                        <i data-lucide="ruler"></i>
-                        Measurements
+                        <i data-lucide="ruler"></i> Measurements
                     </button>
 
                     <button class="nav-link" onclick="showPage('tailors')">
-                        <i data-lucide="scissors"></i>
-                        Tailors
+                        <i data-lucide="scissors"></i> Tailors
                     </button>
 
                     <div class="sidebar-label">BUSINESS</div>
 
                     <button class="nav-link" onclick="showPage('payments')">
-                        <i data-lucide="wallet"></i>
-                        Payments
+                        <i data-lucide="wallet"></i> Payments
                     </button>
 
                     <button class="nav-link" onclick="showPage('reviews')">
-                        <i data-lucide="star"></i>
-                        Reviews
+                        <i data-lucide="star"></i> Reviews
                     </button>
 
                     <button class="nav-link" onclick="showPage('offers')">
-                        <i data-lucide="tag"></i>
-                        Offers
+                        <i data-lucide="tag"></i> Offers
                     </button>
 
                     <button class="nav-link" onclick="showPage('settings')">
-                        <i data-lucide="settings"></i>
-                        Settings
+                        <i data-lucide="settings"></i> Settings
                     </button>
-
                 </nav>
 
                 <div class="sidebar-bottom">
-
-                    <!-- VISIT CUSTOMER WEBSITE -->
                     <a href="/" class="nav-link">
                         <i data-lucide="external-link"></i>
                         Visit Stitchease Website
                     </a>
 
                     <button class="nav-link" onclick="logout()">
-                        <i data-lucide="log-out"></i>
-                        Logout
+                        <i data-lucide="log-out"></i> Logout
                     </button>
-
                 </div>
-
             </aside>
 
             <div class="mobile-overlay" id="mobileOverlay"
@@ -1097,9 +1187,7 @@
             <!-- MAIN CONTENT -->
 
             <main class="admin-main">
-
                 <header class="topbar">
-
                     <div style="display:flex;align-items:center;gap:14px;">
                         <button class="icon-btn mobile-menu"
                             onclick="toggleSidebar()" aria-label="Open menu">
@@ -1118,14 +1206,12 @@
                             <span id="adminNameDisplay">Boutique Admin</span>
                         </div>
                     </div>
-
                 </header>
 
 
                 <!-- DASHBOARD HOME -->
 
                 <section id="dashboard" class="admin-page page-content">
-
                     <div class="welcome-card">
                         <div>
                             <span class="eyebrow">YOUR BOUTIQUE WORKSPACE</span>
@@ -1147,7 +1233,6 @@
                     </div>
 
                     <div class="stats-grid">
-
                         <div class="stat-card">
                             <div class="stat-top">
                                 <span class="eyebrow">CUSTOMERS</span>
@@ -1183,11 +1268,7 @@
                             <h3 id="pendingOrders">0</h3>
                             <p>Orders awaiting completion</p>
                         </div>
-
                     </div>
-
-
-                    <!-- ORDER STATUS -->
 
                     <div class="panel">
                         <div class="panel-header">
@@ -1202,27 +1283,22 @@
                                 <strong id="receivedCount">0</strong>
                                 <span>Received</span>
                             </div>
-
                             <div class="progress-item">
                                 <strong id="measuredCount">0</strong>
                                 <span>Measured</span>
                             </div>
-
                             <div class="progress-item">
                                 <strong id="stitchingCount">0</strong>
                                 <span>Stitching</span>
                             </div>
-
                             <div class="progress-item">
                                 <strong id="trialCount">0</strong>
                                 <span>Trial</span>
                             </div>
-
                             <div class="progress-item">
                                 <strong id="readyCount">0</strong>
                                 <span>Ready</span>
                             </div>
-
                             <div class="progress-item">
                                 <strong id="deliveredCount">0</strong>
                                 <span>Delivered</span>
@@ -1230,16 +1306,12 @@
                         </div>
                     </div>
 
-
-                    <!-- RECENT ORDERS -->
-
                     <div class="panel">
                         <div class="panel-header">
                             <div>
                                 <h2>Recent Orders</h2>
                                 <p>Latest custom outfit orders from your customers.</p>
                             </div>
-
                             <button class="text-link" onclick="showPage('orders')">
                                 View all orders →
                             </button>
@@ -1256,20 +1328,14 @@
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-
                                 <tbody id="ordersTable">
                                     <tr>
-                                        <td colspan="5" class="empty-state">
-                                            No order information available yet.
-                                        </td>
+                                        <td colspan="5" class="empty-state">No order information available yet.</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
-
-                    <!-- RECENT APPOINTMENTS -->
 
                     <div class="panel">
                         <div class="panel-header">
@@ -1277,7 +1343,6 @@
                                 <h2>Recent Appointments</h2>
                                 <p>Keep up with upcoming customer visits.</p>
                             </div>
-
                             <button class="text-link" onclick="showPage('trials')">
                                 View all appointments →
                             </button>
@@ -1294,18 +1359,14 @@
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-
                                 <tbody id="appointmentsTable">
                                     <tr>
-                                        <td colspan="5" class="empty-state">
-                                            No appointment information available yet.
-                                        </td>
+                                        <td colspan="5" class="empty-state">No appointment information available yet.</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-
                 </section>
 
 
@@ -1342,12 +1403,9 @@
                                         <th>Update Status</th>
                                     </tr>
                                 </thead>
-
                                 <tbody id="allOrdersTable">
                                     <tr>
-                                        <td colspan="8" class="empty-state">
-                                            Order details will appear here.
-                                        </td>
+                                        <td colspan="8" class="empty-state">Order details will appear here.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1388,12 +1446,9 @@
                                         <th>Update Status</th>
                                     </tr>
                                 </thead>
-
                                 <tbody id="allAppointmentsTable">
                                     <tr>
-                                        <td colspan="7" class="empty-state">
-                                            Appointment details will appear here.
-                                        </td>
+                                        <td colspan="7" class="empty-state">Appointment details will appear here.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1431,12 +1486,9 @@
                                         <th>Phone</th>
                                     </tr>
                                 </thead>
-
                                 <tbody id="customersTable">
                                     <tr>
-                                        <td colspan="4" class="empty-state">
-                                            Customer details will appear here.
-                                        </td>
+                                        <td colspan="4" class="empty-state">Customer details will appear here.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1445,67 +1497,322 @@
                 </section>
 
 
-                <!-- OTHER ADMIN MODULES -->
-
-                <section id="designs" class="admin-page page-content" hidden>
-                    <div class="page-heading">
-                        <div>
-                            <span class="eyebrow">STYLE COLLECTION</span>
-                            <h1>Designs</h1>
-                            <p>Manage boutique design collections.</p>
-                        </div>
-                    </div>
-                    <div class="section-placeholder">
-                        <div class="placeholder-icon"><i data-lucide="sparkles"></i></div>
-                        <h2>Design Management</h2>
-                        <p>This section is reserved for managing custom design collections.</p>
-                    </div>
-                </section>
+                <!-- FABRICS AND STOCK -->
 
                 <section id="fabrics" class="admin-page page-content" hidden>
                     <div class="page-heading">
                         <div>
                             <span class="eyebrow">MATERIAL MANAGEMENT</span>
-                            <h1>Fabrics</h1>
-                            <p>Manage fabric details and availability.</p>
+                            <h1>Fabrics & Stock</h1>
+                            <p>Add fabrics, maintain available quantities and monitor stock levels.</p>
                         </div>
                     </div>
-                    <div class="section-placeholder">
-                        <div class="placeholder-icon"><i data-lucide="layers"></i></div>
-                        <h2>Fabric Management</h2>
-                        <p>This section is reserved for boutique fabric inventory.</p>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2 id="fabricFormTitle">Add New Fabric</h2>
+                                <p>Enter the fabric details to add it to your inventory.</p>
+                            </div>
+                        </div>
+
+                        <form id="fabricForm">
+                            <input type="hidden" id="fabricId">
+
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="fabricName">Fabric name</label>
+                                    <input type="text" id="fabricName"
+                                        placeholder="e.g. Banarasi Silk" required>
+                                </div>
+
+                                <div class="field">
+                                    <label for="fabricType">Fabric type</label>
+                                    <select id="fabricType" required>
+                                        <option value="">Select fabric type</option>
+                                        <option value="Cotton">Cotton</option>
+                                        <option value="Silk">Silk</option>
+                                        <option value="Banarasi">Banarasi</option>
+                                        <option value="Georgette">Georgette</option>
+                                        <option value="Chiffon">Chiffon</option>
+                                        <option value="Crepe">Crepe</option>
+                                        <option value="Satin">Satin</option>
+                                        <option value="Linen">Linen</option>
+                                        <option value="Rayon">Rayon</option>
+                                        <option value="Velvet">Velvet</option>
+                                        <option value="Net">Net</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <label for="fabricQuantity">Available quantity (metres)</label>
+                                    <input type="number" id="fabricQuantity"
+                                        min="0" step="0.01" placeholder="e.g. 25" required>
+                                </div>
+
+                                <div class="field">
+                                    <label for="fabricLowStock">Low stock alert level (metres)</label>
+                                    <input type="number" id="fabricLowStock"
+                                        min="0" step="0.01" value="5" required>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="fabricSubmitButton">
+                                    <i data-lucide="plus"></i> Add Fabric
+                                </button>
+                                <button type="button" class="btn btn-secondary"
+                                    id="fabricCancelButton" onclick="resetFabricForm()" hidden>
+                                    Cancel Edit
+                                </button>
+                            </div>
+
+                            <p id="fabricMessage" class="message" role="status"></p>
+                        </form>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Fabric Inventory</h2>
+                                <p>Review and update your boutique fabric stock.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <input type="search" class="search-input"
+                                id="fabricSearch" placeholder="Search fabrics...">
+                            <span class="muted" id="fabricCount">0 fabrics</span>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Fabric ID</th>
+                                        <th>Fabric Name</th>
+                                        <th>Type</th>
+                                        <th>Quantity (m)</th>
+                                        <th>Low Stock At (m)</th>
+                                        <th>Stock Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fabricsTable">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">Fabric inventory will appear here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
+
+
+                <!-- CUSTOMER MEASUREMENTS -->
 
                 <section id="measurements" class="admin-page page-content" hidden>
                     <div class="page-heading">
                         <div>
                             <span class="eyebrow">PERSONAL FIT</span>
-                            <h1>Measurements</h1>
-                            <p>Access customer body measurement information.</p>
+                            <h1>Customer Measurements</h1>
+                            <p>View measurements saved by customers through their Stitchease accounts.</p>
                         </div>
                     </div>
-                    <div class="section-placeholder">
-                        <div class="placeholder-icon"><i data-lucide="ruler"></i></div>
-                        <h2>Measurement Management</h2>
-                        <p>This section is reserved for customer measurement records.</p>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Measurement Records</h2>
+                                <p>These details are retrieved from the existing customer measurement records.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <input type="search" class="search-input"
+                                id="measurementSearch" placeholder="Search by customer name, email or phone...">
+                            <span class="muted" id="measurementCount">0 records</span>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer ID</th>
+                                        <th>Customer Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                        <th>Height (cm)</th>
+                                        <th>Shoulder (cm)</th>
+                                        <th>Bust (cm)</th>
+                                        <th>Waist (cm)</th>
+                                        <th>Hip (cm)</th>
+                                        <th>Sleeve (cm)</th>
+                                        <th>Dress Length (cm)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="measurementsTable">
+                                    <tr>
+                                        <td colspan="12" class="empty-state">Customer measurements will appear here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
+
+
+                <!-- TAILORS -->
 
                 <section id="tailors" class="admin-page page-content" hidden>
                     <div class="page-heading">
                         <div>
                             <span class="eyebrow">TEAM MANAGEMENT</span>
                             <h1>Tailors</h1>
-                            <p>Manage boutique tailoring staff.</p>
+                            <p>Maintain your tailoring team and manage order assignments.</p>
                         </div>
                     </div>
-                    <div class="section-placeholder">
-                        <div class="placeholder-icon"><i data-lucide="scissors"></i></div>
-                        <h2>Tailor Management</h2>
-                        <p>This section is reserved for managing tailoring assignments.</p>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2 id="tailorFormTitle">Add Tailor</h2>
+                                <p>Enter the details of a boutique tailor.</p>
+                            </div>
+                        </div>
+
+                        <form id="tailorForm">
+                            <input type="hidden" id="tailorId">
+
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="tailorName">Full name</label>
+                                    <input type="text" id="tailorName"
+                                        placeholder="Enter tailor name" required>
+                                </div>
+
+                                <div class="field">
+                                    <label for="tailorPhone">Contact number</label>
+                                    <input type="tel" id="tailorPhone"
+                                        placeholder="Enter contact number" required>
+                                </div>
+
+                                <div class="field">
+                                    <label for="tailorEmail">Email address</label>
+                                    <input type="email" id="tailorEmail"
+                                        placeholder="Enter email address">
+                                </div>
+
+                                <div class="field">
+                                    <label for="tailorSpecialisation">Specialisation</label>
+                                    <select id="tailorSpecialisation" required>
+                                        <option value="">Select specialisation</option>
+                                        <option value="Blouse Stitching">Blouse Stitching</option>
+                                        <option value="Kurti Stitching">Kurti Stitching</option>
+                                        <option value="Lehenga Stitching">Lehenga Stitching</option>
+                                        <option value="Gown Stitching">Gown Stitching</option>
+                                        <option value="Dress Stitching">Dress Stitching</option>
+                                        <option value="Alterations">Alterations</option>
+                                        <option value="Embroidery">Embroidery</option>
+                                        <option value="General Tailoring">General Tailoring</option>
+                                    </select>
+                                </div>
+
+                                <div class="field full">
+                                    <label for="tailorNotes">Additional details</label>
+                                    <textarea id="tailorNotes"
+                                        placeholder="Optional notes about the tailor"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="tailorSubmitButton">
+                                    <i data-lucide="user-plus"></i> Add Tailor
+                                </button>
+                                <button type="button" class="btn btn-secondary"
+                                    id="tailorCancelButton" onclick="resetTailorForm()" hidden>
+                                    Cancel Edit
+                                </button>
+                            </div>
+
+                            <p id="tailorMessage" class="message" role="status"></p>
+                        </form>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Tailoring Team</h2>
+                                <p>View team details and assigned custom orders.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <input type="search" class="search-input"
+                                id="tailorSearch" placeholder="Search tailors...">
+                            <span class="muted" id="tailorCount">0 tailors</span>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Tailor ID</th>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>Specialisation</th>
+                                        <th>Assigned Orders</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tailorsTable">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">Tailor details will appear here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Assign an Order</h2>
+                                <p>Assign a custom order to a tailor.</p>
+                            </div>
+                        </div>
+
+                        <form id="assignmentForm">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="assignmentTailor">Select tailor</label>
+                                    <select id="assignmentTailor" required>
+                                        <option value="">Choose a tailor</option>
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <label for="assignmentOrder">Select order</label>
+                                    <select id="assignmentOrder" required>
+                                        <option value="">Choose an order</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i data-lucide="clipboard-check"></i> Assign Order
+                            </button>
+
+                            <p id="assignmentMessage" class="message" role="status"></p>
+                        </form>
                     </div>
                 </section>
+
+
+                <!-- PAYMENTS -->
 
                 <section id="payments" class="admin-page page-content" hidden>
                     <div class="page-heading">
@@ -1518,9 +1825,12 @@
                     <div class="section-placeholder">
                         <div class="placeholder-icon"><i data-lucide="wallet"></i></div>
                         <h2>Payment Management</h2>
-                        <p>This section is reserved for payment records.</p>
+                        <p>Payment management can be connected when payment processing is introduced.</p>
                     </div>
                 </section>
+
+
+                <!-- REVIEWS -->
 
                 <section id="reviews" class="admin-page page-content" hidden>
                     <div class="page-heading">
@@ -1533,9 +1843,12 @@
                     <div class="section-placeholder">
                         <div class="placeholder-icon"><i data-lucide="star"></i></div>
                         <h2>Customer Reviews</h2>
-                        <p>This section is reserved for customer feedback.</p>
+                        <p>Customer feedback management can be added when reviews are collected on the website.</p>
                     </div>
                 </section>
+
+
+                <!-- OFFERS -->
 
                 <section id="offers" class="admin-page page-content" hidden>
                     <div class="page-heading">
@@ -1548,9 +1861,12 @@
                     <div class="section-placeholder">
                         <div class="placeholder-icon"><i data-lucide="tag"></i></div>
                         <h2>Offer Management</h2>
-                        <p>This section is reserved for boutique offers and promotions.</p>
+                        <p>Boutique promotions and offers can be managed here in a future update.</p>
                     </div>
                 </section>
+
+
+                <!-- SETTINGS -->
 
                 <section id="settings" class="admin-page page-content" hidden>
                     <div class="page-heading">
@@ -1563,7 +1879,7 @@
                     <div class="section-placeholder">
                         <div class="placeholder-icon"><i data-lucide="settings"></i></div>
                         <h2>Admin Settings</h2>
-                        <p>This section is reserved for administrator settings.</p>
+                        <p>Workspace settings can be added here as the boutique grows.</p>
                     </div>
                 </section>
 
@@ -1571,68 +1887,14 @@
         </div>
     </section>
 
+    <script src="/admin.js"></script>
     <script>
-        function showAdminLoginForm() {
-            document.getElementById("adminLoginForm").hidden = false;
-            document.getElementById("adminRegisterForm").hidden = true;
-            document.getElementById("loginTab").classList.add("active");
-            document.getElementById("registerTab").classList.remove("active");
-        }
-
-        function showAdminRegisterForm() {
-            document.getElementById("adminLoginForm").hidden = true;
-            document.getElementById("adminRegisterForm").hidden = false;
-            document.getElementById("loginTab").classList.remove("active");
-            document.getElementById("registerTab").classList.add("active");
-        }
-
-        function toggleSidebar() {
-            document.getElementById("adminSidebar").classList.toggle("open");
-            document.getElementById("mobileOverlay").classList.toggle("show");
-        }
-
-        function showPage(pageId) {
-            document.querySelectorAll(".admin-page").forEach(page => {
-                page.hidden = page.id !== pageId;
-            });
-
-            document.querySelectorAll(".nav-link").forEach(link => {
-                link.classList.remove("active");
-                if (link.getAttribute("onclick")?.includes("'" + pageId + "'")) {
-                    link.classList.add("active");
-                }
-            });
-
-            const titles = {
-                dashboard: "Dashboard",
-                orders: "Orders",
-                trials: "Appointments",
-                customers: "Customers",
-                designs: "Designs",
-                fabrics: "Fabrics",
-                measurements: "Measurements",
-                tailors: "Tailors",
-                payments: "Payments",
-                reviews: "Reviews",
-                offers: "Offers",
-                settings: "Settings"
-            };
-
-            document.getElementById("currentPageTitle").textContent =
-                titles[pageId] || "Dashboard";
-
-            document.getElementById("adminSidebar").classList.remove("open");
-            document.getElementById("mobileOverlay").classList.remove("show");
-        }
-
         document.addEventListener("DOMContentLoaded", () => {
             if (window.lucide) {
                 lucide.createIcons();
             }
         });
     </script>
-
-    <script src="/admin.js"></script>
 
 </body>
 </html>

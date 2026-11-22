@@ -1778,3 +1778,239 @@ textarea {
         padding: 21px 17px;
     }
 }
+/* =========================================
+   STITCHEASE - IVORY CREAM THEME
+   Navy text + Gold accents
+========================================= */
+
+:root {
+    --maroon: #071B35;
+    --maroon-dark: #071B35;
+    --rose: #FFC928;
+    --rose-soft: #FCE9A5;
+    --blush: #F5F3EC;
+    --cream: #F5F3EC;
+    --white: #FFFFFF;
+    --text: #172A40;
+    --muted: #64748B;
+    --border: #E5DFD2;
+    --success: #267347;
+    --error: #B42318;
+    --shadow: 0 12px 35px rgba(7, 27, 53, 0.08);
+}
+
+body {
+    background: #F5F3EC;
+    color: #172A40;
+}
+
+/* Header */
+.site-header,
+.app-header {
+    background: #F5F3EC;
+    color: #071B35;
+    border-bottom: 1px solid #E5DFD2;
+    box-shadow: 0 4px 18px rgba(7, 27, 53, 0.06);
+}
+
+.brand strong {
+    color: #071B35;
+}
+
+.brand small {
+    color: #64748B;
+}
+
+/* Login and registration page */
+.auth-page {
+    background: #F5F3EC;
+}
+
+.auth-intro h1 {
+    color: #071B35;
+}
+
+.auth-intro h1 em {
+    color: #B58A00;
+}
+
+.auth-intro > p,
+.intro-note {
+    color: #52647A;
+}
+
+.intro-note svg {
+    color: #B58A00;
+}
+
+/* Login card */
+.auth-card,
+.form-card {
+    background: #FFFFFF;
+    border-color: #E5DFD2;
+    box-shadow: var(--shadow);
+}
+
+.auth-card h2 {
+    color: #071B35;
+}
+
+/* Buttons */
+.header-login {
+    color: #071B35;
+    border-color: #D9A900;
+}
+
+.header-login:hover {
+    color: #071B35;
+    background: #FFC928;
+}
+
+.header-admin-login {
+    color: #071B35;
+    background: #FFC928;
+}
+
+.btn-primary {
+    color: #071B35;
+    background: #FFC928;
+}
+
+.btn-outline {
+    color: #071B35;
+    border-color: #071B35;
+}
+
+/* Footer */
+.site-footer {
+    color: #071B35;
+    background: #F5F3EC;
+    border-top: 1px solid #E5DFD2;
+}
+
+/* Dashboard */
+.welcome-banner {
+    background: #FCE9A5;
+    border: 1px solid #EAD58C;
+}
+
+.welcome-banner h1 {
+    color: #071B35;
+}
+
+.welcome-banner p {
+    color: #52647A;
+}
+
+.welcome-decoration {
+    color: #071B35;
+    border-color: rgba(7, 27, 53, 0.2);
+}
+
+/* Dashboard cards */
+.feature-card {
+    background: #FFFFFF;
+    border-color: #E5DFD2;
+}
+
+.feature-card:hover {
+    border-color: #D9A900;
+}
+
+.dashboard-bottom {
+    background: #FFF8DF;
+    border-color: #F0DFAE;
+}
+
+/* Page headings */
+.page-heading h1,
+.section-heading h2,
+.form-section-title h2 {
+    color: #071B35;
+}
+
+/* Appointment cards */
+.appointment-item {
+    background: #FFFFFF;
+    border-color: #E5DFD2;
+}
+
+.appointment-status {
+    background: #FFF3C4;
+}
+
+/* Fashion introduction */
+.fashion-intro {
+    background: #FFF8DF;
+    border-color: #E5DFD2;
+}
+
+/* Orders hero */
+.orders-hero {
+    background: #FCE9A5;
+    border: 1px solid #EAD58C;
+}
+
+.orders-hero h1 {
+    color: #071B35;
+}
+
+.orders-hero p {
+    color: #52647A;
+}
+
+.orders-hero .eyebrow {
+    color: #8A6800;
+}
+
+.orders-hero-icon {
+    color: #071B35;
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(7, 27, 53, 0.15);
+}
+
+/* Orders cards */
+.order-create-card,
+.order-history-card,
+.order-card {
+    background: #FFFFFF;
+    border-color: #E5DFD2;
+}
+
+/* Small decorative sections */
+.feature-icon,
+.form-icon,
+.orders-heading-icon {
+    background: #FFF3C4;
+    color: #071B35;
+}
+
+.dashboard-bar {
+    background: #FFC928;
+    color: #071B35;
+}
+
+/* User profile header */
+.header-user {
+    color: #071B35;
+}
+
+.avatar {
+    background: #FFC928;
+    color: #071B35;
+}
+
+.icon-button {
+    color: #071B35;
+}
+
+.icon-button:hover {
+    background: #FFF3C4;
+}
+
+/* Mobile header */
+@media (max-width: 760px) {
+    .app-header {
+        background: #F5F3EC;
+    }
+}

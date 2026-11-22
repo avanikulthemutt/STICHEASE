@@ -12,7 +12,9 @@ let dashboardData = {
 const ORDER_STATUSES = [
     "Placed",
     "Confirmed",
+    "Measured",
     "In Progress",
+    "Trial",
     "Ready",
     "Completed",
     "Cancelled"
@@ -505,7 +507,7 @@ function renderCustomers() {
             <td>#${escapeHTML(getValue(customer, "id", "customer_id"))}</td>
             <td>${escapeHTML(getValue(customer, "name", "full_name"))}</td>
             <td>${escapeHTML(getValue(customer, "email"))}</td>
-            <td>${escapeHTML(getValue(customer, "phone", "phone_number") || "—")}</td>
+            <td>${escapeHTML(getValue(customer, "phone", "phone_number") || "â€”")}</td>
         </tr>
     `).join("");
 }

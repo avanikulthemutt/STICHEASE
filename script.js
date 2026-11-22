@@ -619,7 +619,9 @@ function saveFashionPreferences() {
 const ORDER_STATUSES = [
     "Placed",
     "Confirmed",
+    "Measured",
     "In Progress",
+    "Trial",
     "Ready",
     "Completed"
 ];

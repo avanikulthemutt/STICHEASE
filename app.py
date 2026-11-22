@@ -1,4 +1,3 @@
-
 import os
 import mysql.connector
 import secrets
@@ -13,7 +12,9 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# ---------------- WEBSITE PAGE ROUTES ----------------
+# ====================================================
+#                  WEBSITE PAGE ROUTES
+# ====================================================
 
 @app.route("/")
 def customer_home():
@@ -55,7 +56,9 @@ def tailoring_image():
     return send_from_directory(app.root_path, "about-tailoring.jpg..jpg")
 
 
-# ---------------- EXPLORE FASHION ROUTES ----------------
+# ====================================================
+#                 EXPLORE FASHION ROUTES
+# ====================================================
 
 @app.route("/explore-fashion")
 def explore_fashion():
@@ -80,7 +83,9 @@ def serve_images(filename):
     )
 
 
-# ---------------- SESSION CONFIGURATION ----------------
+# ====================================================
+#                  SESSION CONFIGURATION
+# ====================================================
 
 app.secret_key = os.getenv("FLASK_SECRET_KEY") or secrets.token_hex(32)
 
@@ -93,7 +98,9 @@ app.config.update(
 CORS(app, supports_credentials=True)
 
 
-# ---------------- DATABASE CONNECTION ----------------
+# ====================================================
+#                   DATABASE CONNECTION
+# ====================================================
 
 def get_db_connection():
     return mysql.connector.connect(
@@ -116,17 +123,70 @@ def admin_required():
     return session.get("admin_id") is not None
 
 
-# ---------------- DATE AND TIME CONVERSION ----------------
+# ====================================================
+#             ADMIN MODULE DATABASE TABLES
+# ====================================================
+
+def ensure_admin_module_tables(cursor):
+    """
+    Automatically creates the Fabrics, Tailors and
+    Tailor Order Assignment tables if they do not exist.
+    """
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS fabrics (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(150) NOT NULL,
+            fabric_type VARCHAR(100) NOT NULL,
+            quantity INT NOT NULL DEFAULT 0,
+            low_stock_threshold INT NOT NULL DEFAULT 5,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ON UPDATE CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS tailors (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(150) NOT NULL,
+            phone VARCHAR(30),
+            email VARCHAR(150),
+            specialisation VARCHAR(150),
+            notes TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS tailor_orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            tailor_id INT NOT NULL,
+            order_id INT NOT NULL,
+            assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_order_assignment (order_id),
+            CONSTRAINT fk_tailor_orders_tailor
+                FOREIGN KEY (tailor_id)
+                REFERENCES tailors(id)
+                ON DELETE CASCADE,
+            CONSTRAINT fk_tailor_orders_order
+                FOREIGN KEY (order_id)
+                REFERENCES custom_orders(id)
+                ON DELETE CASCADE
+        )
+    """)
+
+
+# ====================================================
+#                 DATE/TIME CONVERSION
+# ====================================================
 
 def convert_dates(record):
-    """Convert MySQL date, time and timedelta values into JSON-friendly strings."""
     if not record:
         return record
 
     for key, value in record.items():
 
-        # MySQL TIME columns can be returned as datetime.timedelta.
-        # Convert them into HH:MM:SS strings before sending JSON.
         if isinstance(value, timedelta):
             total_seconds = int(value.total_seconds())
             sign = "-" if total_seconds < 0 else ""
@@ -144,10 +204,16 @@ def convert_dates(record):
         elif key == "estimated_price" and value is not None:
             record[key] = float(value)
 
+        elif value is not None and hasattr(value, "as_integer_ratio"):
+            if key.endswith("_cm"):
+                record[key] = float(value)
+
     return record
 
 
-# ---------------- TEST DATABASE ----------------
+# ====================================================
+#                    DATABASE TEST
+# ====================================================
 
 @app.route("/api/test", methods=["GET"])
 def test_database():
@@ -178,7 +244,7 @@ def test_database():
 
 
 # ====================================================
-#                  CUSTOMER APIs
+#                     CUSTOMER APIs
 # ====================================================
 
 # ---------------- CUSTOMER REGISTRATION ----------------
@@ -192,9 +258,7 @@ def register_customer():
     password = data.get("password", "")
 
     if not name or not email or not password:
-        return jsonify({
-            "error": "Please fill all the fields."
-        }), 400
+        return jsonify({"error": "Please fill all the fields."}), 400
 
     if not isinstance(password, str) or len(password) < 8:
         return jsonify({
@@ -258,9 +322,7 @@ def login_customer():
         }), 400
 
     if not isinstance(password, str):
-        return jsonify({
-            "error": "Invalid password."
-        }), 400
+        return jsonify({"error": "Invalid password."}), 400
 
     connection = None
     cursor = None
@@ -331,9 +393,7 @@ def get_customer_profile(customer_id):
         profile = cursor.fetchone()
 
         if not profile:
-            return jsonify({
-                "error": "Customer not found."
-            }), 404
+            return jsonify({"error": "Customer not found."}), 404
 
         for key, value in profile.items():
             if value is not None and key.endswith("_cm"):
@@ -344,9 +404,7 @@ def get_customer_profile(customer_id):
     except Exception:
         app.logger.exception("Loading customer profile failed")
 
-        return jsonify({
-            "error": "Could not load profile."
-        }), 500
+        return jsonify({"error": "Could not load profile."}), 500
 
     finally:
         close_db(cursor, connection)
@@ -408,9 +466,7 @@ def save_customer_profile(customer_id):
         )
 
         if not cursor.fetchone():
-            return jsonify({
-                "error": "Customer not found."
-            }), 404
+            return jsonify({"error": "Customer not found."}), 404
 
         cursor.execute("""
             UPDATE customers
@@ -476,7 +532,6 @@ def save_customer_profile(customer_id):
 
 @app.route("/api/appointments", methods=["POST"])
 def book_customer_appointment():
-    """Save a customer's appointment request in the MySQL appointments table."""
     data = request.get_json(silent=True) or {}
 
     try:
@@ -485,6 +540,7 @@ def book_customer_appointment():
             str(data.get("date") or "").strip(),
             "%Y-%m-%d"
         ).date()
+
         time_value = str(data.get("time") or "").strip()
         appointment_time = None
 
@@ -537,12 +593,8 @@ def book_customer_appointment():
 
         cursor.execute("""
             INSERT INTO appointments (
-                customer_id,
-                appointment_date,
-                appointment_time,
-                purpose,
-                notes,
-                status
+                customer_id, appointment_date, appointment_time,
+                purpose, notes, status
             )
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (
@@ -578,7 +630,6 @@ def book_customer_appointment():
 
 @app.route("/api/appointments/<int:customer_id>", methods=["GET"])
 def get_customer_appointments(customer_id):
-    """Return appointments belonging to one customer."""
     connection = None
     cursor = None
 
@@ -588,14 +639,8 @@ def get_customer_appointments(customer_id):
 
         cursor.execute("""
             SELECT
-                id,
-                customer_id,
-                appointment_date,
-                appointment_time,
-                purpose,
-                notes,
-                status,
-                created_at
+                id, customer_id, appointment_date, appointment_time,
+                purpose, notes, status, created_at
             FROM appointments
             WHERE customer_id = %s
             ORDER BY appointment_date DESC, appointment_time DESC
@@ -606,9 +651,7 @@ def get_customer_appointments(customer_id):
             for row in cursor.fetchall()
         ]
 
-        return jsonify({
-            "appointments": appointments
-        })
+        return jsonify({"appointments": appointments})
 
     except Exception:
         app.logger.exception("Loading customer appointments failed")
@@ -622,194 +665,8 @@ def get_customer_appointments(customer_id):
 
 
 # ====================================================
-#                    ADMIN APIs
+#                 CUSTOMER CUSTOM ORDERS
 # ====================================================
-
-# ---------------- ADMIN REGISTRATION ----------------
-
-@app.route("/api/admin/register", methods=["POST"])
-def register_admin():
-    data = request.get_json(silent=True) or {}
-
-    name = str(
-        data.get("name") or data.get("full_name") or ""
-    ).strip()
-
-    email = str(data.get("email") or "").strip().lower()
-    password = data.get("password", "")
-
-    if not name or not email or not password:
-        return jsonify({
-            "error": "Please fill all the fields."
-        }), 400
-
-    if not isinstance(password, str) or len(password) < 8:
-        return jsonify({
-            "error": "Password must contain at least 8 characters."
-        }), 400
-
-    connection = None
-    cursor = None
-
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
-
-        cursor.execute("SELECT COUNT(*) AS total FROM admins")
-        admin_count = cursor.fetchone()["total"]
-
-        # Allow public registration only for the first admin.
-        # Later registrations require an authenticated admin.
-        if admin_count > 0 and not admin_required():
-            return jsonify({
-                "error": "Admin registration is restricted. Please log in as an administrator."
-            }), 403
-
-        password_hash = generate_password_hash(
-            password,
-            method="pbkdf2:sha256"
-        )
-
-        cursor.execute("""
-            INSERT INTO admins (full_name, email, password_hash)
-            VALUES (%s, %s, %s)
-        """, (name, email, password_hash))
-
-        connection.commit()
-
-        return jsonify({
-            "message": "Admin registration successful. Please log in."
-        }), 201
-
-    except mysql.connector.IntegrityError:
-        return jsonify({
-            "error": "This admin email is already registered."
-        }), 409
-
-    except Exception:
-        if connection:
-            connection.rollback()
-
-        app.logger.exception("Admin registration failed")
-
-        return jsonify({
-            "error": "Admin registration failed. Check the Flask terminal."
-        }), 500
-
-    finally:
-        close_db(cursor, connection)
-
-
-# ---------------- ADMIN LOGIN ----------------
-
-@app.route("/api/admin/login", methods=["POST"])
-def login_admin():
-    data = request.get_json(silent=True) or {}
-
-    email = str(data.get("email") or "").strip().lower()
-    password = data.get("password", "")
-
-    if not email or not password:
-        return jsonify({
-            "error": "Please enter your admin email and password."
-        }), 400
-
-    connection = None
-    cursor = None
-
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
-
-        cursor.execute("""
-            SELECT id, full_name, email, password_hash
-            FROM admins
-            WHERE email = %s
-        """, (email,))
-
-        admin = cursor.fetchone()
-
-        if not admin or not check_password_hash(
-            admin["password_hash"], password
-        ):
-            return jsonify({
-                "error": "Invalid admin email or password."
-            }), 401
-
-        session.clear()
-        session["admin_id"] = admin["id"]
-
-        return jsonify({
-            "message": "Admin login successful!",
-            "admin": {
-                "id": admin["id"],
-                "name": admin["full_name"],
-                "email": admin["email"]
-            }
-        })
-
-    except Exception:
-        app.logger.exception("Admin login failed")
-
-        return jsonify({
-            "error": "Admin login failed. Check the Flask terminal."
-        }), 500
-
-    finally:
-        close_db(cursor, connection)
-
-
-# ---------------- CURRENT ADMIN ----------------
-
-@app.route("/api/me", methods=["GET"])
-def current_admin():
-    if not admin_required():
-        return jsonify({
-            "error": "Please log in as an administrator."
-        }), 401
-
-    connection = None
-    cursor = None
-
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
-
-        cursor.execute("""
-            SELECT id, full_name, email
-            FROM admins
-            WHERE id = %s
-        """, (session["admin_id"],))
-
-        admin = cursor.fetchone()
-
-        if not admin:
-            session.clear()
-
-            return jsonify({
-                "error": "Admin account not found."
-            }), 404
-
-        return jsonify({
-            "admin": {
-                "id": admin["id"],
-                "name": admin["full_name"],
-                "email": admin["email"]
-            }
-        })
-
-    except Exception:
-        app.logger.exception("Loading admin session failed")
-
-        return jsonify({
-            "error": "Could not verify admin session."
-        }), 500
-
-    finally:
-        close_db(cursor, connection)
-
-
-# ---------------- CUSTOMER CUSTOM ORDERS ----------------
 
 ORDER_BASE_PRICES = {
     "Kurti": 1000,
@@ -912,10 +769,7 @@ def create_custom_order():
         }), 400
 
     estimated_price = calculate_custom_order_price(
-        outfit_type,
-        fabric,
-        description,
-        duration
+        outfit_type, fabric, description, duration
     )
 
     connection = None
@@ -937,29 +791,15 @@ def create_custom_order():
 
         cursor.execute("""
             INSERT INTO custom_orders (
-                customer_id,
-                outfit_type,
-                colour,
-                fabric,
-                occasion,
-                description,
-                duration_days,
-                payment_mode,
-                estimated_price,
-                status
+                customer_id, outfit_type, colour, fabric, occasion,
+                description, duration_days, payment_mode,
+                estimated_price, status
             )
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
-            customer_id,
-            outfit_type,
-            colour,
-            fabric,
-            occasion,
-            description,
-            duration,
-            payment_mode,
-            estimated_price,
-            "Placed"
+            customer_id, outfit_type, colour, fabric, occasion,
+            description, duration, payment_mode,
+            estimated_price, "Placed"
         ))
 
         order_id = cursor.lastrowid
@@ -996,18 +836,9 @@ def get_customer_custom_orders(customer_id):
 
         cursor.execute("""
             SELECT
-                id,
-                customer_id,
-                outfit_type,
-                colour,
-                fabric,
-                occasion,
-                description,
-                duration_days,
-                payment_mode,
-                estimated_price,
-                status,
-                created_at
+                id, customer_id, outfit_type, colour, fabric,
+                occasion, description, duration_days, payment_mode,
+                estimated_price, status, created_at
             FROM custom_orders
             WHERE customer_id = %s
             ORDER BY created_at DESC
@@ -1018,9 +849,7 @@ def get_customer_custom_orders(customer_id):
             for row in cursor.fetchall()
         ]
 
-        return jsonify({
-            "orders": orders
-        })
+        return jsonify({"orders": orders})
 
     except Exception:
         app.logger.exception("Loading customer orders failed")
@@ -1033,18 +862,190 @@ def get_customer_custom_orders(customer_id):
         close_db(cursor, connection)
 
 
-# ---------------- ADMIN LOGOUT ----------------
+# ====================================================
+#                     ADMIN AUTHENTICATION
+# ====================================================
+
+@app.route("/api/admin/register", methods=["POST"])
+def register_admin():
+    data = request.get_json(silent=True) or {}
+
+    name = str(
+        data.get("name") or data.get("full_name") or ""
+    ).strip()
+
+    email = str(data.get("email") or "").strip().lower()
+    password = data.get("password", "")
+
+    if not name or not email or not password:
+        return jsonify({"error": "Please fill all the fields."}), 400
+
+    if not isinstance(password, str) or len(password) < 8:
+        return jsonify({
+            "error": "Password must contain at least 8 characters."
+        }), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("SELECT COUNT(*) AS total FROM admins")
+        admin_count = cursor.fetchone()["total"]
+
+        if admin_count > 0 and not admin_required():
+            return jsonify({
+                "error": "Admin registration is restricted. Please log in as an administrator."
+            }), 403
+
+        password_hash = generate_password_hash(
+            password,
+            method="pbkdf2:sha256"
+        )
+
+        cursor.execute("""
+            INSERT INTO admins (full_name, email, password_hash)
+            VALUES (%s, %s, %s)
+        """, (name, email, password_hash))
+
+        connection.commit()
+
+        return jsonify({
+            "message": "Admin registration successful. Please log in."
+        }), 201
+
+    except mysql.connector.IntegrityError:
+        return jsonify({
+            "error": "This admin email is already registered."
+        }), 409
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Admin registration failed")
+
+        return jsonify({
+            "error": "Admin registration failed. Check the Flask terminal."
+        }), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/admin/login", methods=["POST"])
+def login_admin():
+    data = request.get_json(silent=True) or {}
+
+    email = str(data.get("email") or "").strip().lower()
+    password = data.get("password", "")
+
+    if not email or not password:
+        return jsonify({
+            "error": "Please enter your admin email and password."
+        }), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT id, full_name, email, password_hash
+            FROM admins
+            WHERE email = %s
+        """, (email,))
+
+        admin = cursor.fetchone()
+
+        if not admin or not check_password_hash(
+            admin["password_hash"], password
+        ):
+            return jsonify({
+                "error": "Invalid admin email or password."
+            }), 401
+
+        session.clear()
+        session["admin_id"] = admin["id"]
+
+        return jsonify({
+            "message": "Admin login successful!",
+            "admin": {
+                "id": admin["id"],
+                "name": admin["full_name"],
+                "email": admin["email"]
+            }
+        })
+
+    except Exception:
+        app.logger.exception("Admin login failed")
+
+        return jsonify({
+            "error": "Admin login failed. Check the Flask terminal."
+        }), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/me", methods=["GET"])
+def current_admin():
+    if not admin_required():
+        return jsonify({
+            "error": "Please log in as an administrator."
+        }), 401
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT id, full_name, email
+            FROM admins
+            WHERE id = %s
+        """, (session["admin_id"],))
+
+        admin = cursor.fetchone()
+
+        if not admin:
+            session.clear()
+            return jsonify({"error": "Admin account not found."}), 404
+
+        return jsonify({
+            "admin": {
+                "id": admin["id"],
+                "name": admin["full_name"],
+                "email": admin["email"]
+            }
+        })
+
+    except Exception:
+        app.logger.exception("Loading admin session failed")
+
+        return jsonify({
+            "error": "Could not verify admin session."
+        }), 500
+
+    finally:
+        close_db(cursor, connection)
+
 
 @app.route("/api/logout", methods=["POST"])
 def logout_admin():
     session.clear()
-
-    return jsonify({
-        "message": "Logged out successfully."
-    })
+    return jsonify({"message": "Logged out successfully."})
 
 
-# ---------------- ADMIN DASHBOARD DATA ----------------
+# ====================================================
+#                   ADMIN DASHBOARD
+# ====================================================
 
 @app.route("/api/admin/dashboard", methods=["GET"])
 def admin_dashboard():
@@ -1060,25 +1061,14 @@ def admin_dashboard():
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
-        # Custom orders with customer names
         cursor.execute("""
             SELECT
-                co.id,
-                co.customer_id,
-                c.name AS customer_name,
-                co.outfit_type,
-                co.colour,
-                co.fabric,
-                co.occasion,
-                co.description,
-                co.duration_days,
-                co.payment_mode,
-                co.estimated_price,
-                co.status,
-                co.created_at
+                co.id, co.customer_id, c.name AS customer_name,
+                co.outfit_type, co.colour, co.fabric, co.occasion,
+                co.description, co.duration_days, co.payment_mode,
+                co.estimated_price, co.status, co.created_at
             FROM custom_orders co
-            LEFT JOIN customers c
-                ON co.customer_id = c.id
+            LEFT JOIN customers c ON co.customer_id = c.id
             ORDER BY co.created_at DESC
         """)
 
@@ -1087,22 +1077,13 @@ def admin_dashboard():
             for row in cursor.fetchall()
         ]
 
-        # Appointments with customer names
         cursor.execute("""
             SELECT
-                a.id,
-                a.customer_id,
-                c.name AS customer_name,
-                c.email,
-                a.appointment_date,
-                a.appointment_time,
-                a.purpose,
-                a.notes,
-                a.status,
-                a.created_at
+                a.id, a.customer_id, c.name AS customer_name,
+                c.email, a.appointment_date, a.appointment_time,
+                a.purpose, a.notes, a.status, a.created_at
             FROM appointments a
-            LEFT JOIN customers c
-                ON a.customer_id = c.id
+            LEFT JOIN customers c ON a.customer_id = c.id
             ORDER BY a.appointment_date DESC, a.appointment_time DESC
         """)
 
@@ -1111,17 +1092,11 @@ def admin_dashboard():
             for row in cursor.fetchall()
         ]
 
-        # Customer list and phone numbers
         cursor.execute("""
             SELECT
-                c.id,
-                c.name,
-                c.email,
-                m.phone,
-                c.created_at
+                c.id, c.name, c.email, m.phone, c.created_at
             FROM customers c
-            LEFT JOIN measurements m
-                ON c.id = m.customer_id
+            LEFT JOIN measurements m ON c.id = m.customer_id
             ORDER BY c.created_at DESC
         """)
 
@@ -1129,10 +1104,6 @@ def admin_dashboard():
             convert_dates(row)
             for row in cursor.fetchall()
         ]
-
-        total_customers = len(customers)
-        total_appointments = len(appointments)
-        total_orders = len(orders)
 
         pending_orders = sum(
             1 for order in orders
@@ -1146,9 +1117,9 @@ def admin_dashboard():
                 "orders": orders,
                 "appointments": appointments,
                 "customers": customers,
-                "total_customers": total_customers,
-                "total_appointments": total_appointments,
-                "total_orders": total_orders,
+                "total_customers": len(customers),
+                "total_appointments": len(appointments),
+                "total_orders": len(orders),
                 "pending_orders": pending_orders
             }
         })
@@ -1164,7 +1135,9 @@ def admin_dashboard():
         close_db(cursor, connection)
 
 
-# ---------------- UPDATE CUSTOM ORDER STATUS ----------------
+# ====================================================
+#                 ADMIN ORDER MANAGEMENT
+# ====================================================
 
 @app.route("/api/admin/orders/<int:order_id>", methods=["PATCH"])
 def update_admin_order(order_id):
@@ -1179,16 +1152,16 @@ def update_admin_order(order_id):
     allowed_statuses = [
         "Placed",
         "Confirmed",
+        "Measured",
         "In Progress",
+        "Trial",
         "Ready",
         "Completed",
         "Cancelled"
     ]
 
     if status not in allowed_statuses:
-        return jsonify({
-            "error": "Invalid order status."
-        }), 400
+        return jsonify({"error": "Invalid order status."}), 400
 
     connection = None
     cursor = None
@@ -1204,9 +1177,15 @@ def update_admin_order(order_id):
         """, (status, order_id))
 
         if cursor.rowcount == 0:
-            return jsonify({
-                "error": "Custom order not found."
-            }), 404
+            cursor.execute(
+                "SELECT id FROM custom_orders WHERE id = %s",
+                (order_id,)
+            )
+
+            if not cursor.fetchone():
+                return jsonify({
+                    "error": "Custom order not found."
+                }), 404
 
         connection.commit()
 
@@ -1228,7 +1207,9 @@ def update_admin_order(order_id):
         close_db(cursor, connection)
 
 
-# ---------------- UPDATE APPOINTMENT STATUS ----------------
+# ====================================================
+#              ADMIN APPOINTMENT MANAGEMENT
+# ====================================================
 
 @app.route("/api/admin/appointments/<int:appointment_id>", methods=["PATCH"])
 def update_admin_appointment(appointment_id):
@@ -1249,9 +1230,7 @@ def update_admin_appointment(appointment_id):
     ]
 
     if status not in allowed_statuses:
-        return jsonify({
-            "error": "Invalid appointment status."
-        }), 400
+        return jsonify({"error": "Invalid appointment status."}), 400
 
     connection = None
     cursor = None
@@ -1267,9 +1246,15 @@ def update_admin_appointment(appointment_id):
         """, (status, appointment_id))
 
         if cursor.rowcount == 0:
-            return jsonify({
-                "error": "Appointment not found."
-            }), 404
+            cursor.execute(
+                "SELECT id FROM appointments WHERE id = %s",
+                (appointment_id,)
+            )
+
+            if not cursor.fetchone():
+                return jsonify({
+                    "error": "Appointment not found."
+                }), 404
 
         connection.commit()
 
@@ -1291,7 +1276,547 @@ def update_admin_appointment(appointment_id):
         close_db(cursor, connection)
 
 
-# ---------------- START FLASK SERVER ----------------
+# ====================================================
+#                  FABRICS & STOCK
+# ====================================================
+
+@app.route("/api/admin/fabrics", methods=["GET"])
+def get_admin_fabrics():
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        ensure_admin_module_tables(cursor)
+
+        cursor.execute("""
+            SELECT id, name, fabric_type, quantity,
+                   low_stock_threshold, created_at, updated_at
+            FROM fabrics
+            ORDER BY name ASC
+        """)
+
+        fabrics = [convert_dates(row) for row in cursor.fetchall()]
+
+        for fabric in fabrics:
+            quantity = int(fabric["quantity"])
+            threshold = int(fabric["low_stock_threshold"])
+
+            if quantity <= 0:
+                fabric["stock_status"] = "Out of Stock"
+            elif quantity <= threshold:
+                fabric["stock_status"] = "Low Stock"
+            else:
+                fabric["stock_status"] = "Available"
+
+        connection.commit()
+        return jsonify({"fabrics": fabrics})
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Loading fabrics failed")
+        return jsonify({"error": "Could not load fabrics."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/admin/fabrics", methods=["POST"])
+def add_admin_fabric():
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    data = request.get_json(silent=True) or {}
+
+    name = str(data.get("name") or "").strip()
+    fabric_type = str(data.get("fabric_type") or "").strip()
+
+    try:
+        quantity = int(data.get("quantity", 0))
+        threshold = int(data.get("low_stock_threshold", 5))
+
+        if quantity < 0 or threshold < 0:
+            raise ValueError()
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Quantity and low-stock threshold must be zero or greater."
+        }), 400
+
+    if not name or not fabric_type:
+        return jsonify({
+            "error": "Fabric name and type are required."
+        }), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        ensure_admin_module_tables(cursor)
+
+        cursor.execute("""
+            INSERT INTO fabrics (name, fabric_type, quantity, low_stock_threshold)
+            VALUES (%s, %s, %s, %s)
+        """, (name, fabric_type, quantity, threshold))
+
+        fabric_id = cursor.lastrowid
+        connection.commit()
+
+        return jsonify({
+            "message": "Fabric added successfully.",
+            "id": fabric_id
+        }), 201
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Adding fabric failed")
+        return jsonify({"error": "Could not add fabric."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/admin/fabrics/<int:fabric_id>", methods=["PATCH"])
+def update_admin_fabric(fabric_id):
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    data = request.get_json(silent=True) or {}
+
+    name = str(data.get("name") or "").strip()
+    fabric_type = str(data.get("fabric_type") or "").strip()
+
+    try:
+        quantity = int(data.get("quantity"))
+        threshold = int(data.get("low_stock_threshold", 5))
+
+        if quantity < 0 or threshold < 0:
+            raise ValueError()
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Enter valid non-negative stock quantities."
+        }), 400
+
+    if not name or not fabric_type:
+        return jsonify({
+            "error": "Fabric name and type are required."
+        }), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        ensure_admin_module_tables(cursor)
+
+        cursor.execute("""
+            UPDATE fabrics
+            SET name = %s, fabric_type = %s,
+                quantity = %s, low_stock_threshold = %s
+            WHERE id = %s
+        """, (name, fabric_type, quantity, threshold, fabric_id))
+
+        if cursor.rowcount == 0:
+            cursor.execute(
+                "SELECT id FROM fabrics WHERE id = %s",
+                (fabric_id,)
+            )
+            if not cursor.fetchone():
+                return jsonify({"error": "Fabric not found."}), 404
+
+        connection.commit()
+        return jsonify({"message": "Fabric updated successfully."})
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Updating fabric failed")
+        return jsonify({"error": "Could not update fabric."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/admin/fabrics/<int:fabric_id>", methods=["DELETE"])
+def delete_admin_fabric(fabric_id):
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        ensure_admin_module_tables(cursor)
+
+        cursor.execute(
+            "DELETE FROM fabrics WHERE id = %s",
+            (fabric_id,)
+        )
+
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Fabric not found."}), 404
+
+        connection.commit()
+        return jsonify({"message": "Fabric deleted successfully."})
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Deleting fabric failed")
+        return jsonify({"error": "Could not delete fabric."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+# ====================================================
+#                    MEASUREMENTS
+# ====================================================
+
+@app.route("/api/admin/measurements", methods=["GET"])
+def get_admin_measurements():
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                c.id AS customer_id,
+                c.name AS customer_name,
+                c.email,
+                m.phone,
+                m.address,
+                m.height_cm,
+                m.shoulder_cm,
+                m.bust_cm,
+                m.waist_cm,
+                m.hip_cm,
+                m.sleeve_cm,
+                m.dress_length_cm
+            FROM customers c
+            INNER JOIN measurements m
+                ON c.id = m.customer_id
+            ORDER BY c.name ASC
+        """)
+
+        measurements = cursor.fetchall()
+
+        for row in measurements:
+            for key, value in row.items():
+                if value is not None and key.endswith("_cm"):
+                    row[key] = float(value)
+
+        return jsonify({"measurements": measurements})
+
+    except Exception:
+        app.logger.exception("Loading admin measurements failed")
+        return jsonify({"error": "Could not load customer measurements."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+# ====================================================
+#                       TAILORS
+# ====================================================
+
+@app.route("/api/admin/tailors", methods=["GET"])
+def get_admin_tailors():
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        ensure_admin_module_tables(cursor)
+
+        cursor.execute("""
+            SELECT
+                t.id,
+                t.name,
+                t.phone,
+                t.email,
+                t.specialisation,
+                t.notes,
+                t.created_at,
+                COUNT(toa.id) AS assigned_order_count
+            FROM tailors t
+            LEFT JOIN tailor_orders toa
+                ON t.id = toa.tailor_id
+            GROUP BY
+                t.id, t.name, t.phone, t.email,
+                t.specialisation, t.notes, t.created_at
+            ORDER BY t.name ASC
+        """)
+
+        tailors = [
+            convert_dates(row)
+            for row in cursor.fetchall()
+        ]
+
+        for tailor in tailors:
+            tailor["assigned_orders"] = int(
+                tailor["assigned_order_count"]
+            )
+
+        connection.commit()
+        return jsonify({"tailors": tailors})
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Loading tailors failed")
+        return jsonify({"error": "Could not load tailors."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/admin/tailors", methods=["POST"])
+def add_admin_tailor():
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    data = request.get_json(silent=True) or {}
+
+    name = str(data.get("name") or "").strip()
+    phone = str(data.get("phone") or "").strip()
+    email = str(data.get("email") or "").strip()
+    specialisation = str(
+        data.get("specialisation") or ""
+    ).strip()
+    notes = str(data.get("notes") or "").strip()
+
+    if not name:
+        return jsonify({"error": "Tailor name is required."}), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        ensure_admin_module_tables(cursor)
+
+        cursor.execute("""
+            INSERT INTO tailors (
+                name, phone, email, specialisation, notes
+            )
+            VALUES (%s, %s, %s, %s, %s)
+        """, (name, phone, email, specialisation, notes))
+
+        tailor_id = cursor.lastrowid
+        connection.commit()
+
+        return jsonify({
+            "message": "Tailor added successfully.",
+            "id": tailor_id
+        }), 201
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Adding tailor failed")
+        return jsonify({"error": "Could not add tailor."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/admin/tailors/<int:tailor_id>", methods=["PATCH"])
+def update_admin_tailor(tailor_id):
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    data = request.get_json(silent=True) or {}
+
+    name = str(data.get("name") or "").strip()
+    phone = str(data.get("phone") or "").strip()
+    email = str(data.get("email") or "").strip()
+    specialisation = str(
+        data.get("specialisation") or ""
+    ).strip()
+    notes = str(data.get("notes") or "").strip()
+
+    if not name:
+        return jsonify({"error": "Tailor name is required."}), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        ensure_admin_module_tables(cursor)
+
+        cursor.execute("""
+            UPDATE tailors
+            SET name = %s, phone = %s, email = %s,
+                specialisation = %s, notes = %s
+            WHERE id = %s
+        """, (
+            name, phone, email, specialisation, notes, tailor_id
+        ))
+
+        if cursor.rowcount == 0:
+            cursor.execute(
+                "SELECT id FROM tailors WHERE id = %s",
+                (tailor_id,)
+            )
+            if not cursor.fetchone():
+                return jsonify({"error": "Tailor not found."}), 404
+
+        connection.commit()
+        return jsonify({"message": "Tailor updated successfully."})
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Updating tailor failed")
+        return jsonify({"error": "Could not update tailor."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/admin/tailors/<int:tailor_id>", methods=["DELETE"])
+def delete_admin_tailor(tailor_id):
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        ensure_admin_module_tables(cursor)
+
+        cursor.execute(
+            "DELETE FROM tailors WHERE id = %s",
+            (tailor_id,)
+        )
+
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Tailor not found."}), 404
+
+        connection.commit()
+        return jsonify({"message": "Tailor deleted successfully."})
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Deleting tailor failed")
+        return jsonify({"error": "Could not delete tailor."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+# ====================================================
+#                 TAILOR ORDER ASSIGNMENT
+# ====================================================
+
+@app.route("/api/admin/tailors/<int:tailor_id>/assign", methods=["POST"])
+def assign_order_to_tailor(tailor_id):
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    data = request.get_json(silent=True) or {}
+
+    try:
+        order_id = int(data.get("order_id"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "Please select a valid order."}), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        ensure_admin_module_tables(cursor)
+
+        cursor.execute(
+            "SELECT id FROM tailors WHERE id = %s",
+            (tailor_id,)
+        )
+
+        if not cursor.fetchone():
+            return jsonify({"error": "Tailor not found."}), 404
+
+        cursor.execute(
+            "SELECT id FROM custom_orders WHERE id = %s",
+            (order_id,)
+        )
+
+        if not cursor.fetchone():
+            return jsonify({"error": "Custom order not found."}), 404
+
+        cursor.execute("""
+            INSERT INTO tailor_orders (tailor_id, order_id)
+            VALUES (%s, %s)
+            ON DUPLICATE KEY UPDATE
+                tailor_id = VALUES(tailor_id),
+                assigned_at = CURRENT_TIMESTAMP
+        """, (tailor_id, order_id))
+
+        connection.commit()
+
+        return jsonify({
+            "message": "Order assigned to tailor successfully."
+        })
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Assigning order to tailor failed")
+        return jsonify({"error": "Could not assign order to tailor."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+# ====================================================
+#                    START FLASK SERVER
+# ====================================================
 
 if __name__ == "__main__":
     app.run(
