@@ -2059,3 +2059,172 @@ body {
     }
 }
 
+STITCHEASE - CUSTOMER REVIEW DESIGN
+
+
+/* ==========================================
+   STITCHEASE - CUSTOMER REVIEW DESIGN
+========================================== */
+
+.review-page {
+    width: min(100% - 36px, 1050px);
+    max-width: 1050px;
+    margin: 0 auto;
+    padding-bottom: 55px;
+}
+
+.review-page .back-link {
+    margin-bottom: 22px;
+}
+
+.review-hero {
+    padding: 30px 34px;
+    margin-bottom: 26px;
+    border-radius: 20px;
+}
+
+.review-hero h1 {
+    margin: 9px 0;
+    font-size: clamp(27px, 4vw, 36px);
+}
+
+.review-hero p {
+    max-width: 540px;
+    line-height: 1.7;
+}
+
+.review-form-card {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 34px;
+    background: #FFFFFF;
+    border: 1px solid #E6E0D3;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(7, 27, 53, 0.06);
+}
+
+.review-form-card .orders-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 22px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #EEE9DF;
+}
+
+.review-form-card .orders-heading-icon {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    background: #FFF4CC;
+    color: #071B35;
+}
+
+.review-form-card .orders-card-heading h2 {
+    margin: 5px 0;
+    color: #071B35;
+    font-size: 22px;
+}
+
+.review-form-card .orders-card-heading p {
+    margin: 0;
+    color: #687589;
+    line-height: 1.6;
+}
+
+.review-form-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+}
+
+.review-form-card .field {
+    width: 100%;
+    margin: 0;
+}
+
+.review-form-card .field label {
+    display: block;
+    margin-bottom: 9px;
+    color: #071B35;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.review-form-card select,
+.review-form-card textarea {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #DCD7CB;
+    border-radius: 11px;
+    background: #FFFEFB;
+    color: #071B35;
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.review-form-card select {
+    min-height: 49px;
+    cursor: pointer;
+}
+
+.review-form-card textarea {
+    min-height: 145px;
+    resize: vertical;
+    line-height: 1.7;
+}
+
+.review-form-card select:focus,
+.review-form-card textarea:focus {
+    border-color: #D9A900;
+    box-shadow: 0 0 0 3px rgba(255, 201, 40, 0.18);
+}
+
+.review-character-note {
+    display: block;
+    margin-top: 8px;
+    color: #788294;
+    font-size: 12px;
+}
+
+.review-form-card #submitReviewButton {
+    min-height: 49px;
+    margin-top: 3px;
+    border-radius: 11px;
+    font-weight: 700;
+}
+
+.review-form-card .message {
+    min-height: 20px;
+    margin: 0;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .review-page {
+        width: min(100% - 24px, 1050px);
+    }
+
+    .review-hero {
+        padding: 23px 20px;
+    }
+
+    .review-form-card {
+        padding: 22px 18px;
+    }
+
+    .review-form-card .orders-card-heading {
+        align-items: flex-start;
+    }
+
+    .review-form-card .orders-card-heading h2 {
+        font-size: 19px;
+    }
+}
+
