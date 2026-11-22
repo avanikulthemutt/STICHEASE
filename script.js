@@ -27,6 +27,10 @@ function showPage(pageId) {
 }
 
 function showLogin() {
+    if (window.location.pathname === "/customer") {
+        window.history.replaceState({}, "", "/");
+    }
+
     document.getElementById("loginForm").hidden = false;
     document.getElementById("registerForm").hidden = true;
     clearMessage("authMessage");
@@ -46,6 +50,7 @@ function showHome() {
         return;
     }
 
+    window.history.replaceState({}, "", "/customer");
     updateCustomerGreeting();
     showPage("customerDashboard");
 }
@@ -1081,7 +1086,12 @@ function restoreSession() {
     try {
         const saved = localStorage.getItem("stitcheaseCustomer");
 
-        if (!saved) return;
+        if (!saved) {
+            if (window.location.pathname === "/customer") {
+                window.location.replace("/");
+            }
+            return;
+        }
 
         const customer = JSON.parse(saved);
 
@@ -1092,15 +1102,27 @@ function restoreSession() {
             customer.email
         ) {
             currentCustomer = customer;
+            currentCustomer.phone = currentCustomer.phone || "";
             showHome();
+        } else {
+            localStorage.removeItem("stitcheaseCustomer");
+
+            if (window.location.pathname === "/customer") {
+                window.location.replace("/");
+            }
         }
 
     } catch (error) {
         localStorage.removeItem("stitcheaseCustomer");
+
+        if (window.location.pathname === "/customer") {
+            window.location.replace("/");
+        }
     }
 }
 
 
+// ---------------- BOUTIQUE ADMIN
 // ---------------- BOUTIQUE ADMIN ----------------
 
 function showAdminLogin() {

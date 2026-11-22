@@ -1,0 +1,2522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stitchease | Boutique Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --cream: #FFF9EA;
+            --ivory: #FFFEFA;
+            --beige: #FFF1C9;
+            --beige-dark: #F5D978;
+            --brown: #303030;
+            --brown-dark: #292929;
+            --gold: #E9B936;
+            --gold-light: #FFF0BD;
+            --ink: #303030;
+            --muted: #777777;
+            --line: #EDE4D1;
+            --green: #477653;
+            --green-bg: #E8F1E6;
+            --red: #A84E43;
+            --red-bg: #F8E9E5;
+            --blue-bg: #FFF3D6;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "DM Sans", sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        button, input, select, textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        /* BRAND */
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--brown-dark);
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: var(--gold-light);
+            color: var(--brown);
+        }
+
+        .brand-icon i {
+            width: 23px;
+            height: 23px;
+        }
+
+        .brand strong {
+            display: block;
+            font-family: "Playfair Display", serif;
+            font-size: 23px;
+        }
+
+        .brand small {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 9px;
+            letter-spacing: 1.5px;
+        }
+
+        .eyebrow {
+            color: var(--gold);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* BUTTONS */
+
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 9px;
+            padding: 12px 18px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .btn-primary {
+            background: var(--brown);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--brown-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--gold-light);
+            color: var(--brown-dark);
+            border-color: var(--beige-dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--beige);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-danger {
+            background: var(--red-bg);
+            color: var(--red);
+            border-color: #EED3CD;
+        }
+
+        .btn-small {
+            padding: 8px 11px;
+            font-size: 11px;
+        }
+
+        /* WEBSITE LINK */
+
+        .website-back-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 21px;
+            color: var(--brown);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .website-back-link:hover {
+            color: var(--gold);
+        }
+
+        .website-back-link i {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* LOGIN */
+
+        .auth-section {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 12% 12%, rgba(233,185,54,.16), transparent 32%),
+                radial-gradient(circle at 90% 90%, rgba(255,240,189,.55), transparent 35%),
+                var(--cream);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .auth-header {
+            padding: 25px 6%;
+        }
+
+        .auth-layout {
+            flex: 1;
+            width: min(1100px, 90%);
+            margin: 30px auto 55px;
+            display: grid;
+            grid-template-columns: 1fr 440px;
+            align-items: center;
+            gap: 65px;
+        }
+
+        .auth-intro .eyebrow {
+            color: var(--gold);
+        }
+
+        .auth-intro h1 {
+            color: var(--brown-dark);
+            font-family: "Playfair Display", serif;
+            font-size: clamp(42px, 5vw, 65px);
+            line-height: 1.15;
+            margin: 20px 0;
+        }
+
+        .auth-intro h1 em {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .auth-intro p {
+            max-width: 450px;
+            color: var(--muted);
+            line-height: 1.9;
+            font-size: 14px;
+        }
+
+        .auth-note {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 32px;
+            color: var(--brown);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .auth-note i {
+            width: 20px;
+            height: 20px;
+            color: var(--gold);
+        }
+
+        .auth-card {
+            padding: 38px;
+            background: var(--ivory);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: 0 20px 55px rgba(50,50,50,.08);
+        }
+
+        .auth-card h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 29px;
+            color: var(--brown-dark);
+            margin: 12px 0 8px;
+        }
+
+        .auth-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 5px;
+            background: var(--cream);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            gap: 5px;
+        }
+
+        .auth-tabs button {
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--muted);
+            padding: 11px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .auth-tabs button.active {
+            background: var(--brown);
+            color: white;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--brown-dark);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 12px 13px;
+            background: #FFFEFA;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            outline: none;
+            color: var(--ink);
+            font-size: 12px;
+            transition: .2s;
+        }
+
+        .field textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(233,185,54,.15);
+        }
+
+        .auth-message,
+        .message {
+            margin-top: 13px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .auth-footer {
+            padding: 22px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* DASHBOARD SHELL */
+
+        #dashboardSection {
+            min-height: 100vh;
+        }
+
+        .admin-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            min-width: 250px;
+            background: #FFF4D9;
+            border-right: 1px solid var(--line);
+            color: var(--brown-dark);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            padding: 0 10px 24px;
+            border-bottom: 1px solid var(--beige-dark);
+        }
+
+        .sidebar-label {
+            padding: 23px 12px 11px;
+            color: #777777;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.7px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 11px 13px;
+            color: #555555;
+            background: transparent;
+            border: none;
+            border-radius: 9px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .nav-link i {
+            width: 17px;
+            height: 17px;
+        }
+
+        .nav-link:hover {
+            background: #FFF0C7;
+            color: var(--brown-dark);
+        }
+
+        .nav-link.active {
+            background: var(--brown);
+            color: white;
+            font-weight: 700;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--beige-dark);
+        }
+
+        .sidebar-bottom a.nav-link {
+            text-decoration: none;
+        }
+
+        .admin-main {
+            min-width: 0;
+            flex: 1;
+            padding: 0 32px 45px;
+        }
+
+        /* TOP BAR */
+
+        .topbar {
+            min-height: 82px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--line);
+            gap: 20px;
+        }
+
+        .topbar-title h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 23px;
+            color: var(--brown-dark);
+        }
+
+        .topbar-title p {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--brown-dark);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .admin-avatar {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--gold-light);
+            border: 1px solid var(--beige-dark);
+            color: var(--brown);
+            font-weight: 700;
+        }
+
+        .icon-btn {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            background: var(--ivory);
+            border: 1px solid var(--line);
+            color: var(--brown);
+            border-radius: 9px;
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        /* PAGE CONTENT */
+
+        .page-content {
+            padding-top: 29px;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+
+        .page-heading h1 {
+            margin-top: 8px;
+            color: var(--brown-dark);
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+        }
+
+        .page-heading p {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* WELCOME */
+
+        .welcome-card {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 34px;
+            border-radius: 16px;
+            background: linear-gradient(110deg, #FFF0C7, #FFF8E8);
+            border: 1px solid #F3E3B8;
+            color: var(--brown-dark);
+            margin-bottom: 27px;
+        }
+
+        .welcome-card .eyebrow {
+            color: var(--gold);
+        }
+
+        .welcome-card h1 {
+            margin: 12px 0 8px;
+            font-family: "Playfair Display", serif;
+            font-size: 30px;
+            color: var(--brown-dark);
+        }
+
+        .welcome-card p {
+            color: #666666;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .welcome-decoration {
+            color: #E9B936;
+            opacity: .75;
+            padding-right: 20px;
+        }
+
+        .welcome-decoration i {
+            width: 65px;
+            height: 65px;
+            stroke-width: 1.2;
+        }
+
+        /* STATISTICS */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 27px;
+        }
+
+        .stat-card {
+            background: var(--ivory);
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-icon {
+            display: grid;
+            place-items: center;
+            width: 39px;
+            height: 39px;
+            background: var(--gold-light);
+            color: var(--brown);
+            border-radius: 11px;
+        }
+
+        .stat-icon i {
+            width: 19px;
+            height: 19px;
+        }
+
+        .stat-card h3 {
+            margin-top: 16px;
+            color: var(--brown-dark);
+            font-size: 27px;
+        }
+
+        .stat-card p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* PANELS */
+
+        .panel {
+            background: var(--ivory);
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            padding: 22px;
+            margin-bottom: 21px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 19px;
+        }
+
+        .panel-header h2 {
+            color: var(--brown-dark);
+            font-family: "Playfair Display", serif;
+            font-size: 20px;
+        }
+
+        .panel-header p {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .text-link {
+            border: none;
+            background: transparent;
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* TABLES */
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
+
+        th {
+            padding: 13px 12px;
+            text-align: left;
+            color: #777777;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            background: #FFF9EA;
+        }
+
+        td {
+            padding: 13px 12px;
+            color: #555555;
+            border-bottom: 1px solid #F2EBD9;
+            font-size: 11px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #FFFEFA;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: var(--gold-light);
+            color: #8A6A16;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .status.completed,
+        .status.delivered,
+        .status.ready,
+        .status.available {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .status.cancelled,
+        .status.out-of-stock {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .status.in-progress,
+        .status.confirmed,
+        .status.low-stock {
+            background: #FFF0C7;
+            color: #8A6A16;
+        }
+
+        .empty-state {
+            padding: 25px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* ORDER PROGRESS */
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        .progress-item {
+            padding: 15px 10px;
+            background: #FFF9EA;
+            border: 1px solid #F0E9DC;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .progress-item strong {
+            display: block;
+            color: var(--brown-dark);
+            font-size: 22px;
+        }
+
+        .progress-item span {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        /* MODULE FORMS */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0 16px;
+        }
+
+        .form-grid .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .module-note {
+            margin-bottom: 17px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            width: min(300px, 100%);
+            padding: 10px 12px;
+            background: #FFFEFA;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            outline: none;
+            color: var(--ink);
+            font-size: 12px;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold);
+        }
+
+        /* PLACEHOLDER MODULES */
+
+        .section-placeholder {
+            background: var(--ivory);
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            padding: 45px 25px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .section-placeholder .placeholder-icon {
+            width: 55px;
+            height: 55px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 17px;
+            background: var(--gold-light);
+            color: var(--brown);
+            border-radius: 15px;
+        }
+
+        .section-placeholder h2 {
+            font-family: "Playfair Display", serif;
+            color: var(--brown-dark);
+            font-size: 22px;
+        }
+
+        .section-placeholder p {
+            margin: 9px auto 0;
+            max-width: 420px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .mobile-overlay {
+            display: none;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1100px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .progress-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                position: fixed;
+                z-index: 30;
+                top: 0;
+                left: -270px;
+                height: 100vh;
+                overflow-y: auto;
+                transition: .25s;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .mobile-overlay.show {
+                display: block;
+                position: fixed;
+                inset: 0;
+                z-index: 20;
+                background: rgba(40,40,40,.25);
+            }
+
+            .mobile-menu {
+                display: grid;
+            }
+
+            .admin-main {
+                padding: 0 16px 30px;
+            }
+
+            .topbar {
+                min-height: 70px;
+            }
+
+            .topbar-title h2 {
+                font-size: 19px;
+            }
+
+            .topbar-title p {
+                display: none;
+            }
+
+            .admin-user span:last-child {
+                display: none;
+            }
+
+            .welcome-card {
+                padding: 23px;
+            }
+
+            .welcome-card h1 {
+                font-size: 24px;
+            }
+
+            .welcome-decoration {
+                display: none;
+            }
+
+            .stats-grid {
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card h3 {
+                font-size: 23px;
+            }
+
+            .page-heading h1 {
+                font-size: 26px;
+            }
+
+            .auth-layout {
+                grid-template-columns: 1fr;
+                width: min(450px, 90%);
+                margin-top: 20px;
+                gap: 28px;
+            }
+
+            .auth-intro h1 {
+                font-size: 40px;
+            }
+
+            .auth-intro p {
+                font-size: 12px;
+            }
+
+            .auth-card {
+                padding: 26px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid .field.full {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .progress-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .panel {
+                padding: 15px;
+            }
+
+            .welcome-card h1 {
+                font-size: 21px;
+            }
+
+            .page-heading {
+                align-items: flex-start;
+            }
+        }
+    
+/* ===== FINAL STITCHEASE IVORY CREAM WARM YELLOW THEME ===== */
+
+:root {
+    --cream: #FFF9EA !important;
+    --ivory: #FFFEFA !important;
+    --beige: #FFF1C9 !important;
+    --beige-dark: #F5D978 !important;
+    --brown: #343434 !important;
+    --brown-dark: #292929 !important;
+    --gold: #E9B936 !important;
+    --gold-light: #FFF0BD !important;
+    --ink: #343434 !important;
+    --muted: #777777 !important;
+    --line: #EEE5D2 !important;
+}
+
+/* Overall background */
+body,
+.auth-section,
+.admin-main {
+    background: #FFFEFA !important;
+    color: #343434 !important;
+}
+
+/* Sidebar */
+.sidebar {
+    background: #FFF4D9 !important;
+    color: #343434 !important;
+}
+
+.sidebar-label {
+    color: #777777 !important;
+}
+
+.nav-link {
+    color: #555555 !important;
+    background: transparent !important;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: #F5D978 !important;
+    color: #343434 !important;
+}
+
+/* Login card and tabs */
+.auth-card {
+    background: #FFFEFA !important;
+}
+
+.auth-tabs {
+    background: #FFF8E8 !important;
+}
+
+.auth-tabs button.active {
+    background: #F5D978 !important;
+    color: #343434 !important;
+}
+
+/* All primary buttons */
+.btn-primary,
+button[type="submit"] {
+    background: #E9B936 !important;
+    color: #343434 !important;
+    border-color: #E9B936 !important;
+}
+
+.btn-primary:hover,
+button[type="submit"]:hover {
+    background: #F5D978 !important;
+    color: #343434 !important;
+}
+
+/* Secondary buttons */
+.btn-secondary {
+    background: #FFF0BD !important;
+    color: #343434 !important;
+    border-color: #F5D978 !important;
+}
+
+/* Dashboard welcome banner */
+.welcome-card {
+    background: linear-gradient(110deg, #FFF0BD, #FFF8E8) !important;
+    border: 1px solid #F0D98F !important;
+    color: #343434 !important;
+}
+
+.welcome-card h1,
+.welcome-card p,
+.welcome-card .eyebrow {
+    color: #343434 !important;
+}
+
+.welcome-decoration {
+    color: #D6A82E !important;
+}
+
+/* Cards and panels */
+.panel,
+.stat-card,
+.section-placeholder {
+    background: #FFFEFA !important;
+    border-color: #EEE5D2 !important;
+}
+
+/* Icons and highlights */
+.brand-icon,
+.stat-icon,
+.placeholder-icon,
+.admin-avatar {
+    background: #FFF0BD !important;
+    color: #343434 !important;
+    border-color: #F5D978 !important;
+}
+
+/* Headings and labels */
+h1, h2, h3,
+.brand,
+.topbar-title h2,
+.page-heading h1,
+.panel-header h2 {
+    color: #343434 !important;
+}
+
+/* Tables */
+th {
+    background: #FFF4D9 !important;
+    color: #555555 !important;
+}
+
+td {
+    color: #555555 !important;
+    border-color: #F0E8D8 !important;
+}
+
+tbody tr:hover {
+    background: #FFF9EA !important;
+}
+
+/* Inputs */
+input, select, textarea, .search-input {
+    background: #FFFEFA !important;
+    color: #343434 !important;
+    border-color: #EDE4D1 !important;
+}
+
+/* Status highlights */
+.status {
+    background: #FFF0BD !important;
+    color: #806018 !important;
+}
+
+/* Remove old brown gradients and shadows */
+.auth-section {
+    background: #FFF9EA !important;
+}
+
+.auth-card {
+    box-shadow: 0 15px 40px rgba(80, 65, 30, 0.07) !important;
+}
+
+    
+
+/* =========================================
+   STITCHEASE - PAYMENTS PAGE
+   Ivory Cream and Warm Yellow Theme
+========================================= */
+
+.payment-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    margin: 26px 0;
+}
+
+.payment-summary-card {
+    background: #fffdf7;
+    border: 1px solid #eee8d9;
+    border-radius: 15px;
+    padding: 23px 21px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 0;
+    box-shadow: 0 3px 12px rgba(45, 39, 20, 0.035);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 18px rgba(45, 39, 20, 0.07);
+}
+
+.payment-card-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    border-radius: 12px;
+    background: #fff0b8;
+    color: #755700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-card-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.payment-card-icon.paid-icon {
+    background: #e5f3e7;
+    color: #267347;
+}
+
+.payment-card-icon.pending-icon {
+    background: #fff0d7;
+    color: #a66b13;
+}
+
+.payment-summary-card p {
+    color: #777064;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 2px 0 9px;
+}
+
+.payment-summary-card h2 {
+    color: #29271f;
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 7px;
+    overflow-wrap: anywhere;
+}
+
+.payment-summary-card span {
+    color: #969084;
+    font-size: 11px;
+}
+
+.payment-records-card {
+    margin-top: 28px;
+    overflow: hidden;
+}
+
+.payment-records-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 25px;
+    border-bottom: 1px solid #eee9df;
+}
+
+.payment-records-heading h2 {
+    color: #29271f;
+    font-size: 20px;
+    margin: 7px 0;
+}
+
+.payment-records-heading p {
+    color: #827c70;
+    font-size: 13px;
+    margin: 0;
+}
+
+.payment-records-count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #fff6d9;
+    border: 1px solid #f3e5b5;
+    color: #735814;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.payment-records-count svg {
+    width: 16px;
+    height: 16px;
+}
+
+.payments-table-container {
+    width: 100%;
+    overflow-x: auto;
+    padding: 0 20px;
+}
+
+.payments-table {
+    width: 100%;
+    min-width: 940px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.payments-table thead th {
+    background: #fffaf0;
+    color: #777064;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.045em;
+    padding: 17px 15px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid #eee8dc;
+}
+
+.payments-table tbody td {
+    color: #464238;
+    font-size: 13px;
+    padding: 19px 15px;
+    border-bottom: 1px solid #f0ede6;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.payments-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.payments-table tbody tr:hover {
+    background: #fffdf8;
+}
+
+.payments-table tbody td:first-child {
+    color: #665019;
+    font-weight: 700;
+}
+
+.payments-table .payment-status-select {
+    width: 155px;
+    min-width: 155px;
+    padding: 10px 30px 10px 12px;
+    border: 1px solid #e6dfcf;
+    border-radius: 8px;
+    background-color: #fffdf7;
+    color: #39352c;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payments-table .payment-status-select:focus {
+    border-color: #d8ad32;
+    box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.18);
+}
+
+.payments-table .payment-status-select:hover {
+    border-color: #d8ad32;
+}
+
+.payment-information {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 16px 25px 22px;
+    padding: 14px 16px;
+    background: #fff9e9;
+    border: 1px solid #f1e5c5;
+    border-radius: 9px;
+    color: #796633;
+}
+
+.payment-information svg {
+    width: 17px;
+    height: 17px;
+    min-width: 17px;
+    margin-top: 1px;
+}
+
+.payment-information p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+@media (max-width: 1100px) {
+    .payment-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .payment-summary-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .payment-summary-card {
+        padding: 18px;
+    }
+
+    .payment-summary-card h2 {
+        font-size: 22px;
+    }
+
+    .payment-records-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .payments-table-container {
+        padding: 0 12px;
+    }
+
+    .payment-information {
+        margin: 14px 15px 18px;
+    }
+}
+
+
+
+/* Customer Reviews */
+.review-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin: 24px 0;
+}
+.review-stat-card {
+    padding: 24px;
+    border: 1px solid #E8DFC9;
+    border-radius: 14px;
+    background: #FFFDF6;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.review-stat-card span {
+    color: #52647A;
+    font-size: 14px;
+}
+.review-stat-card strong {
+    color: #071B35;
+    font-size: 30px;
+}
+.review-stat-card small {
+    color: #7B8490;
+}
+.admin-reviews-card {
+    overflow: hidden;
+}
+.admin-reviews-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.admin-reviews-table th,
+.admin-reviews-table td {
+    padding: 15px 13px;
+    text-align: left;
+    border-bottom: 1px solid #EEE8DC;
+    vertical-align: top;
+}
+.admin-reviews-table th {
+    color: #071B35;
+    background: #FFF8E5;
+    font-weight: 700;
+}
+.admin-review-stars {
+    color: #D49A00;
+    white-space: nowrap;
+    letter-spacing: 1px;
+}
+.admin-review-text {
+    min-width: 220px;
+    max-width: 440px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    color: #52647A;
+}
+.review-delete-button {
+    border: 1px solid #E6CACA;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: #FFF4F2;
+    color: #A83232;
+    cursor: pointer;
+    font-weight: 600;
+}
+.review-delete-button:hover {
+    background: #FCE4E0;
+}
+@media (max-width: 700px) {
+    .review-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+    <!-- ADMIN LOGIN AND REGISTRATION -->
+
+    <section id="adminAuthSection" class="auth-section">
+        <header class="auth-header">
+            <a href="/" class="brand">
+                <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                <span>
+                    <strong>Stitchease</strong>
+                    <small>YOUR STYLE, YOUR WAY</small>
+                </span>
+            </a>
+        </header>
+
+        <main class="auth-layout">
+            <div class="auth-intro">
+                <span class="eyebrow">BOUTIQUE MANAGEMENT</span>
+                <h1>Every detail,<br><em>beautifully managed.</em></h1>
+                <p>
+                    Welcome to your Stitchease boutique workspace.
+                    Manage customer appointments, custom orders,
+                    fabrics, measurements and your tailoring team
+                    in one place.
+                </p>
+
+                <div class="auth-note">
+                    <i data-lucide="heart-handshake"></i>
+                    <span>Designed around you. Managed with care.</span>
+                </div>
+            </div>
+
+            <div class="auth-card">
+                <div class="auth-tabs">
+                    <button type="button" id="loginTab" class="active"
+                        onclick="showAdminLoginForm()">Login</button>
+                    <button type="button" id="registerTab"
+                        onclick="showAdminRegisterForm()">Register</button>
+                </div>
+
+                <form id="adminLoginForm">
+                    <span class="eyebrow">WELCOME BACK</span>
+                    <h2>Admin Login</h2>
+                    <p class="muted">Sign in to manage your boutique.</p>
+
+                    <div class="field" style="margin-top:25px;">
+                        <label for="adminLoginEmail">Email address</label>
+                        <input type="email" id="adminLoginEmail"
+                            placeholder="admin@example.com" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="adminLoginPassword">Password</label>
+                        <input type="password" id="adminLoginPassword"
+                            placeholder="Enter your password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Login to Dashboard <i data-lucide="arrow-right"></i>
+                    </button>
+
+                    <p id="adminLoginMessage" class="auth-message" role="status"></p>
+                </form>
+
+                <form id="adminRegisterForm" hidden>
+                    <span class="eyebrow">BOUTIQUE ACCESS</span>
+                    <h2>Create Admin Account</h2>
+                    <p class="muted">Register your boutique administrator account.</p>
+
+                    <div class="field" style="margin-top:22px;">
+                        <label for="adminRegisterName">Full name</label>
+                        <input type="text" id="adminRegisterName"
+                            placeholder="Enter your name" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="adminRegisterEmail">Email address</label>
+                        <input type="email" id="adminRegisterEmail"
+                            placeholder="admin@example.com" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="adminRegisterPassword">Password</label>
+                        <input type="password" id="adminRegisterPassword"
+                            placeholder="Create a password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Create Admin Account <i data-lucide="arrow-right"></i>
+                    </button>
+
+                    <p id="adminRegisterMessage" class="auth-message" role="status"></p>
+                </form>
+
+                <a href="/" class="website-back-link">
+                    <i data-lucide="arrow-left"></i>
+                    Back to Stitchease Website
+                </a>
+            </div>
+        </main>
+
+        <footer class="auth-footer">
+            Stitchease Boutique Management · Your Style, Your Way
+        </footer>
+    </section>
+
+
+    <!-- ADMIN DASHBOARD -->
+
+    <section id="dashboardSection" hidden>
+        <div class="admin-shell">
+
+            <!-- SIDEBAR -->
+
+            <aside class="sidebar" id="adminSidebar">
+                <div class="sidebar-brand">
+                    <a href="/" class="brand">
+                        <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                        <span>
+                            <strong>Stitchease</strong>
+                            <small>BOUTIQUE ADMIN</small>
+                        </span>
+                    </a>
+                </div>
+
+                <div class="sidebar-label">WORKSPACE</div>
+
+                <nav class="sidebar-nav">
+                    <button class="nav-link active" onclick="showPage('dashboard')">
+                        <i data-lucide="layout-dashboard"></i> Dashboard
+                    </button>
+
+                    <button class="nav-link" onclick="showPage('orders')">
+                        <i data-lucide="shopping-bag"></i> Orders
+                    </button>
+
+                    <button class="nav-link" onclick="showPage('trials')">
+                        <i data-lucide="calendar-days"></i> Appointments
+                    </button>
+
+                    <button class="nav-link" onclick="showPage('customers')">
+                        <i data-lucide="users"></i> Customers
+                    </button>
+
+                    <div class="sidebar-label">BOUTIQUE MANAGEMENT</div>
+
+                    <button class="nav-link" onclick="showPage('fabrics')">
+                        <i data-lucide="layers"></i> Fabrics & Stock
+                    </button>
+
+                    <button class="nav-link" onclick="showPage('measurements')">
+                        <i data-lucide="ruler"></i> Measurements
+                    </button>
+
+                    <button class="nav-link" onclick="showPage('tailors')">
+                        <i data-lucide="scissors"></i> Tailors
+                    </button>
+
+                    <div class="sidebar-label">BUSINESS</div>
+
+                    <button class="nav-link" onclick="showPage('payments')">
+                        <i data-lucide="wallet"></i> Payments
+                    </button>
+
+                    <button class="nav-link" onclick="showPage('reviews')">
+                        <i data-lucide="star"></i> Reviews
+                    </button>
+
+                    <button class="nav-link" onclick="showPage('offers')">
+                        <i data-lucide="tag"></i> Offers
+                    </button>
+
+                    <button class="nav-link" onclick="showPage('settings')">
+                        <i data-lucide="settings"></i> Settings
+                    </button>
+                </nav>
+
+                <div class="sidebar-bottom">
+                    <a href="/" class="nav-link">
+                        <i data-lucide="external-link"></i>
+                        Visit Stitchease Website
+                    </a>
+
+                    <button class="nav-link" onclick="logout()">
+                        <i data-lucide="log-out"></i> Logout
+                    </button>
+                </div>
+            </aside>
+
+            <div class="mobile-overlay" id="mobileOverlay"
+                onclick="toggleSidebar()"></div>
+
+            <!-- MAIN CONTENT -->
+
+            <main class="admin-main">
+                <header class="topbar">
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <button class="icon-btn mobile-menu"
+                            onclick="toggleSidebar()" aria-label="Open menu">
+                            <i data-lucide="menu"></i>
+                        </button>
+
+                        <div class="topbar-title">
+                            <h2 id="currentPageTitle">Dashboard</h2>
+                            <p>Your boutique at a glance</p>
+                        </div>
+                    </div>
+
+                    <div class="topbar-right">
+                        <div class="admin-user">
+                            <div class="admin-avatar" id="adminInitial">A</div>
+                            <span id="adminNameDisplay">Boutique Admin</span>
+                        </div>
+                    </div>
+                </header>
+
+
+                <!-- DASHBOARD HOME -->
+
+                <section id="dashboard" class="admin-page page-content">
+                    <div class="welcome-card">
+                        <div>
+                            <span class="eyebrow">YOUR BOUTIQUE WORKSPACE</span>
+                            <h1>Welcome back, <span id="welcomeAdminName">Admin</span>!</h1>
+                            <p>Here's what's happening at your boutique today.</p>
+                        </div>
+
+                        <div class="welcome-decoration">
+                            <i data-lucide="flower-2"></i>
+                        </div>
+                    </div>
+
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">OVERVIEW</span>
+                            <h1>Boutique Overview</h1>
+                            <p>Keep track of your customers, appointments and custom orders.</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-top">
+                                <span class="eyebrow">CUSTOMERS</span>
+                                <span class="stat-icon"><i data-lucide="users"></i></span>
+                            </div>
+                            <h3 id="totalCustomers">0</h3>
+                            <p>Total registered customers</p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-top">
+                                <span class="eyebrow">APPOINTMENTS</span>
+                                <span class="stat-icon"><i data-lucide="calendar-days"></i></span>
+                            </div>
+                            <h3 id="totalAppointments">0</h3>
+                            <p>Total boutique appointments</p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-top">
+                                <span class="eyebrow">ORDERS</span>
+                                <span class="stat-icon"><i data-lucide="shopping-bag"></i></span>
+                            </div>
+                            <h3 id="totalOrders">0</h3>
+                            <p>Total custom orders</p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-top">
+                                <span class="eyebrow">PENDING</span>
+                                <span class="stat-icon"><i data-lucide="clock"></i></span>
+                            </div>
+                            <h3 id="pendingOrders">0</h3>
+                            <p>Orders awaiting completion</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Order Progress</h2>
+                                <p>Track custom outfits through each stage.</p>
+                            </div>
+                        </div>
+
+                        <div class="progress-grid">
+                            <div class="progress-item">
+                                <strong id="receivedCount">0</strong>
+                                <span>Received</span>
+                            </div>
+                            <div class="progress-item">
+                                <strong id="measuredCount">0</strong>
+                                <span>Measured</span>
+                            </div>
+                            <div class="progress-item">
+                                <strong id="stitchingCount">0</strong>
+                                <span>Stitching</span>
+                            </div>
+                            <div class="progress-item">
+                                <strong id="trialCount">0</strong>
+                                <span>Trial</span>
+                            </div>
+                            <div class="progress-item">
+                                <strong id="readyCount">0</strong>
+                                <span>Ready</span>
+                            </div>
+                            <div class="progress-item">
+                                <strong id="deliveredCount">0</strong>
+                                <span>Delivered</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Recent Orders</h2>
+                                <p>Latest custom outfit orders from your customers.</p>
+                            </div>
+                            <button class="text-link" onclick="showPage('orders')">
+                                View all orders →
+                            </button>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Outfit</th>
+                                        <th>Order Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTable">
+                                    <tr>
+                                        <td colspan="5" class="empty-state">No order information available yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Recent Appointments</h2>
+                                <p>Keep up with upcoming customer visits.</p>
+                            </div>
+                            <button class="text-link" onclick="showPage('trials')">
+                                View all appointments →
+                            </button>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Appointment ID</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appointmentsTable">
+                                    <tr>
+                                        <td colspan="5" class="empty-state">No appointment information available yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ALL ORDERS -->
+
+                <section id="orders" class="admin-page page-content" hidden>
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">CUSTOM ORDER MANAGEMENT</span>
+                            <h1>Orders</h1>
+                            <p>View and update customer custom outfit orders.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>All Custom Orders</h2>
+                                <p>Manage the progress of every customer order.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Outfit</th>
+                                        <th>Colour</th>
+                                        <th>Fabric</th>
+                                        <th>Occasion</th>
+                                        <th>Status</th>
+                                        <th>Update Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allOrdersTable">
+                                    <tr>
+                                        <td colspan="8" class="empty-state">Order details will appear here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- APPOINTMENTS -->
+
+                <section id="trials" class="admin-page page-content" hidden>
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">CUSTOMER VISITS</span>
+                            <h1>Appointments</h1>
+                            <p>Manage boutique visits and customer consultations.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>All Appointments</h2>
+                                <p>Review and update appointment requests.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Appointment ID</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Purpose</th>
+                                        <th>Status</th>
+                                        <th>Update Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allAppointmentsTable">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">Appointment details will appear here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- CUSTOMERS -->
+
+                <section id="customers" class="admin-page page-content" hidden>
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">YOUR CLIENTELE</span>
+                            <h1>Customers</h1>
+                            <p>View registered Stitchease customers.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Customer Directory</h2>
+                                <p>Customer information registered with Stitchease.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customersTable">
+                                    <tr>
+                                        <td colspan="4" class="empty-state">Customer details will appear here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- FABRICS AND STOCK -->
+
+                <section id="fabrics" class="admin-page page-content" hidden>
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">MATERIAL MANAGEMENT</span>
+                            <h1>Fabrics & Stock</h1>
+                            <p>Add fabrics, maintain available quantities and monitor stock levels.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2 id="fabricFormTitle">Add New Fabric</h2>
+                                <p>Enter the fabric details to add it to your inventory.</p>
+                            </div>
+                        </div>
+
+                        <form id="fabricForm">
+                            <input type="hidden" id="fabricId">
+
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="fabricName">Fabric name</label>
+                                    <input type="text" id="fabricName"
+                                        placeholder="e.g. Banarasi Silk" required>
+                                </div>
+
+                                <div class="field">
+                                    <label for="fabricType">Fabric type</label>
+                                    <select id="fabricType" required>
+                                        <option value="">Select fabric type</option>
+                                        <option value="Cotton">Cotton</option>
+                                        <option value="Silk">Silk</option>
+                                        <option value="Banarasi">Banarasi</option>
+                                        <option value="Georgette">Georgette</option>
+                                        <option value="Chiffon">Chiffon</option>
+                                        <option value="Crepe">Crepe</option>
+                                        <option value="Satin">Satin</option>
+                                        <option value="Linen">Linen</option>
+                                        <option value="Rayon">Rayon</option>
+                                        <option value="Velvet">Velvet</option>
+                                        <option value="Net">Net</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <label for="fabricQuantity">Available quantity (metres)</label>
+                                    <input type="number" id="fabricQuantity"
+                                        min="0" step="0.01" placeholder="e.g. 25" required>
+                                </div>
+
+                                <div class="field">
+                                    <label for="fabricLowStock">Low stock alert level (metres)</label>
+                                    <input type="number" id="fabricLowStock"
+                                        min="0" step="0.01" value="5" required>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="fabricSubmitButton">
+                                    <i data-lucide="plus"></i> Add Fabric
+                                </button>
+                                <button type="button" class="btn btn-secondary"
+                                    id="fabricCancelButton" onclick="resetFabricForm()" hidden>
+                                    Cancel Edit
+                                </button>
+                            </div>
+
+                            <p id="fabricMessage" class="message" role="status"></p>
+                        </form>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Fabric Inventory</h2>
+                                <p>Review and update your boutique fabric stock.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <input type="search" class="search-input"
+                                id="fabricSearch" placeholder="Search fabrics...">
+                            <span class="muted" id="fabricCount">0 fabrics</span>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Fabric ID</th>
+                                        <th>Fabric Name</th>
+                                        <th>Type</th>
+                                        <th>Quantity (m)</th>
+                                        <th>Low Stock At (m)</th>
+                                        <th>Stock Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fabricsTable">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">Fabric inventory will appear here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- CUSTOMER MEASUREMENTS -->
+
+                <section id="measurements" class="admin-page page-content" hidden>
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">PERSONAL FIT</span>
+                            <h1>Customer Measurements</h1>
+                            <p>View measurements saved by customers through their Stitchease accounts.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Measurement Records</h2>
+                                <p>These details are retrieved from the existing customer measurement records.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <input type="search" class="search-input"
+                                id="measurementSearch" placeholder="Search by customer name, email or phone...">
+                            <span class="muted" id="measurementCount">0 records</span>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer ID</th>
+                                        <th>Customer Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                        <th>Height (cm)</th>
+                                        <th>Shoulder (cm)</th>
+                                        <th>Bust (cm)</th>
+                                        <th>Waist (cm)</th>
+                                        <th>Hip (cm)</th>
+                                        <th>Sleeve (cm)</th>
+                                        <th>Dress Length (cm)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="measurementsTable">
+                                    <tr>
+                                        <td colspan="12" class="empty-state">Customer measurements will appear here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- TAILORS -->
+
+                <section id="tailors" class="admin-page page-content" hidden>
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">TEAM MANAGEMENT</span>
+                            <h1>Tailors</h1>
+                            <p>Maintain your tailoring team and manage order assignments.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2 id="tailorFormTitle">Add Tailor</h2>
+                                <p>Enter the details of a boutique tailor.</p>
+                            </div>
+                        </div>
+
+                        <form id="tailorForm">
+                            <input type="hidden" id="tailorId">
+
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="tailorName">Full name</label>
+                                    <input type="text" id="tailorName"
+                                        placeholder="Enter tailor name" required>
+                                </div>
+
+                                <div class="field">
+                                    <label for="tailorPhone">Contact number</label>
+                                    <input type="tel" id="tailorPhone"
+                                        placeholder="Enter contact number" required>
+                                </div>
+
+                                <div class="field">
+                                    <label for="tailorEmail">Email address</label>
+                                    <input type="email" id="tailorEmail"
+                                        placeholder="Enter email address">
+                                </div>
+
+                                <div class="field">
+                                    <label for="tailorSpecialisation">Specialisation</label>
+                                    <select id="tailorSpecialisation" required>
+                                        <option value="">Select specialisation</option>
+                                        <option value="Blouse Stitching">Blouse Stitching</option>
+                                        <option value="Kurti Stitching">Kurti Stitching</option>
+                                        <option value="Lehenga Stitching">Lehenga Stitching</option>
+                                        <option value="Gown Stitching">Gown Stitching</option>
+                                        <option value="Dress Stitching">Dress Stitching</option>
+                                        <option value="Alterations">Alterations</option>
+                                        <option value="Embroidery">Embroidery</option>
+                                        <option value="General Tailoring">General Tailoring</option>
+                                    </select>
+                                </div>
+
+                                <div class="field full">
+                                    <label for="tailorNotes">Additional details</label>
+                                    <textarea id="tailorNotes"
+                                        placeholder="Optional notes about the tailor"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="tailorSubmitButton">
+                                    <i data-lucide="user-plus"></i> Add Tailor
+                                </button>
+                                <button type="button" class="btn btn-secondary"
+                                    id="tailorCancelButton" onclick="resetTailorForm()" hidden>
+                                    Cancel Edit
+                                </button>
+                            </div>
+
+                            <p id="tailorMessage" class="message" role="status"></p>
+                        </form>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Tailoring Team</h2>
+                                <p>View team details and assigned custom orders.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <input type="search" class="search-input"
+                                id="tailorSearch" placeholder="Search tailors...">
+                            <span class="muted" id="tailorCount">0 tailors</span>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Tailor ID</th>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>Specialisation</th>
+                                        <th>Assigned Orders</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tailorsTable">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">Tailor details will appear here.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Assign an Order</h2>
+                                <p>Assign a custom order to a tailor.</p>
+                            </div>
+                        </div>
+
+                        <form id="assignmentForm">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="assignmentTailor">Select tailor</label>
+                                    <select id="assignmentTailor" required>
+                                        <option value="">Choose a tailor</option>
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <label for="assignmentOrder">Select order</label>
+                                    <select id="assignmentOrder" required>
+                                        <option value="">Choose an order</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i data-lucide="clipboard-check"></i> Assign Order
+                            </button>
+
+                            <p id="assignmentMessage" class="message" role="status"></p>
+                        </form>
+                    </div>
+                </section>
+
+
+                <!-- PAYMENTS -->
+
+                
+                <section id="payments" class="admin-page page-content" hidden>
+
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">BUSINESS OVERVIEW</span>
+                            <h1>Payments</h1>
+                            <p>Track order amounts, payment methods and payment status.</p>
+                        </div>
+                    </div>
+
+                    <div class="payment-summary-grid">
+
+                        <div class="payment-summary-card">
+                            <div class="payment-card-icon">
+                                <i data-lucide="receipt"></i>
+                            </div>
+                            <div>
+                                <p>Total Orders</p>
+                                <h2 id="paymentTotalOrders">0</h2>
+                                <span>Orders received</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-summary-card">
+                            <div class="payment-card-icon">
+                                <i data-lucide="wallet"></i>
+                            </div>
+                            <div>
+                                <p>Total Order Value</p>
+                                <h2 id="paymentTotalAmount">₹0.00</h2>
+                                <span>Value of all orders</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-summary-card">
+                            <div class="payment-card-icon paid-icon">
+                                <i data-lucide="badge-check"></i>
+                            </div>
+                            <div>
+                                <p>Marked as Paid</p>
+                                <h2 id="paymentPaidAmount">₹0.00</h2>
+                                <span>Payments confirmed</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-summary-card">
+                            <div class="payment-card-icon pending-icon">
+                                <i data-lucide="clock"></i>
+                            </div>
+                            <div>
+                                <p>Pending Payments</p>
+                                <h2 id="paymentPendingAmount">₹0.00</h2>
+                                <span>Awaiting confirmation</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="content-card payment-records-card">
+
+                        <div class="payment-records-heading">
+                            <div>
+                                <span class="eyebrow">PAYMENT MANAGEMENT</span>
+                                <h2>Order Payment Records</h2>
+                                <p>Review customer payments and update their status.</p>
+                            </div>
+
+                            <div class="payment-records-count">
+                                <i data-lucide="file-text"></i>
+                                <span>Order Records</span>
+                            </div>
+                        </div>
+
+                        <div class="payments-table-container">
+                            <table class="payments-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Outfit</th>
+                                        <th>Payment Method</th>
+                                        <th>Amount</th>
+                                        <th>Payment Status</th>
+                                        <th>Update Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="paymentsTable">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">
+                                            Loading payment records...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="payment-information">
+                            <i data-lucide="info"></i>
+                            <p>
+                                Payment statuses are maintained manually by the boutique.
+                                No online payment is processed here.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- REVIEWS -->
+                <section id="reviews" class="admin-page page-content" hidden>
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">CUSTOMER FEEDBACK</span>
+                            <h1>Reviews</h1>
+                            <p>Read and manage feedback shared by your customers.</p>
+                        </div>
+                    </div>
+
+                    <div class="review-stats-grid">
+                        <div class="review-stat-card">
+                            <span>Total Reviews</span>
+                            <strong id="adminReviewCount">0</strong>
+                            <small>Customer feedback received</small>
+                        </div>
+                        <div class="review-stat-card">
+                            <span>Average Rating</span>
+                            <strong id="adminAverageRating">0.0 / 5</strong>
+                            <small id="adminReviewStars">☆☆☆☆☆</small>
+                        </div>
+                    </div>
+
+                    <div class="content-card admin-reviews-card">
+                        <div class="section-heading">
+                            <div>
+                                <h2>Customer Feedback</h2>
+                                <p>Reviews submitted through the customer website.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="admin-reviews-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Rating</th>
+                                        <th>Review</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminReviewsTable">
+                                    <tr><td colspan="5" class="empty-state">No reviews available yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <!-- OFFERS -->
+
+                <section id="offers" class="admin-page page-content" hidden>
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">SPECIAL COLLECTIONS</span>
+                            <h1>Offers</h1>
+                            <p>Manage boutique promotions and offers.</p>
+                        </div>
+                    </div>
+                    <div class="section-placeholder">
+                        <div class="placeholder-icon"><i data-lucide="tag"></i></div>
+                        <h2>Offer Management</h2>
+                        <p>Boutique promotions and offers can be managed here in a future update.</p>
+                    </div>
+                </section>
+
+
+                <!-- SETTINGS -->
+
+                <section id="settings" class="admin-page page-content" hidden>
+                    <div class="page-heading">
+                        <div>
+                            <span class="eyebrow">WORKSPACE PREFERENCES</span>
+                            <h1>Settings</h1>
+                            <p>Manage your boutique workspace preferences.</p>
+                        </div>
+                    </div>
+                    <div class="section-placeholder">
+                        <div class="placeholder-icon"><i data-lucide="settings"></i></div>
+                        <h2>Admin Settings</h2>
+                        <p>Workspace settings can be added here as the boutique grows.</p>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </section>
+
+    <script src="/admin.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
+
+</body>
+</html>

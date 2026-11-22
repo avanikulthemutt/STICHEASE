@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard | Stitchease</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/customer-tracking.css">
+</head>
+
+<body>
+
+<header class="track-header">
+    <a href="/" class="brand">
+        Stitchease
+        <span>YOUR STYLE, YOUR WAY</span>
+    </a>
+
+    <a href="/" class="back-link">← Back to Website</a>
+</header>
+
+<main class="track-main">
+
+    <!-- DASHBOARD INTRODUCTION -->
+    <section class="track-intro">
+        <span class="eyebrow">CUSTOMER DASHBOARD</span>
+        <h1>Your Stitchease Experience</h1>
+        <p>Track your orders and share your boutique experience with us.</p>
+    </section>
+
+    <!-- ORDER TRACKING -->
+    <section id="trackingSection">
+
+        <div class="track-intro">
+            <span class="eyebrow">ORDER MANAGEMENT</span>
+            <h2>Track My Order</h2>
+            <p>Stay updated on the progress of your custom outfit.</p>
+        </div>
+
+        <div class="track-search-card">
+            <form id="trackForm">
+
+                <label for="orderId">Enter Your Order ID</label>
+
+                <div class="search-row">
+                    <input
+                        type="number"
+                        id="orderId"
+                        placeholder="Example: 101"
+                        min="1"
+                        required
+                    >
+
+                    <button type="submit" id="trackButton">
+                        Track Order
+                    </button>
+                </div>
+
+                <p class="helper-text">
+                    Enter the order ID provided when you placed your order.
+                </p>
+
+                <p id="trackMessage" class="message" aria-live="polite"></p>
+
+            </form>
+        </div>
+
+        <!-- ORDER DETAILS -->
+        <section id="orderResult" class="order-result" hidden>
+
+            <div class="result-heading">
+                <div>
+                    <span class="eyebrow">ORDER DETAILS</span>
+                    <h2 id="outfitName">Custom Outfit</h2>
+                    <p id="orderNumber"></p>
+                </div>
+
+                <span id="currentStatus" class="status-pill">
+                    Placed
+                </span>
+            </div>
+
+            <div id="orderDetails" class="detail-grid"></div>
+
+            <!-- ORDER STATUS TIMELINE -->
+            <div class="timeline-section">
+                <span class="eyebrow">STITCHING JOURNEY</span>
+                <h3>Order Progress</h3>
+
+                <div id="statusTimeline" class="timeline"></div>
+            </div>
+
+        </section>
+
+        <p class="privacy-note">
+            Your order information is displayed only after verifying your customer account.
+        </p>
+
+    </section>
+
+    <!-- SHARE FEEDBACK -->
+    <section id="feedbackSection" style="margin-top: 65px;">
+
+        <div class="track-intro">
+            <span class="eyebrow">WE VALUE YOUR EXPERIENCE</span>
+            <h2>Share Your Feedback</h2>
+            <p>Your feedback helps us improve our boutique services.</p>
+        </div>
+
+        <div class="track-search-card">
+
+            <form id="customerReviewForm">
+
+                <label for="customerReviewRating">
+                    Rate Your Boutique Experience
+                </label>
+
+                <select
+                    id="customerReviewRating"
+                    required
+                    style="width:100%; padding:14px; border:1px solid #d9c9c1; border-radius:10px; font:inherit; margin-bottom:20px;"
+                >
+                    <option value="">Select your rating</option>
+                    <option value="5">★★★★★ - Excellent</option>
+                    <option value="4">★★★★☆ - Very Good</option>
+                    <option value="3">★★★☆☆ - Good</option>
+                    <option value="2">★★☆☆☆ - Average</option>
+                    <option value="1">★☆☆☆☆ - Needs Improvement</option>
+                </select>
+
+                <label for="customerReviewText">
+                    Tell Us About Your Experience
+                </label>
+
+                <textarea
+                    id="customerReviewText"
+                    rows="5"
+                    maxlength="1000"
+                    placeholder="Share your thoughts about our designs, stitching quality, service and overall experience..."
+                    required
+                    style="width:100%; padding:14px; border:1px solid #d9c9c1; border-radius:10px; font:inherit; resize:vertical; margin-bottom:18px;"
+                ></textarea>
+
+                <button
+                    type="submit"
+                    id="submitReviewButton"
+                    style="min-height:48px; width:100%;"
+                >
+                    Submit Feedback
+                </button>
+
+                <p
+                    id="customerReviewMessage"
+                    class="message"
+                    aria-live="polite"
+                ></p>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer style="text-align:center; padding:25px; color:#817873; font-size:13px;">
+    © 2026 Stitchease. Your Style, Your Way.
+</footer>
+
+<script src="/customer-tracking.js"></script>
+
+</body>
+</html>

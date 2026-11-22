@@ -21,6 +21,11 @@ def customer_home():
     return send_from_directory(app.root_path, "index.html")
 
 
+@app.route("/customer")
+def customer_dashboard():
+    return send_from_directory(app.root_path, "index.html")
+
+
 @app.route("/about")
 def about_page():
     return send_from_directory(app.root_path, "about.html")
