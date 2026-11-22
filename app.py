@@ -1,8 +1,9 @@
+
 import os
 import mysql.connector
 import secrets
 
-from datetime import date, time, datetime
+from datetime import date, time, datetime, timedelta
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, session, send_from_directory
 from flask_cors import CORS
@@ -115,14 +116,31 @@ def admin_required():
     return session.get("admin_id") is not None
 
 
+# ---------------- DATE AND TIME CONVERSION ----------------
+
 def convert_dates(record):
-    """Convert MySQL date/time values into JSON-friendly strings."""
+    """Convert MySQL date, time and timedelta values into JSON-friendly strings."""
     if not record:
         return record
 
     for key, value in record.items():
-        if isinstance(value, (date, time, datetime)):
+
+        # MySQL TIME columns can be returned as datetime.timedelta.
+        # Convert them into HH:MM:SS strings before sending JSON.
+        if isinstance(value, timedelta):
+            total_seconds = int(value.total_seconds())
+            sign = "-" if total_seconds < 0 else ""
+
+            hours, remainder = divmod(abs(total_seconds), 3600)
+            minutes, seconds = divmod(remainder, 60)
+
+            record[key] = (
+                f"{sign}{hours:02d}:{minutes:02d}:{seconds:02d}"
+            )
+
+        elif isinstance(value, (date, time, datetime)):
             record[key] = value.isoformat()
+
         elif key == "estimated_price" and value is not None:
             record[key] = float(value)
 
