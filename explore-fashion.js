@@ -1,16 +1,10 @@
 
 /* =========================================
    STITCHEASE - CUSTOMISATION STUDIO
-   Improved fashion preview
-   Measurement-based proportions
-   Price estimation
-   AI style suggestions
-   Saved designs
-   Book a fitting
+   Complete version with Saved Designs Gallery
 ========================================= */
 
 const $ = id => document.getElementById(id);
-
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 const design = {
@@ -75,14 +69,14 @@ const emptyMeasurements = {
     garmentLength: null
 };
 
-let savedDesigns = readSavedDesigns();
-let measurements = readSavedMeasurements();
 let fitPreference = "Regular";
+let measurements = readSavedMeasurements();
+let savedDesigns = readSavedDesigns();
 let toastTimer = null;
 
 
 /* =========================================
-   REMOVE OLD REFERENCE AND FACE FEATURES
+   REMOVE OLD PHOTO AND FACE FEATURES
 ========================================= */
 
 function removeUnwantedFeatures() {
@@ -91,10 +85,7 @@ function removeUnwantedFeatures() {
 
         if (input) {
             const card = input.closest(".ai-card");
-
-            if (card) {
-                card.remove();
-            }
+            if (card) card.remove();
         }
     });
 
@@ -105,12 +96,9 @@ function removeUnwantedFeatures() {
 
         if (heading) {
             const title = heading.querySelector("h2");
-
-            if (title) {
-                title.textContent = "Style Studio";
-            }
-
             const description = heading.querySelector("p");
+
+            if (title) title.textContent = "Style Studio";
 
             if (description) {
                 description.textContent =
@@ -132,7 +120,8 @@ function readSavedDesigns() {
         );
 
         return Array.isArray(data) ? data : [];
-    } catch {
+    } catch (error) {
+        console.error("Could not read saved designs:", error);
         return [];
     }
 }
@@ -161,7 +150,7 @@ function readSavedMeasurements() {
         }
 
         return data && typeof data === "object" ? data : {};
-    } catch {
+    } catch (error) {
         return {};
     }
 }
@@ -182,12 +171,11 @@ function saveMeasurementsToStorage() {
 
 
 /* =========================================
-   TOAST
+   TOAST MESSAGE
 ========================================= */
 
 function showToast(message) {
     const toast = $("toast");
-
     if (!toast) return;
 
     toast.textContent = message;
@@ -207,7 +195,6 @@ function showToast(message) {
 
 function createColourSwatches() {
     const container = $("colourSwatches");
-
     if (!container) return;
 
     container.innerHTML = colours.map(colour => `
@@ -301,7 +288,6 @@ function getMeasurementValuesFromInputs() {
 
     for (const [key, elementId] of Object.entries(measurementFields)) {
         const input = $(elementId);
-
         if (!input) continue;
 
         const rawValue = input.value.trim();
@@ -335,7 +321,6 @@ function getMeasurementValuesFromInputs() {
 function loadMeasurementsIntoInputs() {
     for (const [key, elementId] of Object.entries(measurementFields)) {
         const input = $(elementId);
-
         if (!input) continue;
 
         const value = measurements[key];
@@ -359,10 +344,12 @@ function hasMeasurements() {
 
 function applyMeasurements(showMessage = true) {
     try {
-        measurements = getMeasurementValuesFromInputs();
+        measurements = {
+            ...emptyMeasurements,
+            ...getMeasurementValuesFromInputs()
+        };
 
-        fitPreference =
-            $("fitPreference")?.value || "Regular";
+        fitPreference = $("fitPreference")?.value || "Regular";
 
         saveMeasurementsToStorage();
         renderDesign();
@@ -372,8 +359,10 @@ function applyMeasurements(showMessage = true) {
         ).length;
 
         if (enteredCount === 0) {
-            $("measurementStatus").textContent =
-                "No measurements entered. The preview is using standard proportions.";
+            if ($("measurementStatus")) {
+                $("measurementStatus").textContent =
+                    "No measurements entered. The preview is using standard proportions.";
+            }
 
             if (showMessage) {
                 showToast("Enter measurements to personalise your preview.");
@@ -382,8 +371,10 @@ function applyMeasurements(showMessage = true) {
             return true;
         }
 
-        $("measurementStatus").textContent =
-            `${enteredCount} measurement(s) applied. Your preview has been adjusted.`;
+        if ($("measurementStatus")) {
+            $("measurementStatus").textContent =
+                `${enteredCount} measurement(s) applied. Your preview has been adjusted.`;
+        }
 
         if (showMessage) {
             showToast("Your measurements have been applied!");
@@ -396,9 +387,7 @@ function applyMeasurements(showMessage = true) {
             $("measurementStatus").textContent = error.message;
         }
 
-        if (showMessage) {
-            showToast(error.message);
-        }
+        if (showMessage) showToast(error.message);
 
         return false;
     }
@@ -415,8 +404,10 @@ $("clearMeasurements")?.addEventListener("click", () => {
     loadMeasurementsIntoInputs();
     saveMeasurementsToStorage();
 
-    $("measurementStatus").textContent =
-        "Measurements cleared. The preview is using standard proportions.";
+    if ($("measurementStatus")) {
+        $("measurementStatus").textContent =
+            "Measurements cleared. The preview is using standard proportions.";
+    }
 
     renderDesign();
     showToast("Measurements cleared.");
@@ -476,16 +467,11 @@ function getPreviewScales() {
         1.35
     );
 
-    return {
-        widthScale,
-        lengthScale,
-        sleeveScale
-    };
+    return { widthScale, lengthScale, sleeveScale };
 }
 
 function updateMeasurementPreview() {
     const group = $("garmentGroup");
-
     if (!group) return;
 
     const scales = getPreviewScales();
@@ -530,6 +516,7 @@ function createSVGElement(tag, attributes = {}) {
 
 function getOrCreateBottomGroup() {
     const group = $("garmentGroup");
+    if (!group) return null;
 
     let bottomGroup = $("separateBottom");
 
@@ -547,29 +534,7 @@ function getOrCreateBottomGroup() {
 function clearBottomGroup() {
     const group = $("separateBottom");
 
-    if (group) {
-        group.innerHTML = "";
-    }
-}
-
-function addBottomGarment(pathData, colour) {
-    const group = getOrCreateBottomGroup();
-
-    const base = createSVGElement("path", {
-        d: pathData,
-        fill: colour,
-        stroke: "rgba(0,0,0,0.08)",
-        "stroke-width": "1"
-    });
-
-    const pattern = createSVGElement("path", {
-        d: pathData,
-        fill: getPatternFill(),
-        "pointer-events": "none"
-    });
-
-    group.appendChild(base);
-    group.appendChild(pattern);
+    if (group) group.innerHTML = "";
 }
 
 function getPatternFill() {
@@ -582,6 +547,24 @@ function getPatternFill() {
     }
 
     return "none";
+}
+
+function addBottomGarment(pathData, colour) {
+    const group = getOrCreateBottomGroup();
+    if (!group) return;
+
+    group.appendChild(createSVGElement("path", {
+        d: pathData,
+        fill: colour,
+        stroke: "rgba(0,0,0,0.08)",
+        "stroke-width": "1"
+    }));
+
+    group.appendChild(createSVGElement("path", {
+        d: pathData,
+        fill: getPatternFill(),
+        "pointer-events": "none"
+    }));
 }
 
 
@@ -654,16 +637,8 @@ function getCoOrdBottomPaths() {
     ];
 }
 
-function getLehengaPath() {
-    return `
-        M92 103
-        Q130 91 168 103
-        L160 170
-        L205 365
-        L55 365
-        L100 170
-        Z
-    `;
+function getBlouseForLehengaPath() {
+    return getBlousePath();
 }
 
 function getSleevePaths() {
@@ -716,8 +691,9 @@ function renderGarment() {
 
     if (design.garment === "Blouse") {
         garmentPath = getBlousePath();
+
     } else if (design.garment === "Lehenga") {
-        garmentPath = getBlousePath();
+        garmentPath = getBlouseForLehengaPath();
 
         const skirtPath = `
             M96 226
@@ -739,14 +715,14 @@ function renderGarment() {
 
         const bottomGroup = $("separateBottom");
 
-        const waistBand = createSVGElement("path", {
-            d: "M87 226 Q130 237 173 226 L174 239 Q130 250 86 239Z",
-            fill: colour,
-            stroke: "#FCE9A5",
-            "stroke-width": "2"
-        });
-
-        bottomGroup.appendChild(waistBand);
+        if (bottomGroup) {
+            bottomGroup.appendChild(createSVGElement("path", {
+                d: "M87 226 Q130 237 173 226 L174 239 Q130 250 86 239Z",
+                fill: colour,
+                stroke: "#FCE9A5",
+                "stroke-width": "2"
+            }));
+        }
 
     } else {
         garmentPath = getKurtiPath();
@@ -760,15 +736,18 @@ function renderGarment() {
 
     const sleeves = getSleevePaths();
 
-    leftSleeve.setAttribute("d", sleeves[0]);
-    rightSleeve.setAttribute("d", sleeves[1]);
+    if (leftSleeve) {
+        leftSleeve.setAttribute("d", sleeves[0]);
+        leftSleeve.setAttribute("fill", colour);
+    }
 
-    leftSleeve.setAttribute("fill", colour);
-    rightSleeve.setAttribute("fill", colour);
+    if (rightSleeve) {
+        rightSleeve.setAttribute("d", sleeves[1]);
+        rightSleeve.setAttribute("fill", colour);
+    }
 
-    neck.setAttribute("d", getNeckPath());
+    if (neck) neck.setAttribute("d", getNeckPath());
 
-    // Add a small gold waist detail for a more finished look.
     let waistDetail = $("waistDetail");
 
     if (!waistDetail) {
@@ -779,7 +758,7 @@ function renderGarment() {
             "stroke-width": "2"
         });
 
-        $("garmentGroup").appendChild(waistDetail);
+        $("garmentGroup")?.appendChild(waistDetail);
     }
 
     if (
@@ -795,7 +774,7 @@ function renderGarment() {
         );
 
         waistDetail.style.display = "block";
-    } else {
+    } else if (waistDetail) {
         waistDetail.style.display = "none";
     }
 }
@@ -884,8 +863,10 @@ function initialiseStyleSuggestions() {
 
             const occasion = button.dataset.occasion;
 
-            $("styleSuggestion").textContent =
-                styleSuggestions[occasion] || "";
+            if ($("styleSuggestion")) {
+                $("styleSuggestion").textContent =
+                    styleSuggestions[occasion] || "";
+            }
         });
     });
 
@@ -900,7 +881,7 @@ function initialiseStyleSuggestions() {
 
 
 /* =========================================
-   SAVE DESIGN
+   SAVED DESIGNS - DATA
 ========================================= */
 
 function getMeasurementCopy() {
@@ -920,6 +901,7 @@ function getDesignCopy() {
         garment: design.garment,
         fabric: design.fabric,
         colour: design.colourName,
+        colourHex: design.colour,
         neckline: design.neckline,
         sleeves: design.sleeves,
         length: design.length,
@@ -928,7 +910,74 @@ function getDesignCopy() {
     };
 }
 
-$("saveDesign")?.addEventListener("click", () => {
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[character]);
+}
+
+
+/* =========================================
+   SAVED DESIGN PREVIEW
+========================================= */
+
+function createSavedDesignPreview(item) {
+    const d = item.details || {};
+
+    const colour = /^#[0-9A-F]{6}$/i.test(d.colourHex || "")
+        ? d.colourHex
+        : colours.find(c => c.name === d.colour)?.value || "#0B3D5C";
+
+    let outfit = "";
+
+    if (d.garment === "Co-ord set") {
+        outfit = `
+            <path d="M65 35 Q100 20 135 35 L130 90
+                L145 110 L55 110 L70 90Z" fill="${colour}"/>
+            <path d="M60 110 L95 110 L90 220 L62 220Z"
+                fill="${colour}"/>
+            <path d="M105 110 L140 110 L138 220 L110 220Z"
+                fill="${colour}"/>
+        `;
+    } else if (d.garment === "Lehenga") {
+        outfit = `
+            <path d="M65 35 Q100 20 135 35 L130 90
+                L145 105 L55 105 L70 90Z" fill="${colour}"/>
+            <path d="M65 105 Q100 120 135 105 L170 220
+                L30 220Z" fill="${colour}"/>
+        `;
+    } else {
+        const bottom = d.garment === "Blouse" ? 145 : 220;
+
+        outfit = `
+            <path d="M65 35 Q100 20 135 35 L130 90
+                L145 ${bottom} L55 ${bottom} L70 90Z"
+                fill="${colour}"/>
+        `;
+    }
+
+    return `
+        <svg viewBox="0 0 200 250"
+            role="img"
+            aria-label="${escapeHTML(d.garment || "Outfit")} preview"
+            style="width:100%;height:210px;display:block;
+            background:#F5F3EC;border-radius:14px;">
+            <ellipse cx="100" cy="232" rx="65" ry="6" fill="#D9D0BA"/>
+            ${outfit}
+        </svg>
+    `;
+}
+
+
+/* =========================================
+   SAVE DESIGN
+========================================= */
+
+function saveCurrentDesign() {
     if (!applyMeasurements(false)) return;
 
     const item = {
@@ -943,16 +992,24 @@ $("saveDesign")?.addEventListener("click", () => {
     saveDesignsToStorage();
     displaySavedDesigns();
 
-    showToast("Your design and measurements have been saved!");
-});
+    showToast("Your design has been saved!");
+}
+
+$("saveDesign")?.addEventListener("click", saveCurrentDesign);
+
+
+/* =========================================
+   DISPLAY SAVED DESIGNS GALLERY
+========================================= */
 
 function displaySavedDesigns() {
     const container = $("savedDesigns");
-
     if (!container) return;
 
-    if ($("savedCount")) {
-        $("savedCount").textContent =
+    const count = $("savedCount");
+
+    if (count) {
+        count.textContent =
             `${savedDesigns.length} ${savedDesigns.length === 1 ? "design" : "designs"} saved`;
     }
 
@@ -970,6 +1027,10 @@ function displaySavedDesigns() {
         const d = item.details || {};
         const m = d.measurements || {};
 
+        const date = item.createdAt
+            ? new Date(item.createdAt).toLocaleDateString("en-IN")
+            : "";
+
         const measurementSummary = [
             m.bust != null ? `Bust: ${m.bust} cm` : null,
             m.waist != null ? `Waist: ${m.waist} cm` : null,
@@ -981,27 +1042,59 @@ function displaySavedDesigns() {
 
         return `
             <article class="saved-card">
-                <h3>${escapeHTML(d.garment || "Custom outfit")}</h3>
 
-                <p>
-                    ${escapeHTML(d.fabric || "")} · ${escapeHTML(d.colour || "")}<br>
-                    ${escapeHTML(d.neckline || "")} neckline ·
-                    ${escapeHTML(d.sleeves || "")} sleeves<br>
-                    ${escapeHTML(d.length || "")} ·
-                    ${escapeHTML(d.print || "")}
-                </p>
+                ${createSavedDesignPreview(item)}
 
-                ${
-                    measurementSummary.length
-                        ? `<p><b>Measurements:</b><br>${measurementSummary.map(escapeHTML).join("<br>")}<br>Fit: ${escapeHTML(m.fitPreference || "Regular")}</p>`
-                        : `<p>No measurements added.</p>`
-                }
+                <div class="saved-card-content">
 
-                <strong>${formatMoney(item.price || 0)}</strong>
+                    <h3>${escapeHTML(d.garment || "Custom outfit")}</h3>
 
-                <button type="button" data-remove-design="${Number(item.id)}">
-                    Remove design
-                </button>
+                    <p>
+                        ${escapeHTML(d.fabric || "")} ·
+                        ${escapeHTML(d.colour || "")}
+                    </p>
+
+                    <p>
+                        ${escapeHTML(d.neckline || "")} neckline ·
+                        ${escapeHTML(d.sleeves || "")} sleeves
+                    </p>
+
+                    <p>
+                        ${escapeHTML(d.length || "")} ·
+                        ${escapeHTML(d.print || "")}
+                    </p>
+
+                    ${
+                        measurementSummary.length
+                            ? `<p><strong>Measurements:</strong><br>${measurementSummary.map(escapeHTML).join("<br>")}</p>`
+                            : `<p>No measurements added.</p>`
+                    }
+
+                    <p>Fit: ${escapeHTML(m.fitPreference || "Regular")}</p>
+
+                    <h3>${formatMoney(item.price || 0)}</h3>
+
+                    <small>Saved on ${escapeHTML(date)}</small>
+
+                    <div class="saved-card-actions">
+
+                        <button
+                            type="button"
+                            class="gold-button"
+                            data-edit-design="${Number(item.id)}">
+                            Edit design
+                        </button>
+
+                        <button
+                            type="button"
+                            class="outline-button"
+                            data-remove-design="${Number(item.id)}">
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
             </article>
         `;
     }).join("");
@@ -1011,17 +1104,18 @@ function displaySavedDesigns() {
             removeSavedDesign(Number(button.dataset.removeDesign));
         });
     });
+
+    container.querySelectorAll("[data-edit-design]").forEach(button => {
+        button.addEventListener("click", () => {
+            editSavedDesign(Number(button.dataset.editDesign));
+        });
+    });
 }
 
-function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, character => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-    })[character]);
-}
+
+/* =========================================
+   DELETE SAVED DESIGN
+========================================= */
 
 function removeSavedDesign(id) {
     savedDesigns = savedDesigns.filter(item => item.id !== id);
@@ -1029,7 +1123,63 @@ function removeSavedDesign(id) {
     saveDesignsToStorage();
     displaySavedDesigns();
 
-    showToast("Saved design removed.");
+    showToast("Saved design deleted.");
+}
+
+
+/* =========================================
+   EDIT SAVED DESIGN
+========================================= */
+
+function editSavedDesign(id) {
+    const item = savedDesigns.find(item => item.id === id);
+
+    if (!item || !item.details) return;
+
+    const d = item.details;
+
+    design.garment = d.garment || "Kurti";
+    design.fabric = d.fabric || "Cotton";
+    design.colourName = d.colour || "Navy";
+
+    design.colour =
+        d.colourHex ||
+        colours.find(c => c.name === design.colourName)?.value ||
+        "#0B3D5C";
+
+    design.neckline = d.neckline || "Round";
+    design.sleeves = d.sleeves || "Sleeveless";
+    design.length = d.length || "Knee length";
+    design.print = d.print || "Plain";
+
+    measurements = {
+        ...emptyMeasurements,
+        ...(d.measurements || {})
+    };
+
+    fitPreference = d.measurements?.fitPreference || "Regular";
+
+    document.querySelectorAll("[data-key]").forEach(button => {
+        const key = button.dataset.key;
+
+        if (Object.prototype.hasOwnProperty.call(design, key)) {
+            button.classList.toggle(
+                "active",
+                button.dataset.value === design[key]
+            );
+        }
+    });
+
+    loadMeasurementsIntoInputs();
+    createColourSwatches();
+    renderDesign();
+
+    showToast("Design loaded! You can continue customising it.");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
 
@@ -1073,7 +1223,6 @@ function initialiseMeasurements() {
         ...measurements
     };
 
-    // Keep only the supported fit choices.
     if (!["Regular", "Slim", "Relaxed"].includes(fitPreference)) {
         fitPreference = "Regular";
     }
