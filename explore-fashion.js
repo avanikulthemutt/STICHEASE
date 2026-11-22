@@ -1,16 +1,17 @@
 
 /* =========================================
    STITCHEASE - CUSTOMISATION STUDIO
-   Custom outfit preview
+   Improved fashion preview
    Measurement-based proportions
    Price estimation
    AI style suggestions
-   Reference photo colour extraction
-   MediaPipe face analysis
    Saved designs
+   Book a fitting
 ========================================= */
 
 const $ = id => document.getElementById(id);
+
+const SVG_NS = "http://www.w3.org/2000/svg";
 
 const design = {
     garment: "Kurti",
@@ -65,13 +66,59 @@ const measurementLimits = {
     garmentLength: [1, 100]
 };
 
-let savedDesigns = readSavedDesigns();
-let faceLandmarker = null;
-let facePhoto = null;
-let toastTimer = null;
+const emptyMeasurements = {
+    bust: null,
+    waist: null,
+    hip: null,
+    shoulder: null,
+    sleeve: null,
+    garmentLength: null
+};
 
+let savedDesigns = readSavedDesigns();
 let measurements = readSavedMeasurements();
 let fitPreference = "Regular";
+let toastTimer = null;
+
+
+/* =========================================
+   REMOVE OLD REFERENCE AND FACE FEATURES
+========================================= */
+
+function removeUnwantedFeatures() {
+    ["referenceUpload", "faceUpload"].forEach(id => {
+        const input = $(id);
+
+        if (input) {
+            const card = input.closest(".ai-card");
+
+            if (card) {
+                card.remove();
+            }
+        }
+    });
+
+    const aiPanel = document.querySelector(".ai-panel");
+
+    if (aiPanel) {
+        const heading = aiPanel.querySelector(".panel-heading");
+
+        if (heading) {
+            const title = heading.querySelector("h2");
+
+            if (title) {
+                title.textContent = "Style Studio";
+            }
+
+            const description = heading.querySelector("p");
+
+            if (description) {
+                description.textContent =
+                    "Ideas and inspiration for your design";
+            }
+        }
+    }
+}
 
 
 /* =========================================
@@ -108,6 +155,11 @@ function readSavedMeasurements() {
             localStorage.getItem("stitcheaseMeasurements") || "{}"
         );
 
+        if (data && data.values) {
+            fitPreference = data.fitPreference || "Regular";
+            return data.values;
+        }
+
         return data && typeof data === "object" ? data : {};
     } catch {
         return {};
@@ -130,11 +182,13 @@ function saveMeasurementsToStorage() {
 
 
 /* =========================================
-   TOAST MESSAGE
+   TOAST
 ========================================= */
 
 function showToast(message) {
     const toast = $("toast");
+
+    if (!toast) return;
 
     toast.textContent = message;
     toast.classList.add("show");
@@ -153,6 +207,8 @@ function showToast(message) {
 
 function createColourSwatches() {
     const container = $("colourSwatches");
+
+    if (!container) return;
 
     container.innerHTML = colours.map(colour => `
         <button
@@ -184,64 +240,48 @@ function createColourSwatches() {
 
 
 /* =========================================
-   OPTION BUTTONS
+   DESIGN OPTION BUTTONS
 ========================================= */
 
-document.querySelectorAll("[data-key]").forEach(button => {
-    button.addEventListener("click", () => {
+function initialiseDesignOptions() {
+    document.querySelectorAll("[data-key]").forEach(button => {
         const key = button.dataset.key;
-        const value = button.dataset.value;
 
-        if (!Object.prototype.hasOwnProperty.call(design, key)) {
-            return;
+        if (Object.prototype.hasOwnProperty.call(design, key)) {
+            button.classList.toggle(
+                "active",
+                button.dataset.value === design[key]
+            );
         }
 
-        design[key] = value;
+        button.addEventListener("click", () => {
+            const optionKey = button.dataset.key;
+            const value = button.dataset.value;
 
-        document.querySelectorAll(`[data-key="${key}"]`).forEach(option => {
-            option.classList.toggle(
-                "active",
-                option.dataset.value === value
-            );
+            if (!Object.prototype.hasOwnProperty.call(design, optionKey)) {
+                return;
+            }
+
+            design[optionKey] = value;
+
+            document.querySelectorAll(
+                `[data-key="${optionKey}"]`
+            ).forEach(option => {
+                option.classList.toggle(
+                    "active",
+                    option.dataset.value === value
+                );
+            });
+
+            renderDesign();
         });
-
-        renderDesign();
     });
-});
+}
 
 
 /* =========================================
    MEASUREMENTS
 ========================================= */
-
-function getMeasurementValuesFromInputs() {
-    const values = {};
-
-    for (const [key, elementId] of Object.entries(measurementFields)) {
-        const input = $(elementId);
-        const rawValue = input.value.trim();
-
-        if (rawValue === "") {
-            values[key] = null;
-            continue;
-        }
-
-        const number = Number(rawValue);
-        const [minimum, maximum] = measurementLimits[key];
-
-        if (!Number.isFinite(number) || number < minimum || number > maximum) {
-            input.focus();
-
-            throw new Error(
-                `${getMeasurementLabel(key)} must be between ${minimum} and ${maximum} cm.`
-            );
-        }
-
-        values[key] = number;
-    }
-
-    return values;
-}
 
 function getMeasurementLabel(key) {
     const labels = {
@@ -256,27 +296,73 @@ function getMeasurementLabel(key) {
     return labels[key] || key;
 }
 
+function getMeasurementValuesFromInputs() {
+    const values = {};
+
+    for (const [key, elementId] of Object.entries(measurementFields)) {
+        const input = $(elementId);
+
+        if (!input) continue;
+
+        const rawValue = input.value.trim();
+
+        if (rawValue === "") {
+            values[key] = null;
+            continue;
+        }
+
+        const number = Number(rawValue);
+        const [minimum, maximum] = measurementLimits[key];
+
+        if (
+            !Number.isFinite(number) ||
+            number < minimum ||
+            number > maximum
+        ) {
+            input.focus();
+
+            throw new Error(
+                `${getMeasurementLabel(key)} must be between ${minimum} and ${maximum} cm.`
+            );
+        }
+
+        values[key] = number;
+    }
+
+    return values;
+}
+
 function loadMeasurementsIntoInputs() {
     for (const [key, elementId] of Object.entries(measurementFields)) {
         const input = $(elementId);
+
+        if (!input) continue;
+
         const value = measurements[key];
 
-        input.value = value === null || value === undefined ? "" : value;
+        input.value =
+            value === null || value === undefined ? "" : value;
     }
 
-    $("fitPreference").value = fitPreference;
+    if ($("fitPreference")) {
+        $("fitPreference").value = fitPreference;
+    }
 }
 
 function hasMeasurements() {
     return Object.values(measurements).some(
-        value => value !== null && value !== undefined && value !== ""
+        value => value !== null &&
+            value !== undefined &&
+            value !== ""
     );
 }
 
 function applyMeasurements(showMessage = true) {
     try {
         measurements = getMeasurementValuesFromInputs();
-        fitPreference = $("fitPreference").value || "Regular";
+
+        fitPreference =
+            $("fitPreference")?.value || "Regular";
 
         saveMeasurementsToStorage();
         renderDesign();
@@ -290,7 +376,7 @@ function applyMeasurements(showMessage = true) {
                 "No measurements entered. The preview is using standard proportions.";
 
             if (showMessage) {
-                showToast("Enter your measurements to personalise the preview.");
+                showToast("Enter measurements to personalise your preview.");
             }
 
             return true;
@@ -306,7 +392,9 @@ function applyMeasurements(showMessage = true) {
         return true;
 
     } catch (error) {
-        $("measurementStatus").textContent = error.message;
+        if ($("measurementStatus")) {
+            $("measurementStatus").textContent = error.message;
+        }
 
         if (showMessage) {
             showToast(error.message);
@@ -316,20 +404,12 @@ function applyMeasurements(showMessage = true) {
     }
 }
 
-$("applyMeasurements").addEventListener("click", () => {
+$("applyMeasurements")?.addEventListener("click", () => {
     applyMeasurements(true);
 });
 
-$("clearMeasurements").addEventListener("click", () => {
-    measurements = {
-        bust: null,
-        waist: null,
-        hip: null,
-        shoulder: null,
-        sleeve: null,
-        garmentLength: null
-    };
-
+$("clearMeasurements")?.addEventListener("click", () => {
+    measurements = { ...emptyMeasurements };
     fitPreference = "Regular";
 
     loadMeasurementsIntoInputs();
@@ -342,14 +422,13 @@ $("clearMeasurements").addEventListener("click", () => {
     showToast("Measurements cleared.");
 });
 
-$("fitPreference").addEventListener("change", () => {
-    fitPreference = $("fitPreference").value;
+$("fitPreference")?.addEventListener("change", () => {
     applyMeasurements(false);
 });
 
 
 /* =========================================
-   MEASUREMENT-BASED PREVIEW SCALE
+   MEASUREMENT-BASED PROPORTIONS
 ========================================= */
 
 function clamp(value, minimum, maximum) {
@@ -419,26 +498,311 @@ function updateMeasurementPreview() {
     const sleeveTransform =
         `translate(0 108) scale(1 ${scales.sleeveScale}) translate(0 -108)`;
 
-    $("leftSleeve").setAttribute("transform", sleeveTransform);
-    $("rightSleeve").setAttribute("transform", sleeveTransform);
+    $("leftSleeve")?.setAttribute("transform", sleeveTransform);
+    $("rightSleeve")?.setAttribute("transform", sleeveTransform);
 
-    const caption = $("previewCaption");
-
-    if (hasMeasurements()) {
-        caption.textContent =
-            `Measurement-adjusted preview · ${fitPreference} fit · Confirm final fit at boutique`;
-    } else {
-        caption.textContent =
-            "Illustrative design preview · Final fit confirmed at the boutique";
+    if ($("previewCaption")) {
+        $("previewCaption").textContent = hasMeasurements()
+            ? `Measurement-adjusted preview · ${fitPreference} fit · Confirm final fit at boutique`
+            : "Illustrative design preview · Final fit confirmed at the boutique";
     }
 
-    $("previewBadge").textContent =
-        hasMeasurements() ? "Personalised preview" : "Your design preview";
+    if ($("previewBadge")) {
+        $("previewBadge").textContent =
+            hasMeasurements() ? "Personalised preview" : "Your design preview";
+    }
 }
 
 
 /* =========================================
-   PRICE CALCULATION
+   SVG HELPERS
+========================================= */
+
+function createSVGElement(tag, attributes = {}) {
+    const element = document.createElementNS(SVG_NS, tag);
+
+    Object.entries(attributes).forEach(([key, value]) => {
+        element.setAttribute(key, value);
+    });
+
+    return element;
+}
+
+function getOrCreateBottomGroup() {
+    const group = $("garmentGroup");
+
+    let bottomGroup = $("separateBottom");
+
+    if (!bottomGroup) {
+        bottomGroup = createSVGElement("g", {
+            id: "separateBottom"
+        });
+
+        group.insertBefore(bottomGroup, group.firstChild);
+    }
+
+    return bottomGroup;
+}
+
+function clearBottomGroup() {
+    const group = $("separateBottom");
+
+    if (group) {
+        group.innerHTML = "";
+    }
+}
+
+function addBottomGarment(pathData, colour) {
+    const group = getOrCreateBottomGroup();
+
+    const base = createSVGElement("path", {
+        d: pathData,
+        fill: colour,
+        stroke: "rgba(0,0,0,0.08)",
+        "stroke-width": "1"
+    });
+
+    const pattern = createSVGElement("path", {
+        d: pathData,
+        fill: getPatternFill(),
+        "pointer-events": "none"
+    });
+
+    group.appendChild(base);
+    group.appendChild(pattern);
+}
+
+function getPatternFill() {
+    if (design.print === "Gold dots") {
+        return "url(#dotPattern)";
+    }
+
+    if (design.print === "Floral") {
+        return "url(#flowerPattern)";
+    }
+
+    return "none";
+}
+
+
+/* =========================================
+   OUTFIT SHAPES
+========================================= */
+
+function getKurtiPath() {
+    const lengths = {
+        Short: 235,
+        "Knee length": 325,
+        Long: 365
+    };
+
+    const bottom = lengths[design.length] || 325;
+
+    return `
+        M92 103
+        Q130 91 168 103
+        L160 170
+        L190 ${bottom}
+        L70 ${bottom}
+        L100 170
+        Z
+    `;
+}
+
+function getBlousePath() {
+    return `
+        M92 103
+        Q130 91 168 103
+        L160 170
+        L174 238
+        L86 238
+        L100 170
+        Z
+    `;
+}
+
+function getCoOrdTopPath() {
+    return `
+        M92 103
+        Q130 91 168 103
+        L160 170
+        L174 232
+        L86 232
+        L100 170
+        Z
+    `;
+}
+
+function getCoOrdBottomPaths() {
+    return [
+        `
+        M86 226
+        L126 226
+        L120 425
+        L88 425
+        L76 285
+        Z
+        `,
+        `
+        M134 226
+        L174 226
+        L184 285
+        L172 425
+        L140 425
+        Z
+        `
+    ];
+}
+
+function getLehengaPath() {
+    return `
+        M92 103
+        Q130 91 168 103
+        L160 170
+        L205 365
+        L55 365
+        L100 170
+        Z
+    `;
+}
+
+function getSleevePaths() {
+    const options = {
+        Sleeveless: ["", ""],
+
+        Short: [
+            "M92 108 L68 139 L77 158 L108 128Z",
+            "M168 108 L192 139 L183 158 L152 128Z"
+        ],
+
+        "Three-quarter": [
+            "M92 108 L62 184 L78 195 L111 132Z",
+            "M168 108 L198 184 L182 195 L149 132Z"
+        ]
+    };
+
+    return options[design.sleeves] || options.Sleeveless;
+}
+
+function getNeckPath() {
+    const options = {
+        Round: "M111 101 Q130 128 149 101Z",
+        "V-neck": "M111 101 L130 137 L149 101Z",
+        Boat: "M94 106 Q130 122 166 106 Q130 96 94 106Z"
+    };
+
+    return options[design.neckline] || options.Round;
+}
+
+
+/* =========================================
+   RENDER OUTFIT
+========================================= */
+
+function renderGarment() {
+    const colour = design.colour;
+
+    const garment = $("garmentShape");
+    const pattern = $("garmentPattern");
+    const leftSleeve = $("leftSleeve");
+    const rightSleeve = $("rightSleeve");
+    const neck = $("neckShape");
+
+    if (!garment || !pattern) return;
+
+    clearBottomGroup();
+
+    let garmentPath;
+
+    if (design.garment === "Blouse") {
+        garmentPath = getBlousePath();
+    } else if (design.garment === "Lehenga") {
+        garmentPath = getBlousePath();
+
+        const skirtPath = `
+            M96 226
+            Q130 238 164 226
+            L205 365
+            L55 365
+            Z
+        `;
+
+        addBottomGarment(skirtPath, colour);
+
+    } else if (design.garment === "Co-ord set") {
+        garmentPath = getCoOrdTopPath();
+
+        const [leftLeg, rightLeg] = getCoOrdBottomPaths();
+
+        addBottomGarment(leftLeg, colour);
+        addBottomGarment(rightLeg, colour);
+
+        const bottomGroup = $("separateBottom");
+
+        const waistBand = createSVGElement("path", {
+            d: "M87 226 Q130 237 173 226 L174 239 Q130 250 86 239Z",
+            fill: colour,
+            stroke: "#FCE9A5",
+            "stroke-width": "2"
+        });
+
+        bottomGroup.appendChild(waistBand);
+
+    } else {
+        garmentPath = getKurtiPath();
+    }
+
+    garment.setAttribute("d", garmentPath);
+    garment.setAttribute("fill", colour);
+
+    pattern.setAttribute("d", garmentPath);
+    pattern.setAttribute("fill", getPatternFill());
+
+    const sleeves = getSleevePaths();
+
+    leftSleeve.setAttribute("d", sleeves[0]);
+    rightSleeve.setAttribute("d", sleeves[1]);
+
+    leftSleeve.setAttribute("fill", colour);
+    rightSleeve.setAttribute("fill", colour);
+
+    neck.setAttribute("d", getNeckPath());
+
+    // Add a small gold waist detail for a more finished look.
+    let waistDetail = $("waistDetail");
+
+    if (!waistDetail) {
+        waistDetail = createSVGElement("path", {
+            id: "waistDetail",
+            fill: "none",
+            stroke: "#FCE9A5",
+            "stroke-width": "2"
+        });
+
+        $("garmentGroup").appendChild(waistDetail);
+    }
+
+    if (
+        design.garment === "Kurti" ||
+        design.garment === "Lehenga" ||
+        design.garment === "Co-ord set"
+    ) {
+        waistDetail.setAttribute(
+            "d",
+            design.garment === "Co-ord set"
+                ? "M94 225 Q130 237 166 225"
+                : "M100 170 Q130 180 160 170"
+        );
+
+        waistDetail.style.display = "block";
+    } else {
+        waistDetail.style.display = "none";
+    }
+}
+
+
+/* =========================================
+   PRICE ESTIMATION
 ========================================= */
 
 function calculatePrice() {
@@ -462,99 +826,40 @@ function formatMoney(amount) {
 
 
 /* =========================================
-   LIVE GARMENT PREVIEW
+   COMPLETE LIVE PREVIEW
 ========================================= */
 
 function renderDesign() {
-    const colour = design.colour;
+    renderGarment();
 
-    const garment = $("garmentShape");
-    const pattern = $("garmentPattern");
-    const leftSleeve = $("leftSleeve");
-    const rightSleeve = $("rightSleeve");
-    const neck = $("neckShape");
-
-    const garmentLength = {
-        Short: 235,
-        "Knee length": 325,
-        Long: 365
-    }[design.length];
-
-    let garmentPath;
-
-    if (design.garment === "Blouse") {
-        garmentPath =
-            "M92 103 Q130 91 168 103 L160 170 L174 238 L86 238 L100 170Z";
-    } else if (design.garment === "Lehenga") {
-        garmentPath =
-            `M92 103 Q130 91 168 103 L160 170 L205 ${garmentLength} L55 ${garmentLength} L100 170Z`;
-    } else if (design.garment === "Co-ord set") {
-        garmentPath =
-            "M92 103 Q130 91 168 103 L160 170 L174 240 L86 240 L100 170Z";
-    } else {
-        garmentPath =
-            `M92 103 Q130 91 168 103 L160 170 L190 ${garmentLength} L70 ${garmentLength} L100 170Z`;
+    if ($("previewTitle")) {
+        $("previewTitle").textContent =
+            `${design.garment} in ${design.fabric}`;
     }
 
-    garment.setAttribute("d", garmentPath);
-    garment.setAttribute("fill", colour);
-
-    pattern.setAttribute("d", garmentPath);
-
-    if (design.print === "Gold dots") {
-        pattern.setAttribute("fill", "url(#dotPattern)");
-    } else if (design.print === "Floral") {
-        pattern.setAttribute("fill", "url(#flowerPattern)");
-    } else {
-        pattern.setAttribute("fill", "none");
+    if ($("selectedColour")) {
+        $("selectedColour").textContent = design.colourName;
     }
 
-    const sleevePaths = {
-        Sleeveless: ["", ""],
-        Short: [
-            "M92 108 L68 139 L77 158 L108 128Z",
-            "M168 108 L192 139 L183 158 L152 128Z"
-        ],
-        "Three-quarter": [
-            "M92 108 L62 184 L78 195 L111 132Z",
-            "M168 108 L198 184 L182 195 L149 132Z"
-        ]
-    };
-
-    const sleeves = sleevePaths[design.sleeves];
-
-    leftSleeve.setAttribute("d", sleeves[0]);
-    rightSleeve.setAttribute("d", sleeves[1]);
-
-    leftSleeve.setAttribute("fill", colour);
-    rightSleeve.setAttribute("fill", colour);
-
-    const neckPaths = {
-        Round: "M111 101 Q130 128 149 101Z",
-        "V-neck": "M111 101 L130 137 L149 101Z",
-        Boat: "M94 106 Q130 122 166 106 Q130 96 94 106Z"
-    };
-
-    neck.setAttribute("d", neckPaths[design.neckline]);
-
-    $("previewTitle").textContent =
-        `${design.garment} in ${design.fabric}`;
-
-    $("selectedColour").textContent = design.colourName;
-    $("estimatedPrice").textContent = formatMoney(calculatePrice());
+    if ($("estimatedPrice")) {
+        $("estimatedPrice").textContent =
+            formatMoney(calculatePrice());
+    }
 
     updateMeasurementPreview();
 
     const svg = $("outfitSvg");
 
-    svg.classList.remove("pop");
-    void svg.offsetWidth;
-    svg.classList.add("pop");
+    if (svg) {
+        svg.classList.remove("pop");
+        void svg.offsetWidth;
+        svg.classList.add("pop");
+    }
 }
 
 
 /* =========================================
-   STYLE MATCH
+   STYLE SUGGESTIONS
 ========================================= */
 
 const styleSuggestions = {
@@ -568,103 +873,29 @@ const styleSuggestions = {
         "Choose a comfortable cotton outfit in navy, ivory or muted colours. A simple neckline and minimal detailing will create a polished everyday look."
 };
 
-document.querySelectorAll("[data-occasion]").forEach(button => {
-    button.addEventListener("click", () => {
-        document.querySelectorAll("[data-occasion]").forEach(option => {
-            option.classList.remove("active");
+function initialiseStyleSuggestions() {
+    document.querySelectorAll("[data-occasion]").forEach(button => {
+        button.addEventListener("click", () => {
+            document.querySelectorAll("[data-occasion]").forEach(option => {
+                option.classList.remove("active");
+            });
+
+            button.classList.add("active");
+
+            const occasion = button.dataset.occasion;
+
+            $("styleSuggestion").textContent =
+                styleSuggestions[occasion] || "";
         });
+    });
 
-        button.classList.add("active");
+    const defaultSuggestion =
+        document.querySelector("[data-occasion].active");
 
+    if (defaultSuggestion && $("styleSuggestion")) {
         $("styleSuggestion").textContent =
-            styleSuggestions[button.dataset.occasion];
-    });
-});
-
-
-/* =========================================
-   REFERENCE PHOTO PREVIEW
-========================================= */
-
-$("referenceUpload").addEventListener("change", event => {
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-        showToast("Please select a valid image.");
-        event.target.value = "";
-        return;
+            styleSuggestions[defaultSuggestion.dataset.occasion] || "";
     }
-
-    if (file.size > 10 * 1024 * 1024) {
-        showToast("Please choose an image smaller than 10 MB.");
-        event.target.value = "";
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-        const image = new Image();
-
-        image.onload = () => {
-            $("referenceImage").src = reader.result;
-            $("referencePreview").hidden = false;
-
-            extractImageColours(image);
-
-            $("referenceStatus").textContent =
-                "Reference image loaded. Main colours have been sampled.";
-        };
-
-        image.onerror = () => {
-            $("referenceStatus").textContent =
-                "Could not open this image. Please try another photo.";
-        };
-
-        image.src = reader.result;
-    };
-
-    reader.onerror = () => {
-        $("referenceStatus").textContent =
-            "Could not read this image. Please try again.";
-    };
-
-    reader.readAsDataURL(file);
-});
-
-function extractImageColours(image) {
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d", {
-        willReadFrequently: true
-    });
-
-    canvas.width = 50;
-    canvas.height = 50;
-
-    context.drawImage(image, 0, 0, 50, 50);
-
-    const pixels = context.getImageData(0, 0, 50, 50).data;
-    const buckets = {};
-
-    for (let i = 0; i < pixels.length; i += 16) {
-        const r = Math.min(Math.round(pixels[i] / 32) * 32, 255);
-        const g = Math.min(Math.round(pixels[i + 1] / 32) * 32, 255);
-        const b = Math.min(Math.round(pixels[i + 2] / 32) * 32, 255);
-
-        const key = [r, g, b].join(",");
-        buckets[key] = (buckets[key] || 0) + 1;
-    }
-
-    const dominant = Object.entries(buckets)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 4)
-        .map(item => item[0]);
-
-    $("referencePalette").innerHTML = dominant.map(rgb => `
-        <span style="background:rgb(${rgb})" title="Sampled colour"></span>
-    `).join("");
 }
 
 
@@ -697,7 +928,7 @@ function getDesignCopy() {
     };
 }
 
-$("saveDesign").addEventListener("click", () => {
+$("saveDesign")?.addEventListener("click", () => {
     if (!applyMeasurements(false)) return;
 
     const item = {
@@ -708,6 +939,7 @@ $("saveDesign").addEventListener("click", () => {
     };
 
     savedDesigns.unshift(item);
+
     saveDesignsToStorage();
     displaySavedDesigns();
 
@@ -717,8 +949,12 @@ $("saveDesign").addEventListener("click", () => {
 function displaySavedDesigns() {
     const container = $("savedDesigns");
 
-    $("savedCount").textContent =
-        `${savedDesigns.length} ${savedDesigns.length === 1 ? "design" : "designs"} saved`;
+    if (!container) return;
+
+    if ($("savedCount")) {
+        $("savedCount").textContent =
+            `${savedDesigns.length} ${savedDesigns.length === 1 ? "design" : "designs"} saved`;
+    }
 
     if (!savedDesigns.length) {
         container.innerHTML = `
@@ -746,26 +982,35 @@ function displaySavedDesigns() {
         return `
             <article class="saved-card">
                 <h3>${escapeHTML(d.garment || "Custom outfit")}</h3>
+
                 <p>
                     ${escapeHTML(d.fabric || "")} · ${escapeHTML(d.colour || "")}<br>
-                    ${escapeHTML(d.neckline || "")} neckline · ${escapeHTML(d.sleeves || "")} sleeves<br>
-                    ${escapeHTML(d.length || "")} · ${escapeHTML(d.print || "")}
+                    ${escapeHTML(d.neckline || "")} neckline ·
+                    ${escapeHTML(d.sleeves || "")} sleeves<br>
+                    ${escapeHTML(d.length || "")} ·
+                    ${escapeHTML(d.print || "")}
                 </p>
 
                 ${
                     measurementSummary.length
-                        ? `<p class="saved-measurements"><b>Measurements:</b><br>${measurementSummary.map(escapeHTML).join("<br>")}<br>Fit: ${escapeHTML(m.fitPreference || "Regular")}</p>`
+                        ? `<p><b>Measurements:</b><br>${measurementSummary.map(escapeHTML).join("<br>")}<br>Fit: ${escapeHTML(m.fitPreference || "Regular")}</p>`
                         : `<p>No measurements added.</p>`
                 }
 
                 <strong>${formatMoney(item.price || 0)}</strong>
 
-                <button type="button" onclick="removeSavedDesign(${Number(item.id)})">
+                <button type="button" data-remove-design="${Number(item.id)}">
                     Remove design
                 </button>
             </article>
         `;
     }).join("");
+
+    container.querySelectorAll("[data-remove-design]").forEach(button => {
+        button.addEventListener("click", () => {
+            removeSavedDesign(Number(button.dataset.removeDesign));
+        });
+    });
 }
 
 function escapeHTML(value) {
@@ -792,7 +1037,7 @@ function removeSavedDesign(id) {
    BOOK A FITTING
 ========================================= */
 
-$("bookFitting").addEventListener("click", () => {
+$("bookFitting")?.addEventListener("click", () => {
     if (!applyMeasurements(false)) return;
 
     const fittingDesign = {
@@ -819,376 +1064,43 @@ $("bookFitting").addEventListener("click", () => {
 
 
 /* =========================================
-   AI FACE DETECTOR
-   MediaPipe Face Landmarker
-========================================= */
-
-async function loadFaceDetector() {
-    if (faceLandmarker) return faceLandmarker;
-
-    $("faceStatus").textContent =
-        "Loading face detection model. Please wait...";
-
-    const vision = await import(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm"
-    );
-
-    const { FilesetResolver, FaceLandmarker } = vision;
-
-    const fileset = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
-    );
-
-    faceLandmarker = await FaceLandmarker.createFromOptions(
-        fileset,
-        {
-            baseOptions: {
-                modelAssetPath:
-                    "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-                delegate: "CPU"
-            },
-            runningMode: "IMAGE",
-            numFaces: 1
-        }
-    );
-
-    return faceLandmarker;
-}
-
-
-/* FACE PHOTO UPLOAD */
-
-$("faceUpload").addEventListener("change", event => {
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-        showToast("Please upload a valid image.");
-        event.target.value = "";
-        return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-        showToast("Please upload an image smaller than 10 MB.");
-        event.target.value = "";
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-        const image = new Image();
-
-        image.onload = () => {
-            facePhoto = image;
-
-            $("faceImage").src = reader.result;
-            $("facePreview").hidden = false;
-            $("faceResult").hidden = true;
-            $("faceProgress").style.width = "0";
-
-            const canvas = $("faceCanvas");
-            const context = canvas.getContext("2d");
-
-            canvas.width = image.naturalWidth;
-            canvas.height = image.naturalHeight;
-
-            context.clearRect(0, 0, canvas.width, canvas.height);
-
-            $("faceStatus").textContent =
-                "Photo uploaded. Select Analyse my face.";
-        };
-
-        image.onerror = () => {
-            $("faceStatus").textContent =
-                "Unable to load this photo. Try another image.";
-        };
-
-        image.src = reader.result;
-    };
-
-    reader.onerror = () => {
-        $("faceStatus").textContent =
-            "Could not read this photo. Please try again.";
-    };
-
-    reader.readAsDataURL(file);
-});
-
-
-/* LANDMARK DISTANCE */
-
-function landmarkDistance(a, b) {
-    return Math.hypot(a.x - b.x, a.y - b.y);
-}
-
-
-/* ESTIMATE FACE SHAPE */
-
-function estimateFaceShape(landmarks) {
-    const foreheadWidth = landmarkDistance(
-        landmarks[127],
-        landmarks[356]
-    );
-
-    const cheekWidth = landmarkDistance(
-        landmarks[234],
-        landmarks[454]
-    );
-
-    const jawWidth = landmarkDistance(
-        landmarks[172],
-        landmarks[397]
-    );
-
-    const faceHeight = landmarkDistance(
-        landmarks[10],
-        landmarks[152]
-    );
-
-    if (!cheekWidth || !faceHeight) return "Oval";
-
-    const widthHeightRatio = cheekWidth / faceHeight;
-    const foreheadRatio = foreheadWidth / cheekWidth;
-    const jawRatio = jawWidth / cheekWidth;
-    const heightRatio = faceHeight / cheekWidth;
-
-    if (widthHeightRatio > 0.82 && jawRatio > 0.82) return "Round";
-    if (jawRatio > 0.84 && foreheadRatio > 0.82) return "Square";
-    if (heightRatio > 1.48) return "Oblong";
-    if (foreheadRatio > 0.94 && jawRatio < 0.78) return "Heart";
-
-    return "Oval";
-}
-
-
-/* DRAW FACE LANDMARKS */
-
-function drawFaceLandmarks(landmarks) {
-    const canvas = $("faceCanvas");
-    const context = canvas.getContext("2d");
-
-    const width = canvas.width;
-    const height = canvas.height;
-
-    context.clearRect(0, 0, width, height);
-
-    const points = landmarks.map(point => ({
-        x: point.x * width,
-        y: point.y * height
-    }));
-
-    let minX = width;
-    let maxX = 0;
-    let minY = height;
-    let maxY = 0;
-
-    points.forEach(point => {
-        minX = Math.min(minX, point.x);
-        maxX = Math.max(maxX, point.x);
-        minY = Math.min(minY, point.y);
-        maxY = Math.max(maxY, point.y);
-    });
-
-    minX = Math.max(0, minX);
-    maxX = Math.min(width, maxX);
-    minY = Math.max(0, minY);
-    maxY = Math.min(height, maxY);
-
-    context.strokeStyle = "#FFC928";
-    context.lineWidth = Math.max(3, width / 300);
-    context.strokeRect(minX, minY, maxX - minX, maxY - minY);
-
-    context.fillStyle = "#20D6A0";
-    const radius = Math.max(1.5, width / 250);
-
-    points.forEach(point => {
-        context.beginPath();
-        context.arc(point.x, point.y, radius, 0, Math.PI * 2);
-        context.fill();
-    });
-
-    const label = "FACE DETECTED";
-    context.font = `bold ${Math.max(14, width / 35)}px Arial`;
-
-    const labelWidth = context.measureText(label).width;
-    const labelHeight = Math.max(24, width / 20);
-    const labelX = minX;
-    const labelY = Math.max(labelHeight, minY - 8);
-
-    context.fillStyle = "#071B35";
-    context.fillRect(
-        labelX,
-        labelY - labelHeight,
-        labelWidth + 16,
-        labelHeight
-    );
-
-    context.fillStyle = "#FFC928";
-    context.fillText(label, labelX + 8, labelY - 7);
-}
-
-
-/* FACE SHAPE STYLE SUGGESTIONS */
-
-const faceRecommendations = {
-    Oval: {
-        description:
-            "Your detected facial proportions appear relatively balanced. You can experiment with many traditional neckline and jewellery styles.",
-        neckline: "Boat neck, V-neck and sweetheart neck",
-        earrings: "Jhumkas, chandbalis and studs",
-        tip: "Experiment with different blouse designs and saree drapes."
-    },
-
-    Round: {
-        description:
-            "Your detected facial proportions appear softer, with a relatively balanced width and height.",
-        neckline: "V-neck and sweetheart neck",
-        earrings: "Long jhumkas and drop earrings",
-        tip: "Try longer earring styles and vertically detailed blouse designs."
-    },
-
-    Square: {
-        description:
-            "Your detected facial proportions appear to have a broader jawline and balanced facial width.",
-        neckline: "Sweetheart and rounded necklines",
-        earrings: "Curved chandbalis and rounded jhumkas",
-        tip: "Try softer curves and delicate jewellery details."
-    },
-
-    Heart: {
-        description:
-            "Your detected facial proportions appear broader around the forehead and narrower towards the chin.",
-        neckline: "Boat neck and wider necklines",
-        earrings: "Chandbalis and wider statement earrings",
-        tip: "Try balanced accessories and detailed blouse necklines."
-    },
-
-    Oblong: {
-        description:
-            "Your detected facial proportions appear longer than they are wide.",
-        neckline: "Boat neck and square neck",
-        earrings: "Wide jhumkas and statement chandbalis",
-        tip: "Try wider jewellery styles and horizontal blouse details."
-    }
-};
-
-
-/* RUN FACE ANALYSIS */
-
-$("analyseFace").addEventListener("click", async () => {
-    if (!facePhoto) {
-        showToast("Please upload your photo first.");
-        return;
-    }
-
-    const button = $("analyseFace");
-
-    button.disabled = true;
-    button.textContent = "Analysing...";
-
-    $("faceResult").hidden = true;
-    $("faceProgress").style.width = "20%";
-    $("faceStatus").textContent =
-        "Preparing the AI face detector...";
-
-    try {
-        const detector = await loadFaceDetector();
-
-        $("faceProgress").style.width = "60%";
-        $("faceStatus").textContent =
-            "Detecting facial landmarks...";
-
-        const result = detector.detect(facePhoto);
-
-        if (!result.faceLandmarks || !result.faceLandmarks.length) {
-            const canvas = $("faceCanvas");
-
-            canvas.getContext("2d").clearRect(
-                0, 0, canvas.width, canvas.height
-            );
-
-            $("faceStatus").textContent =
-                "No face detected. Please use a clear, front-facing photo with good lighting.";
-
-            $("faceProgress").style.width = "0";
-            return;
-        }
-
-        const landmarks = result.faceLandmarks[0];
-
-        drawFaceLandmarks(landmarks);
-
-        const shape = estimateFaceShape(landmarks);
-        const suggestion = faceRecommendations[shape];
-
-        $("faceShape").textContent =
-            `Estimated ${shape} face shape`;
-
-        $("faceDescription").textContent =
-            suggestion.description;
-
-        $("faceNeckline").textContent =
-            suggestion.neckline;
-
-        $("faceEarrings").textContent =
-            suggestion.earrings;
-
-        $("faceTip").textContent =
-            suggestion.tip;
-
-        $("faceProgress").style.width = "100%";
-        $("faceStatus").textContent =
-            "Face detected. Your styling suggestions are ready.";
-
-        $("faceResult").hidden = false;
-
-    } catch (error) {
-        console.error("Face analysis error:", error);
-
-        $("faceProgress").style.width = "0";
-
-        $("faceStatus").textContent =
-            "Could not load the face detector. Check your internet connection and try again.";
-
-        showToast("Face detection failed. Please try again.");
-
-    } finally {
-        button.disabled = false;
-        button.textContent = "Analyse my face";
-    }
-});
-
-
-/* =========================================
-   INITIALISE
+   INITIALISE MEASUREMENTS
 ========================================= */
 
 function initialiseMeasurements() {
-    if (measurements.values) {
-        fitPreference = measurements.fitPreference || "Regular";
-        measurements = measurements.values;
-    }
-
     measurements = {
-        bust: measurements.bust ?? null,
-        waist: measurements.waist ?? null,
-        hip: measurements.hip ?? null,
-        shoulder: measurements.shoulder ?? null,
-        sleeve: measurements.sleeve ?? null,
-        garmentLength: measurements.garmentLength ?? null
+        ...emptyMeasurements,
+        ...measurements
     };
+
+    // Keep only the supported fit choices.
+    if (!["Regular", "Slim", "Relaxed"].includes(fitPreference)) {
+        fitPreference = "Regular";
+    }
 
     loadMeasurementsIntoInputs();
 
-    if (hasMeasurements()) {
+    if (hasMeasurements() && $("measurementStatus")) {
         $("measurementStatus").textContent =
             "Your previously saved measurements have been loaded.";
     }
 }
 
-initialiseMeasurements();
-createColourSwatches();
-renderDesign();
-displaySavedDesigns();
+
+/* =========================================
+   START CUSTOMISATION STUDIO
+========================================= */
+
+function initialiseStudio() {
+    removeUnwantedFeatures();
+
+    initialiseMeasurements();
+    initialiseDesignOptions();
+    initialiseStyleSuggestions();
+
+    createColourSwatches();
+    renderDesign();
+    displaySavedDesigns();
+}
+
+initialiseStudio();
