@@ -6,7 +6,8 @@ let currentAdmin = null;
 let dashboardData = {
     appointments: [],
     orders: [],
-    customers: []
+    customers: [],
+    reviews: []
 };
 
 const ORDER_STATUSES = [
@@ -277,11 +278,15 @@ async function loadDashboard() {
         dashboardData.customers =
             source.customers || [];
 
+        dashboardData.reviews =
+            source.reviews || [];
+
         updateStatistics(source);
         renderOrders();
         renderAppointments();
         renderCustomers();
         renderPayments();
+        renderReviews(source);
 
     } catch (error) {
         console.error("Dashboard loading error:", error);
@@ -624,6 +629,90 @@ async function updatePaymentStatus(orderId, paymentStatus) {
     }
 }
 
+
+
+/* ---------------- CUSTOMER REVIEWS ---------------- */
+
+function renderReviews(source = {}) {
+    const table = document.getElementById("adminReviewsTable");
+    if (!table) return;
+
+    const reviews = dashboardData.reviews || [];
+    const average = Number(source.average_rating || 0);
+
+    setText("adminReviewCount", source.total_reviews ?? reviews.length);
+    setText("adminAverageRating", average.toFixed(1) + " / 5");
+
+    const rounded = Math.round(average);
+    setText(
+        "adminReviewStars",
+        "★".repeat(rounded) + "☆".repeat(5 - rounded)
+    );
+
+    if (!reviews.length) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty-state">
+                    No customer reviews have been submitted yet.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    table.innerHTML = reviews.map(review => {
+        const id = Number(getValue(review, "id"));
+        const rating = Math.max(0, Math.min(5, Number(getValue(review, "rating")) || 0));
+        const dateValue = getValue(review, "created_at") || "—";
+
+        return `
+            <tr>
+                <td>
+                    <strong>${escapeHTML(getValue(review, "customer_name") || "Customer")}</strong>
+                    <br>
+                    <small>${escapeHTML(getValue(review, "email") || "")}</small>
+                </td>
+                <td>
+                    <span class="admin-review-stars">
+                        ${"★".repeat(rating)}${"☆".repeat(5 - rating)}
+                    </span>
+                    <br>
+                    <small>${rating} / 5</small>
+                </td>
+                <td><div class="admin-review-text">${escapeHTML(getValue(review, "review_text"))}</div></td>
+                <td>${escapeHTML(dateValue)}</td>
+                <td>
+                    <button class="review-delete-button"
+                        onclick="deleteCustomerReview(${id})">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join("");
+}
+
+async function deleteCustomerReview(reviewId) {
+    if (!Number.isInteger(reviewId) || reviewId < 1) return;
+
+    if (!confirm("Are you sure you want to delete this customer review?")) {
+        return;
+    }
+
+    try {
+        await apiRequest(
+            `/api/admin/reviews/${reviewId}`,
+            { method: "DELETE" }
+        );
+
+        await loadDashboard();
+        alert("Review deleted successfully.");
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
 // ---------------- LOGOUT ----------------
 
 async function logout() {
@@ -640,7 +729,8 @@ async function logout() {
     dashboardData = {
         appointments: [],
         orders: [],
-        customers: []
+        customers: [],
+        reviews: []
     };
 
     document.getElementById("dashboardSection").hidden = true;

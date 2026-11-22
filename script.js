@@ -7,6 +7,7 @@ const PAGE_IDS = [
     "appointmentSection",
     "designsSection",
     "ordersSection",
+    "reviewSection",
     "boutiqueLogin"
 ];
 
@@ -994,6 +995,75 @@ async function renderOrders() {
     }
 }
 
+
+
+
+/* ---------------- CUSTOMER REVIEWS ---------------- */
+
+function openReviews() {
+    if (!currentCustomer) {
+        showLogin();
+        return;
+    }
+
+    document.getElementById("customerReviewForm").reset();
+    clearMessage("customerReviewMessage");
+    showPage("reviewSection");
+}
+
+async function submitCustomerReview() {
+    if (!currentCustomer || !currentCustomer.id) {
+        showMessage(
+            "customerReviewMessage",
+            "Please log in again before submitting a review.",
+            "error"
+        );
+        return;
+    }
+
+    const rating = document.getElementById("customerReviewRating").value;
+    const reviewText = document.getElementById("customerReviewText").value.trim();
+    const button = document.getElementById("submitReviewButton");
+
+    if (!rating || !reviewText) {
+        showMessage(
+            "customerReviewMessage",
+            "Please select a rating and write your feedback.",
+            "error"
+        );
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Submitting...";
+
+    try {
+        const data = await apiRequest("/api/reviews", {
+            method: "POST",
+            body: JSON.stringify({
+                customer_id: currentCustomer.id,
+                rating: Number(rating),
+                review_text: reviewText
+            })
+        });
+
+        document.getElementById("customerReviewForm").reset();
+
+        showMessage(
+            "customerReviewMessage",
+            data.message || "Thank you for sharing your feedback!",
+            "success"
+        );
+
+    } catch (error) {
+        showMessage("customerReviewMessage", error.message, "error");
+
+    } finally {
+        button.disabled = false;
+        button.innerHTML = '<i data-lucide="send"></i> Submit Review';
+        refreshIcons();
+    }
+}
 
 // ---------------- LOGOUT AND SESSION RESTORE ----------------
 

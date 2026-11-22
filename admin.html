@@ -1408,6 +1408,82 @@ input, select, textarea, .search-input {
 }
 
 
+
+/* Customer Reviews */
+.review-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin: 24px 0;
+}
+.review-stat-card {
+    padding: 24px;
+    border: 1px solid #E8DFC9;
+    border-radius: 14px;
+    background: #FFFDF6;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.review-stat-card span {
+    color: #52647A;
+    font-size: 14px;
+}
+.review-stat-card strong {
+    color: #071B35;
+    font-size: 30px;
+}
+.review-stat-card small {
+    color: #7B8490;
+}
+.admin-reviews-card {
+    overflow: hidden;
+}
+.admin-reviews-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.admin-reviews-table th,
+.admin-reviews-table td {
+    padding: 15px 13px;
+    text-align: left;
+    border-bottom: 1px solid #EEE8DC;
+    vertical-align: top;
+}
+.admin-reviews-table th {
+    color: #071B35;
+    background: #FFF8E5;
+    font-weight: 700;
+}
+.admin-review-stars {
+    color: #D49A00;
+    white-space: nowrap;
+    letter-spacing: 1px;
+}
+.admin-review-text {
+    min-width: 220px;
+    max-width: 440px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    color: #52647A;
+}
+.review-delete-button {
+    border: 1px solid #E6CACA;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: #FFF4F2;
+    color: #A83232;
+    cursor: pointer;
+    font-weight: 600;
+}
+.review-delete-button:hover {
+    background: #FCE4E0;
+}
+@media (max-width: 700px) {
+    .review-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 </head>
 
@@ -2344,24 +2420,56 @@ input, select, textarea, .search-input {
                 </section>
 
 
-                <!-- REVIEWS -->
 
+                <!-- REVIEWS -->
                 <section id="reviews" class="admin-page page-content" hidden>
                     <div class="page-heading">
                         <div>
                             <span class="eyebrow">CUSTOMER FEEDBACK</span>
                             <h1>Reviews</h1>
-                            <p>View feedback and customer experiences.</p>
+                            <p>Read and manage feedback shared by your customers.</p>
                         </div>
                     </div>
-                    <div class="section-placeholder">
-                        <div class="placeholder-icon"><i data-lucide="star"></i></div>
-                        <h2>Customer Reviews</h2>
-                        <p>Customer feedback management can be added when reviews are collected on the website.</p>
+
+                    <div class="review-stats-grid">
+                        <div class="review-stat-card">
+                            <span>Total Reviews</span>
+                            <strong id="adminReviewCount">0</strong>
+                            <small>Customer feedback received</small>
+                        </div>
+                        <div class="review-stat-card">
+                            <span>Average Rating</span>
+                            <strong id="adminAverageRating">0.0 / 5</strong>
+                            <small id="adminReviewStars">☆☆☆☆☆</small>
+                        </div>
+                    </div>
+
+                    <div class="content-card admin-reviews-card">
+                        <div class="section-heading">
+                            <div>
+                                <h2>Customer Feedback</h2>
+                                <p>Reviews submitted through the customer website.</p>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="admin-reviews-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Rating</th>
+                                        <th>Review</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminReviewsTable">
+                                    <tr><td colspan="5" class="empty-state">No reviews available yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
-
-
                 <!-- OFFERS -->
 
                 <section id="offers" class="admin-page page-content" hidden>

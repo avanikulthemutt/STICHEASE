@@ -206,6 +206,13 @@
                     <span class="feature-description">Keep your custom outfit orders in one place.</span>
                     <span class="feature-link">View orders <i data-lucide="arrow-up-right"></i></span>
                 </button>
+
+                <button class="feature-card" onclick="openReviews()">
+                    <span class="feature-icon"><i data-lucide="star"></i></span>
+                    <span class="feature-title">Share Feedback</span>
+                    <span class="feature-description">Tell us about your Stitchease experience and help us improve.</span>
+                    <span class="feature-link">Write a review <i data-lucide="arrow-up-right"></i></span>
+                </button>
             </div>
 
             <div class="dashboard-bottom">
@@ -629,6 +636,75 @@
                 </section>
 
             </div>
+        </main>
+    </section>
+
+
+    <!-- CUSTOMER REVIEWS -->
+    <section id="reviewSection" class="page" hidden>
+        <header class="app-header">
+            <a class="brand" href="#" onclick="showHome(); return false;">
+                <span class="brand-icon"><i data-lucide="scissors"></i></span>
+                <span><strong>Stitchease</strong><small>Your Style, Your Way</small></span>
+            </a>
+            <button class="dashboard-bar" onclick="showHome()">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Back to Home</span>
+            </button>
+            <button class="btn btn-outline btn-small" onclick="logout()">Logout</button>
+        </header>
+
+        <main class="content-main review-page">
+            <button class="back-link" onclick="showHome()">
+                <i data-lucide="arrow-left"></i> Back to Home
+            </button>
+
+            <div class="orders-hero review-hero">
+                <div>
+                    <span class="eyebrow">YOUR EXPERIENCE MATTERS</span>
+                    <h1>Share Your Feedback</h1>
+                    <p>Your thoughts help us make every Stitchease experience better.</p>
+                </div>
+                <div class="orders-hero-icon"><i data-lucide="heart-handshake"></i></div>
+            </div>
+
+            <section class="form-card review-form-card">
+                <div class="orders-card-heading">
+                    <div class="orders-heading-icon"><i data-lucide="star"></i></div>
+                    <div>
+                        <span class="eyebrow">CUSTOMER FEEDBACK</span>
+                        <h2>How was your experience?</h2>
+                        <p>Rate our service and share your experience with us.</p>
+                    </div>
+                </div>
+
+                <form id="customerReviewForm" onsubmit="event.preventDefault(); submitCustomerReview();">
+                    <div class="field">
+                        <label for="customerReviewRating">Your rating</label>
+                        <select id="customerReviewRating" required>
+                            <option value="">Choose your rating</option>
+                            <option value="5">★★★★★ - Excellent</option>
+                            <option value="4">★★★★☆ - Very good</option>
+                            <option value="3">★★★☆☆ - Good</option>
+                            <option value="2">★★☆☆☆ - Fair</option>
+                            <option value="1">★☆☆☆☆ - Needs improvement</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="customerReviewText">Your feedback</label>
+                        <textarea id="customerReviewText" rows="5" maxlength="1000"
+                            placeholder="Tell us about the service, fitting, quality or your overall experience..."
+                            required></textarea>
+                        <small class="review-character-note">Maximum 1000 characters.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full" id="submitReviewButton">
+                        <i data-lucide="send"></i> Submit Review
+                    </button>
+                    <p id="customerReviewMessage" class="message" role="status"></p>
+                </form>
+            </section>
         </main>
     </section>
 

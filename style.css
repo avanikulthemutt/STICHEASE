@@ -2014,3 +2014,48 @@ body {
         background: #F5F3EC;
     }
 }
+
+/* =====================================================
+   CUSTOMER REVIEWS
+===================================================== */
+
+.review-page {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.review-hero {
+    margin-bottom: 28px;
+}
+
+.review-form-card {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 30px;
+    background: #FFFFFF;
+    border: 1px solid #E5DFD2;
+    border-radius: 18px;
+}
+
+.review-form-card textarea {
+    width: 100%;
+    resize: vertical;
+}
+
+.review-character-note {
+    display: block;
+    margin-top: 7px;
+    color: #687589;
+    font-size: 12px;
+}
+
+.review-form-card .message {
+    margin-top: 14px;
+}
+
+@media (max-width: 600px) {
+    .review-form-card {
+        padding: 20px;
+    }
+}
+

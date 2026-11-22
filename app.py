@@ -1061,6 +1061,8 @@ def admin_dashboard():
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
+        ensure_reviews_table(cursor)
+
         # Add payment tracking column safely if it does not exist.
         cursor.execute("SHOW COLUMNS FROM custom_orders LIKE 'payment_status'")
         if not cursor.fetchone():
@@ -1115,6 +1117,25 @@ def admin_dashboard():
             for row in cursor.fetchall()
         ]
 
+        cursor.execute("""
+            SELECT
+                r.id, r.customer_id, c.name AS customer_name,
+                c.email, r.rating, r.review_text, r.created_at
+            FROM reviews r
+            LEFT JOIN customers c ON r.customer_id = c.id
+            ORDER BY r.created_at DESC
+        """)
+
+        reviews = [
+            convert_dates(row)
+            for row in cursor.fetchall()
+        ]
+
+        average_rating = (
+            round(sum(int(review["rating"]) for review in reviews) / len(reviews), 1)
+            if reviews else 0
+        )
+
         pending_orders = sum(
             1 for order in orders
             if str(order.get("status") or "").lower()
@@ -1127,6 +1148,9 @@ def admin_dashboard():
                 "orders": orders,
                 "appointments": appointments,
                 "customers": customers,
+                "reviews": reviews,
+                "total_reviews": len(reviews),
+                "average_rating": average_rating,
                 "total_customers": len(customers),
                 "total_appointments": len(appointments),
                 "total_orders": len(orders),
@@ -1889,6 +1913,125 @@ def assign_order_to_tailor(tailor_id):
 
         app.logger.exception("Assigning order to tailor failed")
         return jsonify({"error": "Could not assign order to tailor."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+
+
+# ====================================================
+#                    CUSTOMER REVIEWS
+# ====================================================
+
+def ensure_reviews_table(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reviews (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            customer_id INT NOT NULL,
+            rating TINYINT NOT NULL,
+            review_text TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT fk_reviews_customer
+                FOREIGN KEY (customer_id)
+                REFERENCES customers(id)
+                ON DELETE CASCADE
+        )
+    """)
+
+
+@app.route("/api/reviews", methods=["POST"])
+def submit_customer_review():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        customer_id = int(data.get("customer_id"))
+        rating = int(data.get("rating"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "Please select a valid rating and log in."}), 400
+
+    review_text = str(data.get("review_text") or "").strip()
+
+    if rating < 1 or rating > 5:
+        return jsonify({"error": "Please select a rating between 1 and 5."}), 400
+
+    if not review_text:
+        return jsonify({"error": "Please write your feedback before submitting."}), 400
+
+    if len(review_text) > 1000:
+        return jsonify({"error": "Your review must be 1000 characters or fewer."}), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        ensure_reviews_table(cursor)
+
+        cursor.execute(
+            "SELECT id FROM customers WHERE id = %s",
+            (customer_id,)
+        )
+
+        if not cursor.fetchone():
+            return jsonify({"error": "Customer account not found. Please log in again."}), 404
+
+        cursor.execute("""
+            INSERT INTO reviews (customer_id, rating, review_text)
+            VALUES (%s, %s, %s)
+        """, (customer_id, rating, review_text))
+
+        connection.commit()
+
+        return jsonify({
+            "message": "Thank you! Your review has been submitted successfully."
+        }), 201
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Customer review submission failed")
+        return jsonify({"error": "Could not submit your review. Please try again."}), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/admin/reviews/<int:review_id>", methods=["DELETE"])
+def delete_admin_review(review_id):
+    if not admin_required():
+        return jsonify({"error": "Please log in as an administrator."}), 401
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        ensure_reviews_table(cursor)
+
+        cursor.execute(
+            "DELETE FROM reviews WHERE id = %s",
+            (review_id,)
+        )
+
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Review not found."}), 404
+
+        connection.commit()
+
+        return jsonify({"message": "Review deleted successfully."})
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Deleting customer review failed")
+        return jsonify({"error": "Could not delete the review."}), 500
 
     finally:
         close_db(cursor, connection)
