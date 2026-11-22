@@ -4,428 +4,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore Fashion | STITCHEASE</title>
+    <title>Customisation Studio | STITCHEASE</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="/explore-fashion.css">
 </head>
 <body>
 
-<header class="site-header">
-    <a href="/" class="brand">STITCHEASE<span>.</span></a>
+<header class="topbar">
+    <a href="/" class="logo">Stitchease<span>.</span></a>
 
-    <nav class="main-nav">
+    <nav>
         <a href="/">Home</a>
-        <a href="#categories">Categories</a>
-        <a href="#shop">Explore</a>
-        <a href="#studio">Customise</a>
+        <a href="/explore-fashion" class="active">Explore Fashion</a>
+        <a href="/#appointmentSection">Book appointment</a>
+        <a href="/#customerDashboard">My account</a>
     </nav>
 
-    <button class="cart-button" id="openCart">
-        Bag <span id="cartCount">0</span>
-    </button>
+    <a href="/#customerDashboard" class="account-link">My account ↗</a>
 </header>
 
-<main>
-    <!-- HERO -->
-    <section class="hero">
-        <div class="hero-content">
-            <p class="eyebrow">THE STITCHEASE COLLECTION</p>
-            <h1>Find your style.<br><em>Make it yours.</em></h1>
-            <p class="hero-description">
-                Discover timeless ethnic wear, beautiful details and designs
-                that feel uniquely you.
-            </p>
-            <div class="hero-actions">
-                <a href="#shop" class="primary-button">Explore Collection</a>
-                <a href="#studio" class="secondary-button">Create Your Design</a>
-            </div>
-        </div>
-        <div class="hero-image">
-            <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=85" alt="Traditional Indian saree">
-            <div class="hero-image-caption">
-                <span>Elegance in every detail</span>
-                <small>Discover your next favourite look</small>
-            </div>
-        </div>
-    </section>
+<main class="studio-page">
 
-    <!-- CATEGORIES -->
-    <section class="section categories-section" id="categories">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">EXPLORE BY STYLE</p>
-                <h2>Fashion categories</h2>
-            </div>
-            <p>Pieces that make every occasion special.</p>
-        </div>
-
-        <div class="category-grid">
-            <button class="category-card" data-category="Sarees">
-                <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=85" alt="Sarees">
-                <span>Sarees</span>
-                <small>Grace in every drape ↗</small>
-            </button>
-
-            <button class="category-card" data-category="Blouses">
-                <img src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=700&q=85" alt="Designer blouses">
-                <span>Blouses</span>
-                <small>Details that define you ↗</small>
-            </button>
-
-            <button class="category-card" data-category="Jhumkas">
-                <img src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=700&q=85" alt="Jhumka earrings">
-                <span>Jhumkas</span>
-                <small>A little extra sparkle ↗</small>
-            </button>
-
-            <button class="category-card custom-category" data-category="Custom Outfits">
-                <div class="category-symbol">✂</div>
-                <span>Customisation Studio</span>
-                <small>Your ideas, your design ↗</small>
-            </button>
-        </div>
-    </section>
-
-    <!-- SHOP -->
-    <section class="section shop-section" id="shop">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">HANDPICKED FOR YOU</p>
-                <h2>Explore the collection</h2>
-            </div>
-            <p id="resultCount">Explore our latest pieces</p>
-        </div>
-
-        <div class="filter-panel">
-            <div class="filter-heading">
-                <h3>Find your perfect piece</h3>
-                <button id="clearFilters" class="text-button">Clear filters</button>
-            </div>
-
-            <div class="filter-grid">
-                <label>
-                    Category
-                    <select id="filterCategory">
-                        <option value="All">All categories</option>
-                        <option value="Sarees">Sarees</option>
-                        <option value="Blouses">Blouses</option>
-                        <option value="Jhumkas">Jhumkas</option>
-                        <option value="Trending">Trending collection</option>
-                    </select>
-                </label>
-
-                <label>
-                    Size
-                    <select id="filterSize">
-                        <option value="All">All sizes</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="One Size">One Size</option>
-                    </select>
-                </label>
-
-                <label>
-                    Colour
-                    <select id="filterColour">
-                        <option value="All">All colours</option>
-                        <option value="Gold">Gold</option>
-                        <option value="Maroon">Maroon</option>
-                        <option value="Rose">Rose</option>
-                        <option value="Emerald">Emerald</option>
-                        <option value="Ivory">Ivory</option>
-                        <option value="Navy">Navy</option>
-                    </select>
-                </label>
-
-                <label>
-                    Occasion
-                    <select id="filterOccasion">
-                        <option value="All">All occasions</option>
-                        <option value="Wedding">Wedding</option>
-                        <option value="Festive">Festive</option>
-                        <option value="Party">Party</option>
-                    </select>
-                </label>
-
-                <label class="price-filter">
-                    Maximum price: <strong id="priceValue">₹15,000</strong>
-                    <input type="range" id="maxPrice" min="500" max="15000" step="500" value="15000">
-                </label>
-
-                <label>
-                    Sort by
-                    <select id="sortProducts">
-                        <option value="featured">Featured</option>
-                        <option value="low">Price: Low to high</option>
-                        <option value="high">Price: High to low</option>
-                    </select>
-                </label>
-            </div>
-        </div>
-
-        <div class="product-grid" id="productGrid"></div>
-    </section>
-
-    <!-- TRENDING STRIP -->
-    <section class="trend-banner">
+    <section class="page-heading">
         <div>
-            <p class="eyebrow">A LITTLE INSPIRATION</p>
-            <h2>Celebrate your style, every day.</h2>
-            <p>From traditional favourites to statement details, find something that feels like you.</p>
+            <p class="eyebrow">DESIGNED AROUND YOU</p>
+            <h1>Customisation <em>Studio</em></h1>
+            <p class="heading-description">
+                Start with an idea. Choose every detail. Create an outfit that feels completely yours.
+            </p>
         </div>
-        <a href="#shop" class="light-button" id="trendingButton">Shop trending pieces ↗</a>
+        <div class="heading-note">
+            <span class="sparkle">✦</span>
+            <span>Made to measure.<br>Designed by you.</span>
+        </div>
     </section>
 
-    <!-- AI ASSISTANT -->
-    <section class="section assistant-section" id="assistant">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">YOUR STYLE COMPANION</p>
-                <h2>Ask our fashion assistant</h2>
-            </div>
-            <p>Need a little styling inspiration?</p>
-        </div>
+    <section class="studio-grid">
 
-        <div class="assistant-card">
-            <div class="assistant-intro">
-                <div class="assistant-icon">✦</div>
+        <!-- LEFT: CUSTOMISATION OPTIONS -->
+        <aside class="panel controls-panel">
+            <div class="panel-heading">
+                <span class="step-number">01</span>
                 <div>
-                    <h3>Hello, fashion lover!</h3>
-                    <p>Ask me about outfit ideas, colours, fabrics and occasions.</p>
+                    <h2>Design your outfit</h2>
+                    <p>Choose your preferred details</p>
                 </div>
             </div>
 
-            <div class="chat-messages" id="chatMessages">
-                <div class="chat-message assistant-message">
-                    Welcome to STITCHEASE! What would you like help styling today?
+            <div class="control-group">
+                <h3>Base garment</h3>
+                <div class="option-row">
+                    <button type="button" class="option active" data-key="garment" data-value="Kurti">Kurti</button>
+                    <button type="button" class="option" data-key="garment" data-value="Lehenga">Lehenga</button>
+                    <button type="button" class="option" data-key="garment" data-value="Blouse">Blouse</button>
+                    <button type="button" class="option" data-key="garment" data-value="Co-ord set">Co-ord set</button>
                 </div>
             </div>
 
-            <div class="suggestion-list">
-                <button class="suggestion">Suggest a festive outfit</button>
-                <button class="suggestion">Which colours suit a wedding?</button>
-                <button class="suggestion">Help me choose a blouse</button>
+            <div class="control-group">
+                <h3>Fabric</h3>
+                <div class="option-row">
+                    <button type="button" class="option active" data-key="fabric" data-value="Cotton">Cotton</button>
+                    <button type="button" class="option" data-key="fabric" data-value="Silk">Silk</button>
+                    <button type="button" class="option" data-key="fabric" data-value="Chanderi">Chanderi</button>
+                    <button type="button" class="option" data-key="fabric" data-value="Georgette">Georgette</button>
+                </div>
             </div>
 
-            <form id="chatForm" class="chat-form">
-                <input type="text" id="chatInput" placeholder="Ask your fashion question..." autocomplete="off">
-                <button type="submit">Send ↗</button>
-            </form>
-            <p class="demo-note">Fashion assistant preview · Personalised AI responses can be connected in a future phase.</p>
-        </div>
-    </section>
-
-    <!-- CUSTOMISATION STUDIO -->
-    <section class="section studio-section" id="studio">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">DESIGNED AROUND YOU</p>
-                <h2>Your customisation studio</h2>
+            <div class="control-group">
+                <h3>Choose a colour</h3>
+                <div class="swatch-row" id="colourSwatches"></div>
+                <p class="selected-colour" id="selectedColour">Navy</p>
             </div>
-            <p>Choose the details and bring your idea to life.</p>
-        </div>
 
-        <div class="studio-layout">
-            <form class="studio-form" id="designForm">
-                <h3>Tell us what you imagine</h3>
-                <p class="form-intro">Personalise your outfit using the options below.</p>
+            <div class="control-group">
+                <h3>Neckline</h3>
+                <div class="option-row">
+                    <button type="button" class="option active" data-key="neckline" data-value="Round">Round</button>
+                    <button type="button" class="option" data-key="neckline" data-value="V-neck">V-neck</button>
+                    <button type="button" class="option" data-key="neckline" data-value="Boat">Boat</button>
+                </div>
+            </div>
 
-                <label>
-                    Outfit type
-                    <select id="designOutfit">
-                        <option value="Saree">Saree</option>
-                        <option value="Blouse">Blouse</option>
-                        <option value="Saree blouse">Saree blouse</option>
-                    </select>
+            <div class="control-group">
+                <h3>Sleeves</h3>
+                <div class="option-row">
+                    <button type="button" class="option active" data-key="sleeves" data-value="Sleeveless">Sleeveless</button>
+                    <button type="button" class="option" data-key="sleeves" data-value="Short">Short</button>
+                    <button type="button" class="option" data-key="sleeves" data-value="Three-quarter">Three-quarter</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Outfit length</h3>
+                <div class="option-row">
+                    <button type="button" class="option" data-key="length" data-value="Short">Short</button>
+                    <button type="button" class="option active" data-key="length" data-value="Knee length">Knee</button>
+                    <button type="button" class="option" data-key="length" data-value="Long">Long</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Print / detailing</h3>
+                <div class="option-row">
+                    <button type="button" class="option active" data-key="print" data-value="Plain">Plain</button>
+                    <button type="button" class="option" data-key="print" data-value="Gold dots">Gold dots</button>
+                    <button type="button" class="option" data-key="print" data-value="Floral">Floral</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTRE: LIVE PREVIEW -->
+        <section class="panel preview-panel">
+            <div class="preview-topline">
+                <div>
+                    <p class="eyebrow">YOUR CREATION</p>
+                    <h2 id="previewTitle">Kurti in Cotton</h2>
+                </div>
+                <span class="live-tag"><i></i> Live preview</span>
+            </div>
+
+            <div class="model-stage" id="modelStage">
+                <div class="preview-badge" id="previewBadge">Your design preview</div>
+
+                <svg id="outfitSvg" viewBox="0 0 260 440" role="img" aria-label="Illustrated outfit preview">
+                    <defs>
+                        <pattern id="dotPattern" width="13" height="13" patternUnits="userSpaceOnUse">
+                            <circle cx="6" cy="6" r="2" fill="#FCE9A5"/>
+                        </pattern>
+                        <pattern id="flowerPattern" width="22" height="22" patternUnits="userSpaceOnUse">
+                            <path d="M11 3 L14 9 L20 11 L14 14 L11 20 L8 14 L2 11 L8 9 Z" fill="#FCE9A5"/>
+                        </pattern>
+                    </defs>
+
+                    <ellipse cx="130" cy="48" rx="29" ry="31" fill="#2A1A14"/>
+                    <circle cx="130" cy="53" r="23" fill="#E9B99A"/>
+                    <path d="M106 48 Q130 15 154 48 Q145 34 130 34 Q115 34 106 48Z" fill="#2A1A14"/>
+                    <rect x="121" y="74" width="18" height="28" fill="#E9B99A"/>
+
+                    <path id="leftArm" d="M91 112 L66 185 L78 190 L105 140Z" fill="#E9B99A"/>
+                    <path id="rightArm" d="M169 112 L194 185 L182 190 L155 140Z" fill="#E9B99A"/>
+
+                    <path id="leftSleeve" d="" fill="#0B3D5C"/>
+                    <path id="rightSleeve" d="" fill="#0B3D5C"/>
+
+                    <path id="garmentShape" d="M92 103 Q130 91 168 103 L160 170 L190 325 L70 325 L100 170Z" fill="#0B3D5C"/>
+                    <path id="garmentPattern" d="" fill="none"/>
+
+                    <path id="neckShape" d="M111 101 Q130 128 149 101Z" fill="#E9B99A"/>
+                    <path d="M100 170 Q130 180 160 170" stroke="#FFC928" stroke-width="2" fill="none"/>
+
+                    <path id="leftLeg" d="M91 320 L124 320 L120 425 L91 425Z" fill="#E7DDC9"/>
+                    <path id="rightLeg" d="M136 320 L169 320 L169 425 L140 425Z" fill="#E7DDC9"/>
+
+                    <path d="M89 425 L122 425 L122 434 L83 434Z" fill="#071B35"/>
+                    <path d="M140 425 L171 425 L178 434 L140 434Z" fill="#071B35"/>
+                </svg>
+
+                <div class="preview-caption">Illustrative design preview · Final fit confirmed at the boutique</div>
+            </div>
+
+            <div class="price-strip">
+                <div>
+                    <small>Estimated price</small>
+                    <strong id="estimatedPrice">₹1,499</strong>
+                </div>
+                <span class="estimate-label">Indicative estimate</span>
+            </div>
+
+            <div class="preview-buttons">
+                <button type="button" class="outline-button" id="saveDesign">♡ Save design</button>
+                <button type="button" class="gold-button" id="bookFitting">Book a fitting ↗</button>
+            </div>
+
+            <p class="price-disclaimer">
+                Final price may vary based on measurements, fabric availability and tailoring requirements.
+            </p>
+        </section>
+
+        <!-- RIGHT: AI STUDIO -->
+        <aside class="panel ai-panel">
+            <div class="panel-heading">
+                <span class="step-number">02</span>
+                <div>
+                    <h2>AI Studio</h2>
+                    <p>Your personal style companion</p>
+                </div>
+            </div>
+
+            <div class="ai-card">
+                <h3><span class="gold-dot"></span> Style match</h3>
+                <p class="card-description">Choose an occasion for a styling suggestion.</p>
+
+                <div class="occasion-options">
+                    <button type="button" class="occasion active" data-occasion="Wedding guest">Wedding guest</button>
+                    <button type="button" class="occasion" data-occasion="Festive">Festive</button>
+                    <button type="button" class="occasion" data-occasion="Office">Office</button>
+                </div>
+
+                <div class="suggestion-box" id="styleSuggestion">
+                    Pick an occasion and we’ll suggest a design to match.
+                </div>
+            </div>
+
+            <div class="ai-card">
+                <h3><span class="gold-dot"></span> Design from a reference photo</h3>
+                <p class="card-description">
+                    Upload an outfit image to preview it and extract its main colours.
+                </p>
+
+                <label class="reference-upload" for="referenceUpload">
+                    <span>＋</span>
+                    <strong>Upload reference photo</strong>
+                    <small>JPG, PNG or WEBP · Max 10 MB</small>
                 </label>
+                <input type="file" id="referenceUpload" accept="image/*">
 
-                <label>
-                    Fabric
-                    <select id="designFabric">
-                        <option value="Silk">Silk</option>
-                        <option value="Cotton">Cotton</option>
-                        <option value="Georgette">Georgette</option>
-                        <option value="Velvet">Velvet</option>
-                        <option value="Chanderi">Chanderi</option>
-                    </select>
+                <div class="reference-preview" id="referencePreview" hidden>
+                    <img id="referenceImage" alt="Your reference outfit">
+                </div>
+
+                <div class="palette" id="referencePalette"></div>
+                <p class="reference-status" id="referenceStatus" aria-live="polite"></p>
+            </div>
+
+            <div class="ai-card see-on-you-card">
+                <h3><span class="gold-dot"></span> See it on you</h3>
+                <p class="card-description">
+                    Upload a clear front-facing photo to detect facial landmarks and receive styling suggestions.
+                </p>
+
+                <label class="reference-upload" for="faceUpload">
+                    <span>♡</span>
+                    <strong>Upload your photo</strong>
+                    <small>Photo stays in your browser</small>
                 </label>
+                <input type="file" id="faceUpload" accept="image/*">
 
-                <label>
-                    Colour
-                    <select id="designColour">
-                        <option value="Maroon">Maroon</option>
-                        <option value="Teal">Teal</option>
-                        <option value="Gold">Gold</option>
-                        <option value="Navy">Navy</option>
-                        <option value="Ivory">Ivory</option>
-                        <option value="Emerald">Emerald</option>
-                        <option value="Rose">Rose</option>
-                    </select>
-                </label>
+                <div class="face-preview" id="facePreview" hidden>
+                    <img id="faceImage" alt="Uploaded photo for face analysis">
+                </div>
 
-                <label>
-                    Neckline
-                    <select id="designNeckline">
-                        <option value="Round neck">Round neck</option>
-                        <option value="V-neck">V-neck</option>
-                        <option value="Boat neck">Boat neck</option>
-                        <option value="Square neck">Square neck</option>
-                        <option value="Sweetheart neck">Sweetheart neck</option>
-                    </select>
-                </label>
-
-                <label>
-                    Sleeve style
-                    <select id="designSleeve">
-                        <option value="Short sleeves">Short sleeves</option>
-                        <option value="Sleeveless">Sleeveless</option>
-                        <option value="Three-quarter sleeves">Three-quarter sleeves</option>
-                        <option value="Full sleeves">Full sleeves</option>
-                        <option value="Puff sleeves">Puff sleeves</option>
-                    </select>
-                </label>
-
-                <label>
-                    Length
-                    <select id="designLength">
-                        <option value="Regular length">Regular length</option>
-                        <option value="Short length">Short length</option>
-                        <option value="Long length">Long length</option>
-                    </select>
-                </label>
-
-                <label>
-                    Embroidery
-                    <select id="designEmbroidery">
-                        <option value="None">No embroidery</option>
-                        <option value="Light zari">Light zari</option>
-                        <option value="Heavy zari">Heavy zari</option>
-                        <option value="Thread work">Thread work</option>
-                        <option value="Mirror work">Mirror work</option>
-                    </select>
-                </label>
-
-                <label>
-                    Occasion
-                    <select id="designOccasion">
-                        <option value="Casual">Casual</option>
-                        <option value="Festive">Festive</option>
-                        <option value="Party">Party</option>
-                        <option value="Wedding">Wedding</option>
-                    </select>
-                </label>
-
-                <button type="button" class="primary-button full-button" id="recommendButton">
-                    ✦ Get design recommendation
+                <button type="button" class="navy-button" id="analyseFace">
+                    Analyse my face
                 </button>
-            </form>
 
-            <div class="design-preview">
-                <p class="eyebrow">YOUR DESIGN PREVIEW</p>
-                <div class="preview-art" id="previewArt">
-                    <span>✦</span>
-                    <p>Your style begins here</p>
+                <div class="face-progress">
+                    <span id="faceProgress"></span>
                 </div>
 
-                <h3>Design summary</h3>
-                <div class="design-summary" id="designSummary"></div>
+                <p class="face-status" id="faceStatus" aria-live="polite">
+                    Upload a photo to begin.
+                </p>
 
-                <div class="estimate-row">
-                    <span>Estimated price</span>
-                    <strong id="designEstimate">₹0</strong>
-                </div>
+                <div class="face-result" id="faceResult" hidden>
+                    <p class="result-label">YOUR STYLE PROFILE</p>
+                    <h4 id="faceShape">Face shape</h4>
+                    <p id="faceDescription"></p>
 
-                <div class="preview-actions">
-                    <button type="button" class="secondary-button full-button" id="saveDesign">♡ Save design</button>
-                    <button type="button" class="primary-button full-button" id="addCustomToCart">Add custom design to bag</button>
-                </div>
-
-                <p class="demo-note">This is an indicative frontend estimate, not a final boutique quotation.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- IMAGE INSPIRATION -->
-    <section class="section inspiration-section" id="inspiration">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">INSPIRED BY YOU</p>
-                <h2>Bring your inspiration</h2>
-            </div>
-            <p>Upload a reference image for your design idea.</p>
-        </div>
-
-        <div class="inspiration-card">
-            <div class="upload-area">
-                <div class="upload-symbol">＋</div>
-                <h3>Upload your inspiration</h3>
-                <p>Choose a photo of a style, fabric or outfit you love.</p>
-                <label for="inspirationUpload" class="primary-button upload-button">Choose image</label>
-                <input type="file" id="inspirationUpload" accept="image/*">
-            </div>
-
-            <div class="visual-preview" id="visualPreview">
-                <div class="visual-placeholder">
-                    <span>✧</span>
-                    <p>Your uploaded image will appear here.</p>
+                    <div class="face-tip">
+                        <small>Suggested neckline</small>
+                        <strong id="faceNeckline"></strong>
+                    </div>
+                    <div class="face-tip">
+                        <small>Suggested earrings</small>
+                        <strong id="faceEarrings"></strong>
+                    </div>
+                    <div class="face-tip">
+                        <small>Styling tip</small>
+                        <strong id="faceTip"></strong>
+                    </div>
+                    <p class="face-disclaimer">
+                        This is an approximate styling suggestion, not a medical or identity analysis.
+                    </p>
                 </div>
             </div>
-        </div>
+        </aside>
 
-        <button type="button" class="secondary-button generate-button" id="generateConcept">
-            Prepare my design idea
-        </button>
-        <p class="demo-note">Image preview is available now. AI image generation can be integrated in a future phase.</p>
     </section>
 
     <!-- SAVED DESIGNS -->
-    <section class="section saved-section" id="saved">
-        <div class="section-heading">
+    <section class="saved-section" id="savedDesignsSection">
+        <div class="saved-heading">
             <div>
-                <p class="eyebrow">KEEP YOUR FAVOURITES</p>
-                <h2>Your saved designs</h2>
+                <p class="eyebrow">YOUR PERSONAL COLLECTION</p>
+                <h2>My saved designs</h2>
             </div>
-            <p>Come back to the designs you love.</p>
+            <span id="savedCount">0 designs saved</span>
         </div>
-        <div class="saved-grid" id="savedDesigns"></div>
+
+        <div class="saved-grid" id="savedDesigns">
+            <div class="empty-saved">
+                <span>♡</span>
+                <p>Your saved designs will appear here.</p>
+            </div>
+        </div>
     </section>
+
 </main>
 
-<footer class="site-footer">
-    <a href="/" class="brand">STITCHEASE<span>.</span></a>
-    <p>Your style, your way.</p>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<footer class="footer">
+    <a href="/" class="logo">Stitchease<span>.</span></a>
+    <p>Your style. Your way.</p>
     <small>© 2026 STITCHEASE. All rights reserved.</small>
 </footer>
-
-<!-- CART DRAWER -->
-<div class="cart-backdrop" id="cartBackdrop"></div>
-
-<aside class="cart-drawer" id="cartDrawer">
-    <div class="cart-header">
-        <div>
-            <p class="eyebrow">YOUR SELECTION</p>
-            <h2>Your shopping bag</h2>
-        </div>
-        <button id="closeCart" class="close-button" aria-label="Close cart">×</button>
-    </div>
-
-    <div class="cart-items" id="cartItems"></div>
-
-    <div class="cart-footer">
-        <div class="cart-total-row">
-            <span>Total</span>
-            <strong id="cartTotal">₹0</strong>
-        </div>
-        <button id="checkoutButton" class="primary-button full-button">Continue to checkout</button>
-        <p class="demo-note">Checkout integration will be added in a future phase.</p>
-    </div>
-</aside>
 
 <script src="/explore-fashion.js"></script>
 </body>
 </html>
-Hello

@@ -1,732 +1,359 @@
 
 /* =========================================
-   STITCHEASE - EXPLORE FASHION
+   STITCHEASE - CUSTOMISATION STUDIO
+   Live garment preview
+   Price estimation
+   AI style suggestions
+   Reference photo preview
+   Face analysis using MediaPipe
+   Saved designs
 ========================================= */
 
-/* PRODUCT COLLECTION */
+const $ = id => document.getElementById(id);
 
-const products = [
-    {
-        id: 1,
-        name: "Banarasi Silk Saree",
-        category: "Sarees",
-        price: 8999,
-        rating: "4.9",
-        occasion: "Wedding",
-        colour: "Gold",
-        tag: "Bestseller",
-        trending: true,
-        sizes: ["S", "M", "L", "XL"],
-        image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=85"
-    },
-    {
-        id: 2,
-        name: "Kanjeevaram Silk Saree",
-        category: "Sarees",
-        price: 10999,
-        rating: "4.9",
-        occasion: "Wedding",
-        colour: "Maroon",
-        tag: "Trending",
-        trending: true,
-        sizes: ["S", "M", "L", "XL"],
-        image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=85"
-    },
-    {
-        id: 3,
-        name: "Organza Floral Saree",
-        category: "Sarees",
-        price: 6499,
-        rating: "4.7",
-        occasion: "Party",
-        colour: "Rose",
-        tag: "New Arrival",
-        trending: false,
-        sizes: ["S", "M", "L", "XL"],
-        image: "https://images.unsplash.com/photo-1583391733956-6c78276477e3?auto=format&fit=crop&w=700&q=85"
-    },
-    {
-        id: 4,
-        name: "Mirror Work Blouse",
-        category: "Blouses",
-        price: 1799,
-        rating: "4.6",
-        occasion: "Party",
-        colour: "Emerald",
-        tag: "Trending",
-        trending: true,
-        sizes: ["S", "M", "L", "XL"],
-        image: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=700&q=85"
-    },
-    {
-        id: 5,
-        name: "Zari Silk Blouse",
-        category: "Blouses",
-        price: 2299,
-        rating: "4.8",
-        occasion: "Festive",
-        colour: "Gold",
-        tag: "New Arrival",
-        trending: false,
-        sizes: ["S", "M", "L", "XL"],
-        image: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=700&q=85"
-    },
-    {
-        id: 6,
-        name: "Antique Gold Jhumkas",
-        category: "Jhumkas",
-        price: 899,
-        rating: "4.8",
-        occasion: "Festive",
-        colour: "Gold",
-        tag: "Trending",
-        trending: true,
-        sizes: ["One Size"],
-        image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=700&q=85"
-    },
-    {
-        id: 7,
-        name: "Pearl Chandbali Jhumkas",
-        category: "Jhumkas",
-        price: 1299,
-        rating: "4.7",
-        occasion: "Wedding",
-        colour: "Ivory",
-        tag: "Bestseller",
-        trending: false,
-        sizes: ["One Size"],
-        image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=700&q=85"
-    },
-    {
-        id: 8,
-        name: "Temple Design Jhumkas",
-        category: "Jhumkas",
-        price: 699,
-        rating: "4.6",
-        occasion: "Festive",
-        colour: "Gold",
-        tag: "Traditional Pick",
-        trending: false,
-        sizes: ["One Size"],
-        image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=700&q=85"
-    }
+const design = {
+    garment: "Kurti",
+    fabric: "Cotton",
+    colour: "#0B3D5C",
+    colourName: "Navy",
+    neckline: "Round",
+    sleeves: "Sleeveless",
+    length: "Knee length",
+    print: "Plain"
+};
+
+const colours = [
+    { name: "Navy", value: "#0B3D5C" },
+    { name: "Maroon", value: "#7A1F3D" },
+    { name: "Emerald", value: "#0F6B4F" },
+    { name: "Mustard", value: "#D9A441" },
+    { name: "Blush", value: "#E8B4B8" },
+    { name: "Black", value: "#252525" },
+    { name: "Ivory", value: "#D9D0BA" }
 ];
 
-/* STORAGE */
+const garmentPrices = {
+    Kurti: 1499,
+    Lehenga: 3999,
+    Blouse: 899,
+    "Co-ord set": 2499
+};
 
-function readStorage(key) {
+const fabricPrices = {
+    Cotton: 0,
+    Silk: 900,
+    Chanderi: 600,
+    Georgette: 400
+};
+
+let savedDesigns = readSavedDesigns();
+let faceLandmarker = null;
+let facePhoto = null;
+let toastTimer = null;
+
+
+/* =========================================
+   STORAGE
+========================================= */
+
+function readSavedDesigns() {
     try {
-        const value = JSON.parse(localStorage.getItem(key) || "[]");
-        return Array.isArray(value) ? value : [];
-    } catch (error) {
+        const data = JSON.parse(
+            localStorage.getItem("stitcheaseSavedDesigns") || "[]"
+        );
+
+        return Array.isArray(data) ? data : [];
+    } catch {
         return [];
     }
 }
 
-let cart = readStorage("stitcheaseFashionCart");
-let savedDesigns = readStorage("stitcheaseSavedDesigns");
-
-const money = amount =>
-    "₹" + Number(amount).toLocaleString("en-IN");
-
-function element(id) {
-    return document.getElementById(id);
-}
-
-/* =========================================
-   PRODUCT DISPLAY AND FILTERS
-========================================= */
-
-function displayProducts() {
-    const category = element("filterCategory").value;
-    const size = element("filterSize").value;
-    const colour = element("filterColour").value;
-    const occasion = element("filterOccasion").value;
-    const maxPrice = Number(element("maxPrice").value);
-    const sort = element("sortProducts").value;
-
-    let filtered = products.filter(product => {
-        return (
-            (category === "All" ||
-                (category === "Trending"
-                    ? product.trending
-                    : product.category === category)) &&
-
-            (size === "All" ||
-                product.sizes.includes(size)) &&
-
-            (colour === "All" || product.colour === colour) &&
-            (occasion === "All" || product.occasion === occasion) &&
-            product.price <= maxPrice
-        );
-    });
-
-    if (sort === "low") {
-        filtered.sort((a, b) => a.price - b.price);
-    } else if (sort === "high") {
-        filtered.sort((a, b) => b.price - a.price);
-    }
-
-    element("resultCount").textContent =
-        filtered.length +
-        (filtered.length === 1
-            ? " piece to explore"
-            : " pieces to explore");
-
-    const grid = element("productGrid");
-
-    if (!filtered.length) {
-        grid.innerHTML = `
-            <div class="no-products">
-                <h3>No matching products found</h3>
-                <p>Try changing your filters to explore more styles.</p>
-            </div>
-        `;
-        return;
-    }
-
-    grid.innerHTML = filtered.map(product => `
-        <article class="product-card">
-
-            <div class="product-photo">
-                <img
-                    src="${product.image}"
-                    alt="${product.name}"
-                    loading="lazy"
-                >
-                <span class="product-tag">${product.tag}</span>
-            </div>
-
-            <div class="product-details">
-                <span class="product-category">
-                    ${product.category}
-                </span>
-
-                <h3>${product.name}</h3>
-
-                <div class="product-price">
-                    ${money(product.price)}
-                </div>
-
-                <div class="product-meta">
-                    ★ ${product.rating} · ${product.occasion}
-                </div>
-
-                <div class="product-sizes">
-                    ${product.category === "Jhumkas"
-                        ? "One Size"
-                        : "Sizes: " + product.sizes.join(", ")}
-                </div>
-
-                <div class="product-actions">
-                    <button onclick="viewProduct(${product.id})">
-                        View Details
-                    </button>
-
-                    ${product.category !== "Jhumkas" ? `
-                        <button class="customise-product"
-                            onclick="customiseProduct(${product.id})">
-                            Customise
-                        </button>
-                    ` : ""}
-
-                    <button onclick="addToCart(${product.id})">
-                        + Add to Bag
-                    </button>
-                </div>
-            </div>
-        </article>
-    `).join("");
-}
-
-/* PRODUCT DETAILS */
-
-function viewProduct(id) {
-    const product = products.find(item => item.id === id);
-
-    if (!product) return;
-
-    alert(
-        product.name + "\n\n" +
-        "Category: " + product.category + "\n" +
-        "Price: " + money(product.price) + "\n" +
-        "Rating: " + product.rating + "\n" +
-        "Occasion: " + product.occasion + "\n" +
-        "Colour: " + product.colour
+function saveDesignsToStorage() {
+    localStorage.setItem(
+        "stitcheaseSavedDesigns",
+        JSON.stringify(savedDesigns)
     );
 }
 
-/* CUSTOMISE A PRODUCT */
 
-function customiseProduct(id) {
-    const product = products.find(item => item.id === id);
+/* =========================================
+   TOAST MESSAGE
+========================================= */
 
-    if (!product) return;
+function showToast(message) {
+    const toast = $("toast");
 
-    element("designOutfit").value =
-        product.category === "Sarees"
-            ? "Saree"
-            : "Blouse";
+    toast.textContent = message;
+    toast.classList.add("show");
 
-    const colourSelect = element("designColour");
+    clearTimeout(toastTimer);
 
-    if ([...colourSelect.options].some(option =>
-        option.value === product.colour
-    )) {
-        colourSelect.value = product.colour;
-    }
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2800);
+}
 
-    updateDesignSummary();
 
-    element("studio").scrollIntoView({
-        behavior: "smooth"
+/* =========================================
+   COLOUR OPTIONS
+========================================= */
+
+function createColourSwatches() {
+    const container = $("colourSwatches");
+
+    container.innerHTML = colours.map(colour => `
+        <button
+            type="button"
+            class="swatch ${colour.value === design.colour ? "active" : ""}"
+            data-colour="${colour.value}"
+            style="background:${colour.value}"
+            aria-label="${colour.name}"
+            title="${colour.name}">
+        </button>
+    `).join("");
+
+    container.querySelectorAll(".swatch").forEach(button => {
+        button.addEventListener("click", () => {
+            const selected = colours.find(
+                colour => colour.value === button.dataset.colour
+            );
+
+            if (!selected) return;
+
+            design.colour = selected.value;
+            design.colourName = selected.name;
+
+            createColourSwatches();
+            renderDesign();
+        });
     });
 }
 
-/* FILTER EVENTS */
 
-[
-    "filterCategory",
-    "filterSize",
-    "filterColour",
-    "filterOccasion",
-    "maxPrice",
-    "sortProducts"
-].forEach(id => {
-    element(id).addEventListener("input", () => {
-        element("priceValue").textContent =
-            money(element("maxPrice").value);
+/* =========================================
+   OPTION BUTTONS
+========================================= */
 
-        displayProducts();
-    });
+document.querySelectorAll("[data-key]").forEach(button => {
+    button.addEventListener("click", () => {
+        const key = button.dataset.key;
+        const value = button.dataset.value;
 
-    element(id).addEventListener("change", displayProducts);
-});
-
-/* CLEAR FILTERS */
-
-element("clearFilters").addEventListener("click", () => {
-    element("filterCategory").value = "All";
-    element("filterSize").value = "All";
-    element("filterColour").value = "All";
-    element("filterOccasion").value = "All";
-    element("maxPrice").value = 15000;
-    element("sortProducts").value = "featured";
-
-    element("priceValue").textContent = "₹15,000";
-
-    displayProducts();
-});
-
-/* CATEGORY CARD CLICK */
-
-document.querySelectorAll(".category-card").forEach(card => {
-    card.addEventListener("click", () => {
-        const category = card.dataset.category;
-
-        if (category === "Custom Outfits") {
-            element("studio").scrollIntoView({
-                behavior: "smooth"
-            });
+        if (!Object.prototype.hasOwnProperty.call(design, key)) {
             return;
         }
 
-        element("filterCategory").value = category;
-        displayProducts();
+        design[key] = value;
 
-        element("shop").scrollIntoView({
-            behavior: "smooth"
+        document.querySelectorAll(`[data-key="${key}"]`).forEach(option => {
+            option.classList.toggle(
+                "active",
+                option.dataset.value === value
+            );
         });
+
+        renderDesign();
     });
 });
 
-/* TRENDING BUTTON */
-
-element("trendingButton").addEventListener("click", event => {
-    event.preventDefault();
-
-    element("filterCategory").value = "Trending";
-    displayProducts();
-
-    element("shop").scrollIntoView({
-        behavior: "smooth"
-    });
-});
 
 /* =========================================
-   SHOPPING CART
+   PRICE CALCULATION
 ========================================= */
 
-function saveCart() {
-    localStorage.setItem(
-        "stitcheaseFashionCart",
-        JSON.stringify(cart)
-    );
+function calculatePrice() {
+    let price =
+        (garmentPrices[design.garment] || 1499) +
+        (fabricPrices[design.fabric] || 0);
 
-    updateCart();
+    if (design.neckline === "Boat") {
+        price += 150;
+    }
+
+    if (design.sleeves === "Short") {
+        price += 100;
+    }
+
+    if (design.sleeves === "Three-quarter") {
+        price += 200;
+    }
+
+    if (design.length === "Long") {
+        price += 250;
+    }
+
+    if (design.length === "Short") {
+        price -= 100;
+    }
+
+    if (design.print !== "Plain") {
+        price += 180;
+    }
+
+    return Math.max(price, 0);
 }
 
-function addToCart(id) {
-    const product = products.find(item => item.id === id);
-
-    if (!product) return;
-
-    cart.push({
-        id: Date.now(),
-        name: product.name,
-        price: product.price,
-        type: "Ready-made"
-    });
-
-    saveCart();
-    toggleCart(true);
+function formatMoney(amount) {
+    return "₹" + Number(amount).toLocaleString("en-IN");
 }
 
-function addCustomDesignToCart() {
-    const design = getDesign();
 
-    cart.push({
-        id: Date.now(),
-        name: design.Outfit + " - Custom design",
-        price: estimatePrice(),
-        type: "Custom design"
-    });
+/* =========================================
+   LIVE GARMENT PREVIEW
+========================================= */
 
-    saveCart();
-    toggleCart(true);
-}
+function renderDesign() {
+    const colour = design.colour;
 
-function removeCartItem(id) {
-    cart = cart.filter(item => item.id !== id);
-    saveCart();
-}
+    const garment = $("garmentShape");
+    const pattern = $("garmentPattern");
+    const leftSleeve = $("leftSleeve");
+    const rightSleeve = $("rightSleeve");
+    const neck = $("neckShape");
+    const leftLeg = $("leftLeg");
+    const rightLeg = $("rightLeg");
 
-function updateCart() {
-    element("cartCount").textContent = cart.length;
+    const garmentLength = {
+        Short: 235,
+        "Knee length": 325,
+        Long: 365
+    }[design.length];
 
-    const container = element("cartItems");
+    let garmentPath;
 
-    if (!cart.length) {
-        container.innerHTML = `
-            <div class="cart-empty">
-                <span>♡</span>
-                <p>Your bag is empty.</p>
-                <small>Add a ready-made piece or custom design.</small>
-            </div>
-        `;
+    if (design.garment === "Blouse") {
+        garmentPath =
+            "M92 103 Q130 91 168 103 L160 170 L174 238 L86 238 L100 170Z";
+
+        leftLeg.setAttribute("y", 230);
+        rightLeg.setAttribute("y", 230);
+    } else if (design.garment === "Lehenga") {
+        garmentPath =
+            `M92 103 Q130 91 168 103 L160 170 L205 ${garmentLength} L55 ${garmentLength} L100 170Z`;
+
+        leftLeg.setAttribute("y", garmentLength - 8);
+        rightLeg.setAttribute("y", garmentLength - 8);
+    } else if (design.garment === "Co-ord set") {
+        garmentPath =
+            `M92 103 Q130 91 168 103 L160 170 L174 240 L86 240 L100 170Z`;
+
+        leftLeg.setAttribute("y", 235);
+        rightLeg.setAttribute("y", 235);
     } else {
-        container.innerHTML = cart.map(item => `
-            <div class="cart-item">
-                <div>
-                    <strong>${item.name}</strong>
-                    <small>${item.type}</small>
-                    <small>${money(item.price)}</small>
-                </div>
+        garmentPath =
+            `M92 103 Q130 91 168 103 L160 170 L190 ${garmentLength} L70 ${garmentLength} L100 170Z`;
 
-                <button class="remove-item"
-                    onclick="removeCartItem(${item.id})">
-                    Remove
-                </button>
-            </div>
-        `).join("");
+        leftLeg.setAttribute("y", garmentLength - 8);
+        rightLeg.setAttribute("y", garmentLength - 8);
     }
 
-    const total = cart.reduce(
-        (sum, item) => sum + Number(item.price || 0),
-        0
-    );
+    garment.setAttribute("d", garmentPath);
+    garment.setAttribute("fill", colour);
 
-    element("cartTotal").textContent = money(total);
+    pattern.setAttribute("d", garmentPath);
+
+    if (design.print === "Gold dots") {
+        pattern.setAttribute("fill", "url(#dotPattern)");
+    } else if (design.print === "Floral") {
+        pattern.setAttribute("fill", "url(#flowerPattern)");
+    } else {
+        pattern.setAttribute("fill", "none");
+    }
+
+    const sleevePaths = {
+        Sleeveless: ["", ""],
+        Short: [
+            "M92 108 L68 139 L77 158 L108 128Z",
+            "M168 108 L192 139 L183 158 L152 128Z"
+        ],
+        "Three-quarter": [
+            "M92 108 L62 184 L78 195 L111 132Z",
+            "M168 108 L198 184 L182 195 L149 132Z"
+        ]
+    };
+
+    const sleeves = sleevePaths[design.sleeves];
+
+    leftSleeve.setAttribute("d", sleeves[0]);
+    rightSleeve.setAttribute("d", sleeves[1]);
+
+    leftSleeve.setAttribute("fill", colour);
+    rightSleeve.setAttribute("fill", colour);
+
+    const neckPaths = {
+        Round: "M111 101 Q130 128 149 101Z",
+        "V-neck": "M111 101 L130 137 L149 101Z",
+        Boat: "M94 106 Q130 122 166 106 Q130 96 94 106Z"
+    };
+
+    neck.setAttribute("d", neckPaths[design.neckline]);
+
+    $("previewTitle").textContent =
+        `${design.garment} in ${design.fabric}`;
+
+    $("selectedColour").textContent = design.colourName;
+
+    $("estimatedPrice").textContent =
+        formatMoney(calculatePrice());
+
+    const svg = $("outfitSvg");
+
+    svg.classList.remove("pop");
+    void svg.offsetWidth;
+    svg.classList.add("pop");
 }
 
-function toggleCart(open) {
-    element("cartDrawer").classList.toggle("open", open);
-    element("cartBackdrop").classList.toggle("show", open);
-
-    document.body.style.overflow = open ? "hidden" : "";
-}
-
-element("openCart").addEventListener("click", () => {
-    toggleCart(true);
-});
-
-element("closeCart").addEventListener("click", () => {
-    toggleCart(false);
-});
-
-element("cartBackdrop").addEventListener("click", () => {
-    toggleCart(false);
-});
-
-/* CLOSE CART WITH ESCAPE KEY */
-
-document.addEventListener("keydown", event => {
-    if (event.key === "Escape") {
-        toggleCart(false);
-    }
-});
-
-/* CHECKOUT DEMO */
-
-element("checkoutButton").addEventListener("click", () => {
-    if (!cart.length) {
-        alert("Your shopping bag is empty. Add a product first.");
-        return;
-    }
-
-    const total = cart.reduce(
-        (sum, item) => sum + Number(item.price || 0),
-        0
-    );
-
-    alert(
-        "Your shopping bag is ready!\n\n" +
-        "Total: " + money(total) +
-        "\n\nCheckout will be connected to the STITCHEASE backend in a future phase."
-    );
-});
 
 /* =========================================
-   CUSTOMISATION STUDIO
+   STYLE MATCH
 ========================================= */
 
-function getDesign() {
-    return {
-        Outfit: element("designOutfit").value,
-        Fabric: element("designFabric").value,
-        Colour: element("designColour").value,
-        Neckline: element("designNeckline").value,
-        Sleeve: element("designSleeve").value,
-        Length: element("designLength").value,
-        Embroidery: element("designEmbroidery").value,
-        Occasion: element("designOccasion").value
-    };
-}
+const styleSuggestions = {
+    "Wedding guest":
+        "Try a rich silk or Chanderi outfit with a boat neckline and elegant gold detailing. A deeper colour with statement earrings creates a graceful wedding look.",
 
-/* ESTIMATED CUSTOM DESIGN PRICE */
+    Festive:
+        "A vibrant cotton or Chanderi outfit with floral or gold detailing is a lovely festive choice. Try a coordinated colour palette and traditional accessories.",
 
-function estimatePrice() {
-    const design = getDesign();
+    Office:
+        "Choose a comfortable cotton outfit in navy, ivory or muted colours. A simple neckline and minimal detailing will create a polished everyday look."
+};
 
-    let price = 1800;
-
-    const fabricPrices = {
-        Silk: 900,
-        Cotton: 200,
-        Georgette: 450,
-        Velvet: 850,
-        Chanderi: 700
-    };
-
-    const embroideryPrices = {
-        None: 0,
-        "Light zari": 600,
-        "Heavy zari": 1800,
-        "Thread work": 900,
-        "Mirror work": 1100
-    };
-
-    price += fabricPrices[design.Fabric] || 0;
-    price += embroideryPrices[design.Embroidery] || 0;
-
-    if (design.Occasion === "Wedding") price += 700;
-    if (design.Occasion === "Party") price += 300;
-    if (design.Occasion === "Festive") price += 200;
-
-    return price;
-}
-
-/* COLOUR PREVIEW */
-
-function colourCode(colour) {
-    const colours = {
-        Maroon: "#70263C",
-        Teal: "#167C80",
-        Gold: "#B58B24",
-        Navy: "#071B35",
-        Ivory: "#D9D0BA",
-        Emerald: "#08764C",
-        Rose: "#C8798B"
-    };
-
-    return colours[colour] || "#071B35";
-}
-
-/* UPDATE DESIGN SUMMARY */
-
-function updateDesignSummary() {
-    const design = getDesign();
-
-    element("designSummary").innerHTML =
-        Object.entries(design).map(([key, value]) => `
-            <div class="summary-item">
-                <small>${key}</small>
-                <strong>${value}</strong>
-            </div>
-        `).join("");
-
-    element("designEstimate").textContent =
-        money(estimatePrice());
-
-    const preview = element("previewArt");
-
-    preview.style.background =
-        `linear-gradient(135deg, ${colourCode(design.Colour)}, #071B35)`;
-}
-
-/* UPDATE WHEN SELECTION CHANGES */
-
-document.querySelectorAll("#designForm select").forEach(select => {
-    select.addEventListener("change", updateDesignSummary);
-});
-
-/* DESIGN RECOMMENDATION DEMO */
-
-element("recommendButton").addEventListener("click", () => {
-    updateDesignSummary();
-
-    const design = getDesign();
-
-    alert(
-        "Your design preferences are ready!\n\n" +
-        "Outfit: " + design.Outfit + "\n" +
-        "Fabric: " + design.Fabric + "\n" +
-        "Colour: " + design.Colour + "\n" +
-        "Embroidery: " + design.Embroidery + "\n" +
-        "Occasion: " + design.Occasion + "\n\n" +
-        "AI fashion recommendations can be connected in a future phase."
-    );
-});
-
-/* SAVE DESIGN */
-
-element("saveDesign").addEventListener("click", () => {
-    const design = getDesign();
-
-    savedDesigns.push({
-        id: Date.now(),
-        details: design,
-        price: estimatePrice()
-    });
-
-    localStorage.setItem(
-        "stitcheaseSavedDesigns",
-        JSON.stringify(savedDesigns)
-    );
-
-    displaySavedDesigns();
-
-    alert("Your design has been saved!");
-});
-
-/* ADD CUSTOM DESIGN TO CART */
-
-element("addCustomToCart").addEventListener(
-    "click",
-    addCustomDesignToCart
-);
-
-/* DISPLAY SAVED DESIGNS */
-
-function displaySavedDesigns() {
-    const container = element("savedDesigns");
-
-    if (!savedDesigns.length) {
-        container.innerHTML = `
-            <div class="saved-empty">
-                <span>♡</span>
-                <p>No saved designs yet.</p>
-                <small>Create a design in the studio and select Save design.</small>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = savedDesigns.map(item => `
-        <article class="saved-card">
-            <h3>${item.details.Outfit}</h3>
-
-            <p>
-                ${item.details.Fabric} · ${item.details.Colour}<br>
-                ${item.details.Embroidery} · ${item.details.Occasion}
-            </p>
-
-            <strong>${money(item.price)}</strong>
-
-            <button onclick="deleteSavedDesign(${item.id})">
-                Remove design
-            </button>
-        </article>
-    `).join("");
-}
-
-/* DELETE SAVED DESIGN */
-
-function deleteSavedDesign(id) {
-    savedDesigns = savedDesigns.filter(
-        item => item.id !== id
-    );
-
-    localStorage.setItem(
-        "stitcheaseSavedDesigns",
-        JSON.stringify(savedDesigns)
-    );
-
-    displaySavedDesigns();
-}
-
-/* =========================================
-   FASHION ASSISTANT - FRONTEND DEMO
-========================================= */
-
-function addChatMessage(message, type) {
-    const chat = element("chatMessages");
-    const bubble = document.createElement("div");
-
-    bubble.className = "chat-message " + type;
-    bubble.textContent = message;
-
-    chat.appendChild(bubble);
-    chat.scrollTop = chat.scrollHeight;
-}
-
-function sendChatMessage(message) {
-    if (!message.trim()) return;
-
-    addChatMessage(message, "user-message");
-
-    addChatMessage(
-        "Thank you for sharing! I can help you explore outfit ideas, colours, fabrics and styling inspiration. Personalised AI responses can be connected to the backend in a future phase.",
-        "assistant-message"
-    );
-}
-
-element("chatForm").addEventListener("submit", event => {
-    event.preventDefault();
-
-    const input = element("chatInput");
-
-    sendChatMessage(input.value);
-    input.value = "";
-});
-
-document.querySelectorAll(".suggestion").forEach(button => {
+document.querySelectorAll("[data-occasion]").forEach(button => {
     button.addEventListener("click", () => {
-        sendChatMessage(button.textContent);
+        document.querySelectorAll("[data-occasion]").forEach(option => {
+            option.classList.remove("active");
+        });
+
+        button.classList.add("active");
+
+        const occasion = button.dataset.occasion;
+
+        $("styleSuggestion").textContent =
+            styleSuggestions[occasion];
     });
 });
 
+
 /* =========================================
-   INSPIRATION IMAGE PREVIEW
+   REFERENCE PHOTO PREVIEW
+   Extracts approximate dominant colours
+   locally using Canvas
 ========================================= */
 
-element("inspirationUpload").addEventListener("change", event => {
+$("referenceUpload").addEventListener("change", event => {
     const file = event.target.files[0];
 
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-        alert("Please select an image file.");
+        showToast("Please select a valid image.");
+        event.target.value = "";
+        return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+        showToast("Please choose an image smaller than 10 MB.");
         event.target.value = "";
         return;
     }
@@ -734,52 +361,492 @@ element("inspirationUpload").addEventListener("change", event => {
     const reader = new FileReader();
 
     reader.onload = () => {
-        element("visualPreview").innerHTML = "";
+        const image = new Image();
 
-        const image = document.createElement("img");
+        image.onload = () => {
+            $("referenceImage").src = reader.result;
+            $("referencePreview").hidden = false;
+
+            extractImageColours(image);
+
+            $("referenceStatus").textContent =
+                "Reference image loaded. Main colours have been sampled.";
+        };
+
+        image.onerror = () => {
+            $("referenceStatus").textContent =
+                "Could not open this image. Please try another photo.";
+        };
+
         image.src = reader.result;
-        image.alt = "Your inspiration image";
-
-        element("visualPreview").appendChild(image);
     };
 
     reader.readAsDataURL(file);
 });
 
-/* PREPARE DESIGN IDEA */
+function extractImageColours(image) {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d", {
+        willReadFrequently: true
+    });
 
-element("generateConcept").addEventListener("click", () => {
-    const file = element("inspirationUpload").files[0];
+    canvas.width = 50;
+    canvas.height = 50;
 
-    if (!file) {
-        alert("Please upload an inspiration image first.");
+    context.drawImage(image, 0, 0, 50, 50);
+
+    const pixels = context.getImageData(
+        0, 0, 50, 50
+    ).data;
+
+    const buckets = {};
+
+    for (let i = 0; i < pixels.length; i += 16) {
+        const r = Math.round(pixels[i] / 32) * 32;
+        const g = Math.round(pixels[i + 1] / 32) * 32;
+        const b = Math.round(pixels[i + 2] / 32) * 32;
+
+        const key = [
+            Math.min(r, 255),
+            Math.min(g, 255),
+            Math.min(b, 255)
+        ].join(",");
+
+        buckets[key] = (buckets[key] || 0) + 1;
+    }
+
+    const dominant = Object.entries(buckets)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(item => item[0]);
+
+    $("referencePalette").innerHTML = dominant.map(rgb => `
+        <span style="background:rgb(${rgb})" title="Sampled colour"></span>
+    `).join("");
+}
+
+
+/* =========================================
+   SAVE DESIGN
+========================================= */
+
+function getDesignCopy() {
+    return {
+        garment: design.garment,
+        fabric: design.fabric,
+        colour: design.colourName,
+        neckline: design.neckline,
+        sleeves: design.sleeves,
+        length: design.length,
+        print: design.print
+    };
+}
+
+$("saveDesign").addEventListener("click", () => {
+    const item = {
+        id: Date.now(),
+        details: getDesignCopy(),
+        price: calculatePrice(),
+        createdAt: new Date().toISOString()
+    };
+
+    savedDesigns.unshift(item);
+    saveDesignsToStorage();
+    displaySavedDesigns();
+
+    showToast("Your design has been saved!");
+});
+
+function displaySavedDesigns() {
+    const container = $("savedDesigns");
+
+    $("savedCount").textContent =
+        `${savedDesigns.length} ${savedDesigns.length === 1 ? "design" : "designs"} saved`;
+
+    if (!savedDesigns.length) {
+        container.innerHTML = `
+            <div class="empty-saved">
+                <span>♡</span>
+                <p>Your saved designs will appear here.</p>
+            </div>
+        `;
         return;
     }
 
-    alert(
-        "Your inspiration image has been uploaded successfully!\n\n" +
-        "Your reference is ready for the design process. AI outfit image generation can be integrated in a future phase."
-    );
-});
+    container.innerHTML = savedDesigns.map(item => {
+        const d = item.details || {};
 
-/* =========================================
-   HOMEPAGE ACCOUNT NAVIGATION
-========================================= */
+        return `
+            <article class="saved-card">
+                <h3>${escapeHTML(d.garment || "Custom outfit")}</h3>
 
-function goToAccount(section) {
-    sessionStorage.setItem(
-        "stitcheaseReturnSection",
-        section
-    );
+                <p>
+                    ${escapeHTML(d.fabric || "")} · ${escapeHTML(d.colour || "")}<br>
+                    ${escapeHTML(d.neckline || "")} neckline · ${escapeHTML(d.sleeves || "")} sleeves<br>
+                    ${escapeHTML(d.length || "")} · ${escapeHTML(d.print || "")}
+                </p>
 
-    return true;
+                <strong>${formatMoney(item.price || 0)}</strong>
+
+                <button type="button" onclick="removeSavedDesign(${Number(item.id)})">
+                    Remove design
+                </button>
+            </article>
+        `;
+    }).join("");
 }
 
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[character]);
+}
+
+function removeSavedDesign(id) {
+    savedDesigns = savedDesigns.filter(item => item.id !== id);
+
+    saveDesignsToStorage();
+    displaySavedDesigns();
+
+    showToast("Saved design removed.");
+}
+
+
 /* =========================================
-   INITIALISE PAGE
+   BOOK A FITTING
 ========================================= */
 
-displayProducts();
-updateDesignSummary();
+$("bookFitting").addEventListener("click", () => {
+    sessionStorage.setItem(
+        "stitcheaseReturnSection",
+        "appointmentSection"
+    );
+
+    sessionStorage.setItem(
+        "stitcheaseCustomDesign",
+        JSON.stringify({
+            ...getDesignCopy(),
+            estimatedPrice: calculatePrice()
+        })
+    );
+
+    showToast("Taking you to Stitchease to book your fitting...");
+
+    setTimeout(() => {
+        window.location.href = "/";
+    }, 800);
+});
+
+
+/* =========================================
+   AI FACE DETECTOR
+   MediaPipe Face Landmarker
+   Runs locally in the browser
+========================================= */
+
+async function loadFaceDetector() {
+    if (faceLandmarker) {
+        return faceLandmarker;
+    }
+
+    $("faceStatus").textContent =
+        "Loading face detection model. Please wait...";
+
+    const vision = await import(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm"
+    );
+
+    const { FilesetResolver, FaceLandmarker } = vision;
+
+    const fileset = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+    );
+
+    faceLandmarker = await FaceLandmarker.createFromOptions(
+        fileset,
+        {
+            baseOptions: {
+                modelAssetPath:
+                    "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+                delegate: "CPU"
+            },
+            runningMode: "IMAGE",
+            numFaces: 1
+        }
+    );
+
+    return faceLandmarker;
+}
+
+
+/* FACE PHOTO UPLOAD */
+
+$("faceUpload").addEventListener("change", event => {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        showToast("Please upload a valid image.");
+        event.target.value = "";
+        return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+        showToast("Please upload an image smaller than 10 MB.");
+        event.target.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        const image = new Image();
+
+        image.onload = () => {
+            facePhoto = image;
+
+            $("faceImage").src = reader.result;
+            $("facePreview").hidden = false;
+            $("faceResult").hidden = true;
+            $("faceProgress").style.width = "0";
+
+            $("faceStatus").textContent =
+                "Photo uploaded. Select Analyse my face.";
+        };
+
+        image.onerror = () => {
+            $("faceStatus").textContent =
+                "Unable to load this photo. Try another image.";
+        };
+
+        image.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+});
+
+
+/* LANDMARK DISTANCE */
+
+function landmarkDistance(a, b) {
+    return Math.hypot(
+        a.x - b.x,
+        a.y - b.y
+    );
+}
+
+
+/* ESTIMATE FACE SHAPE */
+
+function estimateFaceShape(landmarks) {
+    const foreheadWidth = landmarkDistance(
+        landmarks[127],
+        landmarks[356]
+    );
+
+    const cheekWidth = landmarkDistance(
+        landmarks[234],
+        landmarks[454]
+    );
+
+    const jawWidth = landmarkDistance(
+        landmarks[172],
+        landmarks[397]
+    );
+
+    const faceHeight = landmarkDistance(
+        landmarks[10],
+        landmarks[152]
+    );
+
+    if (!cheekWidth || !faceHeight) {
+        return "Oval";
+    }
+
+    const widthHeightRatio = cheekWidth / faceHeight;
+    const foreheadRatio = foreheadWidth / cheekWidth;
+    const jawRatio = jawWidth / cheekWidth;
+    const heightRatio = faceHeight / cheekWidth;
+
+    if (widthHeightRatio > 0.82 && jawRatio > 0.82) {
+        return "Round";
+    }
+
+    if (jawRatio > 0.84 && foreheadRatio > 0.82) {
+        return "Square";
+    }
+
+    if (heightRatio > 1.48) {
+        return "Oblong";
+    }
+
+    if (foreheadRatio > 0.94 && jawRatio < 0.78) {
+        return "Heart";
+    }
+
+    return "Oval";
+}
+
+
+/* FACE SHAPE STYLE SUGGESTIONS */
+
+const faceRecommendations = {
+    Oval: {
+        description:
+            "Your detected facial proportions appear relatively balanced. You can experiment with many traditional neckline and jewellery styles.",
+
+        neckline:
+            "Boat neck, V-neck and sweetheart neck",
+
+        earrings:
+            "Jhumkas, chandbalis and studs",
+
+        tip:
+            "Experiment with different blouse designs and saree drapes."
+    },
+
+    Round: {
+        description:
+            "Your detected facial proportions appear softer, with a relatively balanced width and height.",
+
+        neckline:
+            "V-neck and sweetheart neck",
+
+        earrings:
+            "Long jhumkas and drop earrings",
+
+        tip:
+            "Try longer earring styles and vertically detailed blouse designs."
+    },
+
+    Square: {
+        description:
+            "Your detected facial proportions appear to have a broader jawline and balanced facial width.",
+
+        neckline:
+            "Sweetheart and rounded necklines",
+
+        earrings:
+            "Curved chandbalis and rounded jhumkas",
+
+        tip:
+            "Try softer curves and delicate jewellery details."
+    },
+
+    Heart: {
+        description:
+            "Your detected facial proportions appear broader around the forehead and narrower towards the chin.",
+
+        neckline:
+            "Boat neck and wider necklines",
+
+        earrings:
+            "Chandbalis and wider statement earrings",
+
+        tip:
+            "Try balanced accessories and detailed blouse necklines."
+    },
+
+    Oblong: {
+        description:
+            "Your detected facial proportions appear longer than they are wide.",
+
+        neckline:
+            "Boat neck and square neck",
+
+        earrings:
+            "Wide jhumkas and statement chandbalis",
+
+        tip:
+            "Try wider jewellery styles and horizontal blouse details."
+    }
+};
+
+
+/* RUN FACE ANALYSIS */
+
+$("analyseFace").addEventListener("click", async () => {
+    if (!facePhoto) {
+        showToast("Please upload your photo first.");
+        return;
+    }
+
+    const button = $("analyseFace");
+
+    button.disabled = true;
+    button.textContent = "Analysing...";
+
+    $("faceResult").hidden = true;
+    $("faceProgress").style.width = "20%";
+    $("faceStatus").textContent =
+        "Preparing the AI face detector...";
+
+    try {
+        const detector = await loadFaceDetector();
+
+        $("faceProgress").style.width = "60%";
+        $("faceStatus").textContent =
+            "Detecting facial landmarks...";
+
+        const result = detector.detect(facePhoto);
+
+        if (!result.faceLandmarks || !result.faceLandmarks.length) {
+            $("faceStatus").textContent =
+                "No face detected. Please use a clear, front-facing photo with good lighting.";
+
+            $("faceProgress").style.width = "0";
+            return;
+        }
+
+        const landmarks = result.faceLandmarks[0];
+        const shape = estimateFaceShape(landmarks);
+        const suggestion = faceRecommendations[shape];
+
+        $("faceShape").textContent =
+            `Estimated ${shape} face shape`;
+
+        $("faceDescription").textContent =
+            suggestion.description;
+
+        $("faceNeckline").textContent =
+            suggestion.neckline;
+
+        $("faceEarrings").textContent =
+            suggestion.earrings;
+
+        $("faceTip").textContent =
+            suggestion.tip;
+
+        $("faceProgress").style.width = "100%";
+        $("faceStatus").textContent =
+            "Face detected. Your styling suggestions are ready.";
+
+        $("faceResult").hidden = false;
+
+    } catch (error) {
+        console.error("Face analysis error:", error);
+
+        $("faceProgress").style.width = "0";
+
+        $("faceStatus").textContent =
+            "Could not load the face detector. Check your internet connection and try again.";
+
+    } finally {
+        button.disabled = false;
+        button.textContent = "Analyse my face";
+    }
+});
+
+
+/* =========================================
+   INITIALISE
+========================================= */
+
+createColourSwatches();
+renderDesign();
 displaySavedDesigns();
-updateCart();
