@@ -1689,6 +1689,526 @@ STITCHEASE - ADMIN REVIEWS DESIGN
     }
 }
 
+
+
+/* ==========================================
+   CONSISTENT ADMIN PAGE DESIGN
+   Payments page remains the visual reference
+========================================== */
+
+.admin-page:not(#payments) {
+    padding: 29px 30px 40px;
+    min-width: 0;
+}
+
+.admin-page:not(#payments) .page-heading {
+    margin-bottom: 26px;
+    padding-bottom: 19px;
+    border-bottom: 1px solid #EEE8D9;
+}
+
+.admin-page:not(#payments) .page-heading h1 {
+    margin: 7px 0;
+    font-size: 29px;
+    color: #29271F !important;
+}
+
+.admin-page:not(#payments) .page-heading p {
+    color: #827C70 !important;
+    font-size: 13px;
+}
+
+.admin-page:not(#payments) .eyebrow {
+    color: #A17A20;
+    letter-spacing: 1.1px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* Main content cards */
+.admin-page:not(#payments) .panel,
+.admin-page:not(#payments) .content-card,
+.admin-page:not(#payments) .section-placeholder {
+    background: #FFFDF7 !important;
+    border: 1px solid #EEE8D9 !important;
+    border-radius: 15px !important;
+    box-shadow: 0 3px 12px rgba(45, 39, 20, 0.035) !important;
+    margin: 0 0 24px;
+    padding: 24px;
+    min-width: 0;
+}
+
+.admin-page:not(#payments) .panel-header {
+    padding: 0 0 19px;
+    margin-bottom: 19px;
+    border-bottom: 1px solid #EEE9DF;
+}
+
+.admin-page:not(#payments) .panel-header h2,
+.admin-page:not(#payments) .section-heading h2 {
+    color: #29271F !important;
+    font-size: 19px;
+    margin: 0 0 7px;
+}
+
+.admin-page:not(#payments) .panel-header p,
+.admin-page:not(#payments) .section-heading p {
+    color: #827C70 !important;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Dashboard summary cards */
+.admin-page:not(#payments) .stats-grid,
+.admin-page:not(#payments) .review-stats-grid {
+    gap: 20px;
+    margin: 24px 0;
+}
+
+.admin-page:not(#payments) .stat-card,
+.admin-page:not(#payments) .review-stat-card {
+    background: #FFFDF7 !important;
+    border: 1px solid #EEE8D9 !important;
+    border-radius: 15px !important;
+    box-shadow: 0 3px 12px rgba(45, 39, 20, 0.035) !important;
+    padding: 22px;
+}
+
+.admin-page:not(#payments) .stat-card h3,
+.admin-page:not(#payments) .review-stat-card strong {
+    color: #29271F !important;
+}
+
+.admin-page:not(#payments) .stat-card p,
+.admin-page:not(#payments) .review-stat-card span,
+.admin-page:not(#payments) .review-stat-card small {
+    color: #827C70 !important;
+}
+
+/* Tables */
+.admin-page:not(#payments) .table-wrap,
+.admin-page:not(#payments) .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #EEE9DF;
+    border-radius: 11px;
+    background: #FFFFFF;
+}
+
+.admin-page:not(#payments) table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #FFFFFF;
+}
+
+.admin-page:not(#payments) th {
+    padding: 15px 14px;
+    background: #FFF8E5 !important;
+    color: #66552C !important;
+    border-bottom: 1px solid #EEE9DF;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.admin-page:not(#payments) td {
+    padding: 15px 14px;
+    color: #555047 !important;
+    border-bottom: 1px solid #F0EBE1 !important;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.admin-page:not(#payments) tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+.admin-page:not(#payments) tbody tr:hover {
+    background: #FFFCF3 !important;
+}
+
+.admin-page:not(#payments) .empty-state {
+    padding: 30px 18px;
+    text-align: center;
+    color: #969084 !important;
+}
+
+/* Forms and search controls */
+.admin-page:not(#payments) .form-grid {
+    gap: 19px;
+}
+
+.admin-page:not(#payments) .field label {
+    color: #665F52;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.admin-page:not(#payments) input,
+.admin-page:not(#payments) select,
+.admin-page:not(#payments) textarea,
+.admin-page:not(#payments) .search-input {
+    border: 1px solid #E9E1D2 !important;
+    border-radius: 9px !important;
+    background: #FFFEFA !important;
+    color: #343434 !important;
+    padding: 11px 13px;
+    font-size: 12px;
+}
+
+.admin-page:not(#payments) input:focus,
+.admin-page:not(#payments) select:focus,
+.admin-page:not(#payments) textarea:focus {
+    border-color: #D9B54D !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(233, 185, 54, .12);
+}
+
+.admin-page:not(#payments) .table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 0 0 17px;
+}
+
+.admin-page:not(#payments) .muted {
+    color: #827C70;
+    font-size: 12px;
+}
+
+/* Welcome and placeholder sections */
+.admin-page:not(#payments) .welcome-card {
+    border-radius: 15px;
+    margin-bottom: 27px;
+}
+
+.admin-page:not(#payments) .section-placeholder {
+    text-align: center;
+    padding: 42px 24px;
+}
+
+.admin-page:not(#payments) .section-placeholder h2 {
+    color: #29271F !important;
+    margin: 14px 0 8px;
+}
+
+.admin-page:not(#payments) .section-placeholder p {
+    color: #827C70 !important;
+}
+
+/* Reviews */
+.admin-page:not(#payments) .admin-reviews-card {
+    padding: 24px;
+}
+
+.admin-page:not(#payments) .admin-reviews-table {
+    min-width: 760px;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+    .admin-page:not(#payments) {
+        padding: 24px 20px 35px;
+    }
+
+    .admin-page:not(#payments) .stats-grid,
+    .admin-page:not(#payments) .review-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-page:not(#payments) {
+        padding: 20px 14px 30px;
+    }
+
+    .admin-page:not(#payments) .page-heading h1 {
+        font-size: 25px;
+    }
+
+    .admin-page:not(#payments) .panel,
+    .admin-page:not(#payments) .content-card,
+    .admin-page:not(#payments) .section-placeholder {
+        padding: 17px 13px;
+    }
+
+    .admin-page:not(#payments) .stats-grid,
+    .admin-page:not(#payments) .review-stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .admin-page:not(#payments) .table-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+
+
+
+/* ==========================================
+   CONSISTENT ADMIN PAGE DESIGN
+   Payments page remains the visual reference
+========================================== */
+
+.admin-page:not(#payments) {
+    padding: 29px 30px 40px;
+    min-width: 0;
+}
+
+.admin-page:not(#payments) .page-heading {
+    margin-bottom: 26px;
+    padding-bottom: 19px;
+    border-bottom: 1px solid #EEE8D9;
+}
+
+.admin-page:not(#payments) .page-heading h1 {
+    margin: 7px 0;
+    font-size: 29px;
+    color: #29271F !important;
+}
+
+.admin-page:not(#payments) .page-heading p {
+    color: #827C70 !important;
+    font-size: 13px;
+}
+
+.admin-page:not(#payments) .eyebrow {
+    color: #A17A20;
+    letter-spacing: 1.1px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* Main content cards */
+.admin-page:not(#payments) .panel,
+.admin-page:not(#payments) .content-card,
+.admin-page:not(#payments) .section-placeholder {
+    background: #FFFDF7 !important;
+    border: 1px solid #EEE8D9 !important;
+    border-radius: 15px !important;
+    box-shadow: 0 3px 12px rgba(45, 39, 20, 0.035) !important;
+    margin: 0 0 24px;
+    padding: 24px;
+    min-width: 0;
+}
+
+.admin-page:not(#payments) .panel-header {
+    padding: 0 0 19px;
+    margin-bottom: 19px;
+    border-bottom: 1px solid #EEE9DF;
+}
+
+.admin-page:not(#payments) .panel-header h2,
+.admin-page:not(#payments) .section-heading h2 {
+    color: #29271F !important;
+    font-size: 19px;
+    margin: 0 0 7px;
+}
+
+.admin-page:not(#payments) .panel-header p,
+.admin-page:not(#payments) .section-heading p {
+    color: #827C70 !important;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Dashboard summary cards */
+.admin-page:not(#payments) .stats-grid,
+.admin-page:not(#payments) .review-stats-grid {
+    gap: 20px;
+    margin: 24px 0;
+}
+
+.admin-page:not(#payments) .stat-card,
+.admin-page:not(#payments) .review-stat-card {
+    background: #FFFDF7 !important;
+    border: 1px solid #EEE8D9 !important;
+    border-radius: 15px !important;
+    box-shadow: 0 3px 12px rgba(45, 39, 20, 0.035) !important;
+    padding: 22px;
+}
+
+.admin-page:not(#payments) .stat-card h3,
+.admin-page:not(#payments) .review-stat-card strong {
+    color: #29271F !important;
+}
+
+.admin-page:not(#payments) .stat-card p,
+.admin-page:not(#payments) .review-stat-card span,
+.admin-page:not(#payments) .review-stat-card small {
+    color: #827C70 !important;
+}
+
+/* Tables */
+.admin-page:not(#payments) .table-wrap,
+.admin-page:not(#payments) .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #EEE9DF;
+    border-radius: 11px;
+    background: #FFFFFF;
+}
+
+.admin-page:not(#payments) table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #FFFFFF;
+}
+
+.admin-page:not(#payments) th {
+    padding: 15px 14px;
+    background: #FFF8E5 !important;
+    color: #66552C !important;
+    border-bottom: 1px solid #EEE9DF;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.admin-page:not(#payments) td {
+    padding: 15px 14px;
+    color: #555047 !important;
+    border-bottom: 1px solid #F0EBE1 !important;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.admin-page:not(#payments) tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+.admin-page:not(#payments) tbody tr:hover {
+    background: #FFFCF3 !important;
+}
+
+.admin-page:not(#payments) .empty-state {
+    padding: 30px 18px;
+    text-align: center;
+    color: #969084 !important;
+}
+
+/* Forms and search controls */
+.admin-page:not(#payments) .form-grid {
+    gap: 19px;
+}
+
+.admin-page:not(#payments) .field label {
+    color: #665F52;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.admin-page:not(#payments) input,
+.admin-page:not(#payments) select,
+.admin-page:not(#payments) textarea,
+.admin-page:not(#payments) .search-input {
+    border: 1px solid #E9E1D2 !important;
+    border-radius: 9px !important;
+    background: #FFFEFA !important;
+    color: #343434 !important;
+    padding: 11px 13px;
+    font-size: 12px;
+}
+
+.admin-page:not(#payments) input:focus,
+.admin-page:not(#payments) select:focus,
+.admin-page:not(#payments) textarea:focus {
+    border-color: #D9B54D !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(233, 185, 54, .12);
+}
+
+.admin-page:not(#payments) .table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 0 0 17px;
+}
+
+.admin-page:not(#payments) .muted {
+    color: #827C70;
+    font-size: 12px;
+}
+
+/* Welcome and placeholder sections */
+.admin-page:not(#payments) .welcome-card {
+    border-radius: 15px;
+    margin-bottom: 27px;
+}
+
+.admin-page:not(#payments) .section-placeholder {
+    text-align: center;
+    padding: 42px 24px;
+}
+
+.admin-page:not(#payments) .section-placeholder h2 {
+    color: #29271F !important;
+    margin: 14px 0 8px;
+}
+
+.admin-page:not(#payments) .section-placeholder p {
+    color: #827C70 !important;
+}
+
+/* Reviews */
+.admin-page:not(#payments) .admin-reviews-card {
+    padding: 24px;
+}
+
+.admin-page:not(#payments) .admin-reviews-table {
+    min-width: 760px;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+    .admin-page:not(#payments) {
+        padding: 24px 20px 35px;
+    }
+
+    .admin-page:not(#payments) .stats-grid,
+    .admin-page:not(#payments) .review-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-page:not(#payments) {
+        padding: 20px 14px 30px;
+    }
+
+    .admin-page:not(#payments) .page-heading h1 {
+        font-size: 25px;
+    }
+
+    .admin-page:not(#payments) .panel,
+    .admin-page:not(#payments) .content-card,
+    .admin-page:not(#payments) .section-placeholder {
+        padding: 17px 13px;
+    }
+
+    .admin-page:not(#payments) .stats-grid,
+    .admin-page:not(#payments) .review-stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .admin-page:not(#payments) .table-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+
 </style>
 </head>
 
