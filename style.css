@@ -2728,3 +2728,13 @@ STITCHEASE - CUSTOMER REVIEW DESIGN
 #appointmentSection .two-column-layout {
     grid-template-columns: minmax(0, 1fr);
 }
+
+/* Explore Fashion — match the Appointment form layout */
+#designsSection .fashion-form {
+    width: 100%;
+}
+
+#designsSection .fashion-form .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+}
+
