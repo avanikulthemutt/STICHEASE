@@ -1,6 +1,9 @@
 import os
+import smtplib
 import mysql.connector
 import secrets
+
+from email.message import EmailMessage
 
 from datetime import date, time, datetime, timedelta
 from dotenv import load_dotenv
@@ -126,6 +129,55 @@ def close_db(cursor=None, connection=None):
 
 def admin_required():
     return session.get("admin_id") is not None
+
+
+def send_payment_confirmation_email(customer_email, customer_name, order):
+    """Send a payment confirmation after an administrator verifies payment."""
+    mail_username = os.getenv("MAIL_USERNAME", "").strip()
+    mail_password = os.getenv("MAIL_PASSWORD", "").strip()
+    mail_sender = os.getenv("MAIL_DEFAULT_SENDER", mail_username).strip()
+    mail_server = os.getenv("MAIL_SERVER", "smtp.gmail.com").strip()
+    mail_port = int(os.getenv("MAIL_PORT", "587"))
+
+    if not mail_username or not mail_password or not mail_sender:
+        raise RuntimeError(
+            "Gmail is not configured. Set MAIL_USERNAME, MAIL_PASSWORD "
+            "and MAIL_DEFAULT_SENDER in your .env file."
+        )
+
+    if not customer_email:
+        raise RuntimeError("The customer does not have an email address on their account.")
+
+    amount = order.get("estimated_price")
+    try:
+        amount_text = f"₹{float(amount):,.2f}"
+    except (TypeError, ValueError):
+        amount_text = str(amount or "Not available")
+
+    message = EmailMessage()
+    message["Subject"] = f"Payment Confirmation – Stitchease Order #{order['id']}"
+    message["From"] = mail_sender
+    message["To"] = customer_email
+    message.set_content(
+        f"Dear {customer_name or 'Customer'},\n\n"
+        "Your payment has been verified successfully by the Stitchease boutique.\n\n"
+        f"Order ID: #{order['id']}\n"
+        f"Outfit: {order.get('outfit_type') or 'Custom outfit'}\n"
+        f"Payment amount: {amount_text}\n"
+        f"Payment method: {order.get('payment_mode') or 'Not specified'}\n"
+        f"UPI transaction reference: {order.get('payment_reference') or 'Not provided'}\n"
+        "Payment status: PAID\n\n"
+        "Thank you for choosing Stitchease!\n"
+        "Your Style, Your Way.\n\n"
+        "Stitchease Team"
+    )
+
+    with smtplib.SMTP(mail_server, mail_port, timeout=20) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login(mail_username, mail_password)
+        smtp.send_message(message)
 
 
 # ====================================================
@@ -1282,7 +1334,35 @@ def update_admin_payment(order_id):
 
     try:
         connection = get_db_connection()
-        cursor = connection.cursor()
+        cursor = connection.cursor(dictionary=True)
+
+        # Add the email-sent marker to older databases without disturbing data.
+        cursor.execute(
+            "SHOW COLUMNS FROM custom_orders LIKE 'payment_confirmation_sent_at'"
+        )
+        if not cursor.fetchone():
+            cursor.execute("""
+                ALTER TABLE custom_orders
+                ADD COLUMN payment_confirmation_sent_at DATETIME NULL
+            """)
+
+        # Lock this order while its payment status and email are processed.
+        cursor.execute("""
+            SELECT
+                co.id, co.customer_id, co.outfit_type, co.payment_mode,
+                co.estimated_price, co.payment_status, co.payment_reference,
+                co.payment_confirmation_sent_at,
+                c.name AS customer_name, c.email AS customer_email
+            FROM custom_orders co
+            LEFT JOIN customers c ON c.id = co.customer_id
+            WHERE co.id = %s
+            FOR UPDATE
+        """, (order_id,))
+        order = cursor.fetchone()
+
+        if not order:
+            connection.rollback()
+            return jsonify({"error": "Custom order not found."}), 404
 
         cursor.execute("""
             UPDATE custom_orders
@@ -1290,22 +1370,53 @@ def update_admin_payment(order_id):
             WHERE id = %s
         """, (payment_status, order_id))
 
-        if cursor.rowcount == 0:
-            cursor.execute(
-                "SELECT id FROM custom_orders WHERE id = %s",
-                (order_id,)
-            )
+        email_sent = False
+        email_already_sent = bool(order.get("payment_confirmation_sent_at"))
+        email_error = None
 
-            if not cursor.fetchone():
-                return jsonify({
-                    "error": "Custom order not found."
-                }), 404
+        # Send only on a Paid status, and only once per order.
+        if payment_status == "Paid" and not email_already_sent:
+            try:
+                send_payment_confirmation_email(
+                    order.get("customer_email"),
+                    order.get("customer_name"),
+                    order
+                )
+                cursor.execute("""
+                    UPDATE custom_orders
+                    SET payment_confirmation_sent_at = NOW()
+                    WHERE id = %s
+                """, (order_id,))
+                email_sent = True
+            except Exception as mail_exception:
+                # Payment verification is still saved even if email delivery fails.
+                email_error = str(mail_exception)
+                app.logger.exception(
+                    "Payment was marked Paid, but confirmation email failed for order %s",
+                    order_id
+                )
 
         connection.commit()
 
-        return jsonify({
-            "message": "Payment status updated successfully."
-        })
+        if payment_status == "Paid" and email_sent:
+            message = "Payment marked Paid. Confirmation email sent to the customer."
+        elif payment_status == "Paid" and email_already_sent:
+            message = "Payment is Paid. Confirmation email was already sent."
+        elif payment_status == "Paid":
+            message = "Payment marked Paid, but the confirmation email could not be sent. Check Gmail settings and retry by changing the status to Pending, then Paid."
+        else:
+            message = "Payment status updated successfully."
+
+        response = {
+            "message": message,
+            "payment_status": payment_status,
+            "email_sent": email_sent,
+            "email_already_sent": email_already_sent
+        }
+        if email_error:
+            response["email_error"] = email_error
+
+        return jsonify(response)
 
     except Exception:
         if connection:
@@ -1314,7 +1425,7 @@ def update_admin_payment(order_id):
         app.logger.exception("Updating payment status failed")
 
         return jsonify({
-            "error": "Could not update payment status."
+            "error": "Could not update payment status. Check the Flask terminal."
         }), 500
 
     finally:

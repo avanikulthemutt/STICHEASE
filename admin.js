@@ -714,7 +714,7 @@ function renderPayments() {
 
 async function updatePaymentStatus(orderId, paymentStatus) {
     try {
-        await apiRequest(
+        const result = await apiRequest(
             `/api/admin/payments/${encodeURIComponent(orderId)}`,
             {
                 method: "PATCH",
@@ -722,7 +722,7 @@ async function updatePaymentStatus(orderId, paymentStatus) {
             }
         );
 
-        alert("Payment status updated successfully.");
+        alert(result.message || "Payment status updated successfully.");
         await loadDashboard();
 
     } catch (error) {
