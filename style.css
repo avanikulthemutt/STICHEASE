@@ -2320,3 +2320,43 @@ STITCHEASE - CUSTOMER REVIEW DESIGN
         height: 125px;
     }
 }
+
+/* UPI transaction reference submission */
+.orders-list .payment-reference-label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    color: #3A3024;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.orders-list .payment-reference-input {
+    display: block;
+    width: 100%;
+    max-width: 340px;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #D8C9A9;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #3A3024;
+    font: inherit;
+}
+
+.orders-list .payment-reference-submit {
+    margin-top: 9px;
+    border: 0;
+    cursor: pointer;
+}
+
+.orders-list .payment-reference-submit:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.orders-list .payment-reference-message {
+    margin-top: 8px;
+    font-size: .8rem;
+    color: #665B4E;
+}

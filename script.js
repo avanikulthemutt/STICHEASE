@@ -1016,6 +1016,73 @@ async function renderOrders() {
                 payLink.textContent = "Pay Now";
                 paymentInfo.appendChild(payLink);
 
+                const referenceLabel = document.createElement("label");
+                referenceLabel.className = "payment-reference-label";
+                referenceLabel.textContent = "UPI Transaction Reference / UTR";
+
+                const referenceInput = document.createElement("input");
+                referenceInput.className = "payment-reference-input";
+                referenceInput.type = "text";
+                referenceInput.placeholder = "Enter UTR after completing payment";
+                referenceInput.maxLength = 50;
+                referenceInput.value = order.payment_reference || "";
+                referenceInput.id = "payment-reference-" + order.id;
+                referenceLabel.htmlFor = referenceInput.id;
+
+                const referenceButton = document.createElement("button");
+                referenceButton.className = "payment-reference-submit";
+                referenceButton.type = "button";
+                referenceButton.textContent = order.payment_reference
+                    ? "Update Reference"
+                    : "Submit Reference";
+
+                const referenceMessage = document.createElement("p");
+                referenceMessage.className = "payment-reference-message";
+                referenceMessage.textContent = order.payment_reference
+                    ? "Reference submitted: " + order.payment_reference
+                    : "Payment remains pending until boutique verification.";
+
+                referenceButton.addEventListener("click", async () => {
+                    const reference = referenceInput.value.trim();
+
+                    if (!reference) {
+                        referenceMessage.textContent = "Please enter your transaction reference.";
+                        return;
+                    }
+
+                    referenceButton.disabled = true;
+                    referenceMessage.textContent = "Submitting reference...";
+
+                    try {
+                        const result = await apiRequest(
+                            `/api/orders/${encodeURIComponent(order.id)}/payment-reference`,
+                            {
+                                method: "POST",
+                                body: JSON.stringify({
+                                    customer_id: currentCustomer.id,
+                                    payment_reference: reference
+                                })
+                            }
+                        );
+
+                        order.payment_reference = result.payment_reference;
+                        referenceMessage.textContent =
+                            "Reference submitted. Waiting for boutique verification.";
+                        referenceButton.textContent = "Update Reference";
+                    } catch (error) {
+                        referenceMessage.textContent = error.message;
+                    } finally {
+                        referenceButton.disabled = false;
+                    }
+                });
+
+                paymentInfo.append(
+                    referenceLabel,
+                    referenceInput,
+                    referenceButton,
+                    referenceMessage
+                );
+
             } else if (paymentStatus.toLowerCase() === "paid") {
                 const paidNote = document.createElement("p");
                 paidNote.className = "order-payment-confirmed";

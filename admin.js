@@ -687,6 +687,7 @@ function renderPayments() {
                 <td>${escapeHTML(getValue(order, "outfit_type", "outfit") || "—")}</td>
                 <td>${escapeHTML(getValue(order, "payment_mode") || "Not specified")}</td>
                 <td>${formatRupees(getValue(order, "estimated_price"))}</td>
+                <td>${escapeHTML(getValue(order, "payment_reference") || "Not submitted")}</td>
                 <td>
                     <span class="status ${getStatusClass(status)}">
                         ${escapeHTML(status)}

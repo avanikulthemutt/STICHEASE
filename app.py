@@ -847,11 +847,19 @@ def get_customer_custom_orders(customer_id):
                 ADD COLUMN payment_status VARCHAR(30) NOT NULL DEFAULT 'Pending'
             """)
 
+        cursor.execute("SHOW COLUMNS FROM custom_orders LIKE 'payment_reference'")
+        if not cursor.fetchone():
+            cursor.execute("""
+                ALTER TABLE custom_orders
+                ADD COLUMN payment_reference VARCHAR(100) NULL
+            """)
+
         cursor.execute("""
             SELECT
                 id, customer_id, outfit_type, colour, fabric,
                 occasion, description, duration_days, payment_mode,
-                estimated_price, status, payment_status, created_at
+                estimated_price, status, payment_status,
+                payment_reference, created_at
             FROM custom_orders
             WHERE customer_id = %s
             ORDER BY created_at DESC
@@ -870,6 +878,60 @@ def get_customer_custom_orders(customer_id):
         return jsonify({
             "error": "Could not load your orders."
         }), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+
+
+@app.route("/api/orders/<int:order_id>/payment-reference", methods=["POST"])
+def submit_payment_reference(order_id):
+    data = request.get_json(silent=True) or {}
+    customer_id = data.get("customer_id")
+    reference = str(data.get("payment_reference") or "").strip()
+
+    if not customer_id or not reference:
+        return jsonify({"error": "Please enter your UPI transaction reference."}), 400
+
+    if len(reference) < 6 or len(reference) > 50 or any(ch.isspace() for ch in reference):
+        return jsonify({"error": "Please enter a valid transaction reference."}), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            "SELECT id, payment_status FROM custom_orders WHERE id = %s AND customer_id = %s",
+            (order_id, customer_id)
+        )
+        order = cursor.fetchone()
+
+        if not order:
+            return jsonify({"error": "Order not found for this customer."}), 404
+
+        if str(order.get("payment_status") or "Pending").lower() == "paid":
+            return jsonify({"error": "This order is already marked as paid."}), 400
+
+        cursor.execute(
+            "UPDATE custom_orders SET payment_reference = %s WHERE id = %s",
+            (reference, order_id)
+        )
+        connection.commit()
+
+        return jsonify({
+            "message": "Transaction reference submitted. The boutique will verify your payment.",
+            "payment_reference": reference
+        })
+
+    except Exception:
+        if connection:
+            connection.rollback()
+        app.logger.exception("Saving payment reference failed")
+        return jsonify({"error": "Could not submit the transaction reference."}), 500
 
     finally:
         close_db(cursor, connection)
@@ -1085,13 +1147,20 @@ def admin_dashboard():
                 NOT NULL DEFAULT 'Pending'
             """)
 
+        cursor.execute("SHOW COLUMNS FROM custom_orders LIKE 'payment_reference'")
+        if not cursor.fetchone():
+            cursor.execute("""
+                ALTER TABLE custom_orders
+                ADD COLUMN payment_reference VARCHAR(100) NULL
+            """)
+
         cursor.execute("""
             SELECT
                 co.id, co.customer_id, c.name AS customer_name,
                 co.outfit_type, co.colour, co.fabric, co.occasion,
                 co.description, co.duration_days, co.payment_mode,
                 co.estimated_price, co.payment_status,
-                co.status, co.created_at
+                co.payment_reference, co.status, co.created_at
             FROM custom_orders co
             LEFT JOIN customers c ON co.customer_id = c.id
             ORDER BY co.created_at DESC
