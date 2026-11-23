@@ -444,7 +444,7 @@ function renderOrders() {
         `;
 
         allTable.innerHTML = `
-            <tr><td colspan="8" class="empty-state">No orders available yet.</td></tr>
+            <tr><td colspan="12" class="empty-state">No orders available yet.</td></tr>
         `;
         return;
     }
@@ -467,6 +467,7 @@ function renderOrders() {
 
     allTable.innerHTML = dashboardData.orders.map(order => {
         const id = getValue(order, "id", "order_id");
+        const deliveryStatus = getValue(order, "delivery_status") || "Not Assigned";
 
         return `
             <tr>
@@ -492,6 +493,37 @@ function renderOrders() {
                         `).join("")}
                     </select>
                 </td>
+                <td>
+                    <input type="text"
+                        id="delivery-name-${escapeHTML(id)}"
+                        placeholder="Delivery person"
+                        value="${escapeHTML(getValue(order, "delivery_person_name") || "")}"
+                        style="width:130px;padding:8px;">
+                </td>
+                <td>
+                    <input type="tel"
+                        id="delivery-phone-${escapeHTML(id)}"
+                        placeholder="Phone number"
+                        value="${escapeHTML(getValue(order, "delivery_person_phone") || "")}"
+                        style="width:130px;padding:8px;">
+                </td>
+                <td>
+                    <select id="delivery-status-${escapeHTML(id)}"
+                        class="payment-status-select">
+                        ${["Not Assigned", "Assigned", "Out for Delivery", "Delivered"].map(status => `
+                            <option value="${status}"
+                                ${deliveryStatus === status ? "selected" : ""}>
+                                ${status}
+                            </option>
+                        `).join("")}
+                    </select>
+                </td>
+                <td>
+                    <button type="button"
+                        onclick="saveDeliveryAssignment('${escapeHTML(id)}')">
+                        Save
+                    </button>
+                </td>
             </tr>
         `;
     }).join("");
@@ -508,6 +540,43 @@ async function updateOrderStatus(orderId, status) {
         });
 
         alert("Order status updated successfully.");
+        await loadDashboard();
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+
+async function saveDeliveryAssignment(orderId) {
+    const nameInput = document.getElementById(`delivery-name-${orderId}`);
+    const phoneInput = document.getElementById(`delivery-phone-${orderId}`);
+    const statusInput = document.getElementById(`delivery-status-${orderId}`);
+
+    const delivery_person_name = nameInput.value.trim();
+    const delivery_person_phone = phoneInput.value.trim();
+    const delivery_status = statusInput.value;
+
+    if (delivery_status !== "Not Assigned" &&
+        (!delivery_person_name || !delivery_person_phone)) {
+        alert("Enter the delivery person's name and phone number.");
+        return;
+    }
+
+    try {
+        const result = await apiRequest(
+            `/api/admin/orders/${encodeURIComponent(orderId)}/delivery`,
+            {
+                method: "PATCH",
+                body: JSON.stringify({
+                    delivery_person_name,
+                    delivery_person_phone,
+                    delivery_status
+                })
+            }
+        );
+
+        alert(result.message || "Delivery details updated successfully.");
         await loadDashboard();
 
     } catch (error) {

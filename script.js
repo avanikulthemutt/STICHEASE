@@ -1138,6 +1138,61 @@ async function renderOrders() {
                 card.appendChild(cancelledMessage);
             }
 
+            // DELIVERY TRACKING DETAILS
+
+            const deliverySection = document.createElement("section");
+            deliverySection.className = "order-tracking";
+
+            const deliveryHeading = document.createElement("h4");
+            deliveryHeading.textContent = "Delivery Details";
+
+            const deliveryStatusLine = document.createElement("p");
+            const deliveryStatusLabel = document.createElement("strong");
+            deliveryStatusLabel.textContent = "Delivery status: ";
+
+            deliveryStatusLine.append(
+                deliveryStatusLabel,
+                document.createTextNode(
+                    order.delivery_status || "Not Assigned"
+                )
+            );
+
+            deliverySection.append(deliveryHeading, deliveryStatusLine);
+
+            if (order.delivery_person_name && order.delivery_person_phone) {
+                const nameLine = document.createElement("p");
+                const nameLabel = document.createElement("strong");
+                nameLabel.textContent = "Delivery person: ";
+
+                nameLine.append(
+                    nameLabel,
+                    document.createTextNode(order.delivery_person_name)
+                );
+
+                const phoneLine = document.createElement("p");
+                const phoneLabel = document.createElement("strong");
+                phoneLabel.textContent = "Phone: ";
+
+                const phoneLink = document.createElement("a");
+                phoneLink.href = "tel:" + String(
+                    order.delivery_person_phone
+                ).replace(/[^0-9+]/g, "");
+                phoneLink.textContent = order.delivery_person_phone;
+
+                phoneLine.append(phoneLabel, phoneLink);
+
+                deliverySection.append(nameLine, phoneLine);
+
+            } else {
+                const note = document.createElement("p");
+                note.textContent =
+                    "A delivery person will be assigned once your order is ready.";
+
+                deliverySection.appendChild(note);
+            }
+
+            card.appendChild(deliverySection);
+
             container.appendChild(card);
         });
 

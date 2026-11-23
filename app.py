@@ -911,7 +911,8 @@ def get_customer_custom_orders(customer_id):
                 id, customer_id, outfit_type, colour, fabric,
                 occasion, description, duration_days, payment_mode,
                 estimated_price, status, payment_status,
-                payment_reference, created_at
+                payment_reference, delivery_person_name,
+                delivery_person_phone, delivery_status, created_at
             FROM custom_orders
             WHERE customer_id = %s
             ORDER BY created_at DESC
@@ -1212,7 +1213,9 @@ def admin_dashboard():
                 co.outfit_type, co.colour, co.fabric, co.occasion,
                 co.description, co.duration_days, co.payment_mode,
                 co.estimated_price, co.payment_status,
-                co.payment_reference, co.status, co.created_at
+                co.payment_reference, co.status,
+                co.delivery_person_name, co.delivery_person_phone,
+                co.delivery_status, co.created_at
             FROM custom_orders co
             LEFT JOIN customers c ON co.customer_id = c.id
             ORDER BY co.created_at DESC
@@ -1498,6 +1501,79 @@ def update_admin_order(order_id):
 
         return jsonify({
             "error": "Could not update order status."
+        }), 500
+
+    finally:
+        close_db(cursor, connection)
+
+
+@app.route("/api/admin/orders/<int:order_id>/delivery", methods=["PATCH"])
+def update_admin_order_delivery(order_id):
+    if not admin_required():
+        return jsonify({
+            "error": "Please log in as an administrator."
+        }), 401
+
+    data = request.get_json(silent=True) or {}
+
+    name = str(data.get("delivery_person_name") or "").strip()
+    phone = str(data.get("delivery_person_phone") or "").strip()
+    delivery_status = str(data.get("delivery_status") or "").strip()
+
+    allowed_delivery_statuses = [
+        "Not Assigned",
+        "Assigned",
+        "Out for Delivery",
+        "Delivered"
+    ]
+
+    if delivery_status not in allowed_delivery_statuses:
+        return jsonify({"error": "Invalid delivery status."}), 400
+
+    if delivery_status == "Not Assigned":
+        name = None
+        phone = None
+    elif not name or not phone or len(phone) < 7 or len(phone) > 30:
+        return jsonify({
+            "error": "Enter the delivery person's name and a valid phone number."
+        }), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            UPDATE custom_orders
+            SET delivery_person_name = %s,
+                delivery_person_phone = %s,
+                delivery_status = %s
+            WHERE id = %s
+        """, (name, phone, delivery_status, order_id))
+
+        if cursor.rowcount == 0:
+            cursor.execute(
+                "SELECT id FROM custom_orders WHERE id = %s",
+                (order_id,)
+            )
+            if not cursor.fetchone():
+                return jsonify({"error": "Custom order not found."}), 404
+
+        connection.commit()
+
+        return jsonify({
+            "message": "Delivery details updated successfully."
+        })
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        app.logger.exception("Updating delivery assignment failed")
+        return jsonify({
+            "error": "Could not update delivery details."
         }), 500
 
     finally:
