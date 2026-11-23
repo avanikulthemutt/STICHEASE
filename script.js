@@ -957,7 +957,7 @@ async function renderOrders() {
 
             const qrImage = document.createElement("img");
             qrImage.className = "order-payment-qr";
-            qrImage.src = "/images/upi-qr.png.jpeg";
+            qrImage.src = "/images/upi-qr-cropped.jpg";
             qrImage.alt = "Stitchease boutique UPI payment QR code";
             qrImage.loading = "lazy";
 
