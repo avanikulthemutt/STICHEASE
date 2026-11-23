@@ -2360,3 +2360,213 @@ STITCHEASE - CUSTOMER REVIEW DESIGN
     font-size: .8rem;
     color: #665B4E;
 }
+
+/* =========================================
+   STITCHEASE - MODERN UPI PAYMENT DESIGN
+========================================= */
+
+.orders-list .order-payment-panel {
+    margin-top: 24px;
+    padding: 24px;
+    border: 1px solid #E8DCC3;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #FFFCF5, #F8F1E4);
+    box-shadow: 0 8px 24px rgba(58, 48, 36, 0.06);
+}
+
+.orders-list .order-payment-panel h4 {
+    color: #3A3024;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.orders-list .order-payment-description {
+    color: #817463;
+    font-size: .88rem;
+    margin-bottom: 22px;
+}
+
+.orders-list .order-payment-content {
+    display: grid;
+    grid-template-columns: minmax(170px, 220px) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 22px;
+}
+
+.orders-list .order-payment-qr {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    padding: 12px;
+    background: #FFFFFF;
+    border: 1px solid #E8DFC9;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(58, 48, 36, 0.06);
+}
+
+.orders-list .order-payment-info {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid #EAE0CF;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.orders-list .order-payment-info p {
+    color: #665B4E;
+    font-size: .87rem;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.orders-list .order-payment-info p:first-child {
+    margin: 0 0 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #EEE6D8;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #806018;
+}
+
+.orders-list .order-payment-info p:first-child strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #817463;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.orders-list .order-payment-info p:nth-child(2) {
+    padding: 10px 12px;
+    background: #F8F3E9;
+    border-radius: 8px;
+}
+
+.orders-list .order-payment-info p:nth-child(2) strong {
+    display: block;
+    color: #817463;
+    font-size: .75rem;
+    margin-bottom: 3px;
+}
+
+.orders-list .order-payment-info .order-payment-status {
+    display: inline-block;
+    padding: 6px 11px;
+    border-radius: 20px;
+    background: #FFF2D5;
+    color: #806018;
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.orders-list .order-pay-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 14px 0;
+    padding: 13px 18px;
+    border-radius: 9px;
+    background: #806018;
+    color: #FFFFFF;
+    font-size: .9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background .2s ease, transform .2s ease;
+}
+
+.orders-list .order-pay-button:hover {
+    background: #604716;
+    transform: translateY(-1px);
+}
+
+.orders-list .payment-reference-label {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 7px;
+    color: #3A3024;
+    font-size: .83rem;
+    font-weight: 700;
+}
+
+.orders-list .payment-reference-input {
+    display: block;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    padding: 12px 13px;
+    border: 1px solid #DCCBAA;
+    border-radius: 9px;
+    background: #FFFFFF;
+    color: #3A3024;
+    font-size: .87rem;
+    outline: none;
+}
+
+.orders-list .payment-reference-input:focus {
+    border-color: #806018;
+    box-shadow: 0 0 0 3px rgba(128, 96, 24, .10);
+}
+
+.orders-list .payment-reference-submit {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 9px;
+    background: #3A3024;
+    color: #FFFFFF;
+    font-size: .86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.orders-list .payment-reference-submit:hover {
+    background: #806018;
+}
+
+.orders-list .payment-reference-submit:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.orders-list .payment-reference-message {
+    margin-top: 10px;
+    color: #756A5B;
+    font-size: .78rem;
+    line-height: 1.5;
+}
+
+.orders-list .order-payment-confirmed {
+    padding: 12px;
+    border-radius: 9px;
+    background: #EAF5EC;
+    color: #267347 !important;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .orders-list .order-payment-panel {
+        padding: 16px;
+    }
+
+    .orders-list .order-payment-content {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .orders-list .order-payment-qr {
+        width: 190px;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .orders-list .order-payment-info {
+        padding: 14px;
+    }
+}
