@@ -321,6 +321,58 @@ a {
     margin-top: 10px;
 }
 
+.model-profile-group {
+    padding: 16px 13px;
+    border: 1px solid #E8D79F;
+    border-radius: 9px;
+    background: #FFFCF3;
+}
+
+.model-profile-group .fit-label {
+    margin: 13px 0 8px;
+}
+
+.skin-tone-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0 5px;
+}
+
+.skin-tone {
+    width: 27px;
+    height: 27px;
+    padding: 0;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #E9B99A;
+    box-shadow: 0 0 0 1px #D8D0C2;
+}
+
+.skin-tone.active {
+    box-shadow: 0 0 0 2px #C49A32;
+}
+
+.height-slider {
+    width: 100%;
+    accent-color: #B58A25;
+    margin: 8px 0 2px;
+}
+
+#modelHeightValue {
+    color: #98751C;
+    font-weight: 800;
+}
+
+.model-shapes {
+    gap: 6px;
+}
+
+.model-shapes .option {
+    padding: 8px 9px;
+}
+
 /* MEASUREMENTS */
 
 .measurements-group {

@@ -133,6 +133,35 @@
                 </div>
             </div>
 
+            <!-- MODEL APPEARANCE -->
+
+            <div class="control-group model-profile-group">
+                <h3>Personalise your mannequin</h3>
+
+                <label class="fit-label">Body shape</label>
+                <div class="option-row model-shapes">
+                    <button type="button" class="option" data-body-shape="Slim">Slim</button>
+                    <button type="button" class="option active" data-body-shape="Average">Average</button>
+                    <button type="button" class="option" data-body-shape="Curvy">Curvy</button>
+                    <button type="button" class="option" data-body-shape="Plus-size">Plus-size</button>
+                </div>
+
+                <label class="fit-label">Skin tone</label>
+                <div class="skin-tone-row">
+                    <button type="button" class="skin-tone active" data-skin-tone="#F5D7C3" aria-label="Light skin tone" title="Light"></button>
+                    <button type="button" class="skin-tone" data-skin-tone="#E9B99A" aria-label="Medium-light skin tone" title="Medium-light"></button>
+                    <button type="button" class="skin-tone" data-skin-tone="#C98F68" aria-label="Medium skin tone" title="Medium"></button>
+                    <button type="button" class="skin-tone" data-skin-tone="#A96C4D" aria-label="Medium-deep skin tone" title="Medium-deep"></button>
+                    <button type="button" class="skin-tone" data-skin-tone="#754832" aria-label="Deep skin tone" title="Deep"></button>
+                    <button type="button" class="skin-tone" data-skin-tone="#4B2E22" aria-label="Dark skin tone" title="Dark"></button>
+                </div>
+
+                <label class="fit-label" for="modelHeight">
+                    Height <span id="modelHeightValue">160 cm</span>
+                </label>
+                <input type="range" id="modelHeight" min="145" max="175" value="160" step="1" class="height-slider">
+            </div>
+
             <!-- MEASUREMENTS -->
 
             <div class="control-group measurements-group">
@@ -249,10 +278,11 @@
                         </pattern>
                     </defs>
 
+                    <g id="modelFigure">
                     <ellipse cx="130" cy="48" rx="29" ry="31" fill="#2A1A14"/>
-                    <circle cx="130" cy="53" r="23" fill="#E9B99A"/>
+                    <circle id="modelFace" cx="130" cy="53" r="23" fill="#E9B99A"/>
                     <path d="M106 48 Q130 15 154 48 Q145 34 130 34 Q115 34 106 48Z" fill="#2A1A14"/>
-                    <rect x="121" y="74" width="18" height="28" fill="#E9B99A"/>
+                    <rect id="modelNeck" x="121" y="74" width="18" height="28" fill="#E9B99A"/>
 
                     <path id="leftArm" d="M91 112 L66 185 L78 190 L105 140Z" fill="#E9B99A"/>
                     <path id="rightArm" d="M169 112 L194 185 L182 190 L155 140Z" fill="#E9B99A"/>
@@ -278,6 +308,7 @@
                     <path d="M89 425 L122 425 L122 434 L83 434Z" fill="#071B35"/>
                     <path d="M140 425 L171 425 L178 434 L140 434Z" fill="#071B35"/>
 
+                    </g>
                 </svg>
 
                 <div class="preview-caption" id="previewCaption">

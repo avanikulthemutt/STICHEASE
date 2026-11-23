@@ -78,6 +78,17 @@ let toastTimer = null;
 /* NEW: Price stays hidden until customisation begins. */
 let hasStartedDesigning = false;
 
+const modelProfile = {
+    bodyShape: "Average",
+    skinTone: "#E9B99A",
+    height: 160
+};
+
+const allowedSkinTones = [
+    "#F5D7C3", "#E9B99A", "#C98F68",
+    "#A96C4D", "#754832", "#4B2E22"
+];
+
 
 /* =========================================
    REMOVE OLD PHOTO AND FACE FEATURES
@@ -439,6 +450,88 @@ $("fitPreference")?.addEventListener("change", () => {
 
 
 /* =========================================
+   MANNEQUIN APPEARANCE
+========================================= */
+
+function saveModelProfile() {
+    localStorage.setItem("stitcheaseModelProfile", JSON.stringify(modelProfile));
+}
+
+function initialiseModelProfile() {
+    try {
+        const saved = JSON.parse(localStorage.getItem("stitcheaseModelProfile") || "{}");
+
+        if (["Slim", "Average", "Curvy", "Plus-size"].includes(saved.bodyShape)) {
+            modelProfile.bodyShape = saved.bodyShape;
+        }
+
+        if (allowedSkinTones.includes(saved.skinTone)) {
+            modelProfile.skinTone = saved.skinTone;
+        }
+
+        if (Number.isFinite(Number(saved.height))) {
+            modelProfile.height = clamp(Number(saved.height), 145, 175);
+        }
+    } catch (error) {
+        console.warn("Using default mannequin appearance.");
+    }
+
+    document.querySelectorAll("[data-body-shape]").forEach(button => {
+        button.classList.toggle("active", button.dataset.bodyShape === modelProfile.bodyShape);
+
+        button.addEventListener("click", () => {
+            modelProfile.bodyShape = button.dataset.bodyShape;
+
+            document.querySelectorAll("[data-body-shape]").forEach(item => {
+                item.classList.toggle("active", item === button);
+            });
+
+            saveModelProfile();
+            renderDesign();
+        });
+    });
+
+    document.querySelectorAll("[data-skin-tone]").forEach(button => {
+        button.style.backgroundColor = button.dataset.skinTone;
+        button.classList.toggle("active", button.dataset.skinTone === modelProfile.skinTone);
+
+        button.addEventListener("click", () => {
+            modelProfile.skinTone = button.dataset.skinTone;
+
+            document.querySelectorAll("[data-skin-tone]").forEach(item => {
+                item.classList.toggle("active", item === button);
+            });
+
+            saveModelProfile();
+            renderDesign();
+        });
+    });
+
+    const heightInput = $("modelHeight");
+
+    if (heightInput) {
+        heightInput.value = modelProfile.height;
+        heightInput.addEventListener("input", () => {
+            modelProfile.height = Number(heightInput.value);
+
+            if ($("modelHeightValue")) {
+                $("modelHeightValue").textContent = `${modelProfile.height} cm`;
+            }
+
+            saveModelProfile();
+            renderDesign();
+        });
+    }
+
+    if ($("modelHeightValue")) {
+        $("modelHeightValue").textContent = `${modelProfile.height} cm`;
+    }
+
+    saveModelProfile();
+}
+
+
+/* =========================================
    MEASUREMENT-BASED PROPORTIONS
 ========================================= */
 
@@ -467,8 +560,15 @@ function getPreviewScales() {
         Relaxed: 1.07
     }[fitPreference] || 1;
 
+    const shapeScale = {
+        Slim: 0.94,
+        Average: 1,
+        Curvy: 1.08,
+        "Plus-size": 1.16
+    }[modelProfile.bodyShape] || 1;
+
     const widthScale = clamp(
-        ((bodyWidthScale * 0.8) + (shoulderScale * 0.2)) * fitScale,
+        ((bodyWidthScale * 0.8) + (shoulderScale * 0.2)) * fitScale * shapeScale,
         0.82,
         1.22
     );
@@ -495,6 +595,19 @@ function updateMeasurementPreview() {
     if (!group) return;
 
     const scales = getPreviewScales();
+
+    const heightScale = clamp(modelProfile.height / 160, 0.94, 1.06);
+    $("modelFigure")?.setAttribute(
+        "transform",
+        `translate(130 220) scale(1 ${heightScale}) translate(-130 -220)`
+    );
+
+    [
+        "modelFace", "modelNeck", "leftArm", "rightArm",
+        "leftLeg", "rightLeg", "neckShape"
+    ].forEach(id => {
+        $(id)?.setAttribute("fill", modelProfile.skinTone);
+    });
 
     group.setAttribute(
         "transform",
@@ -953,7 +1066,8 @@ function getDesignCopy() {
         sleeves: design.sleeves,
         length: design.length,
         print: design.print,
-        measurements: getMeasurementCopy()
+        measurements: getMeasurementCopy(),
+        modelProfile: { ...modelProfile }
     };
 }
 
@@ -1323,6 +1437,7 @@ function initialiseMeasurements() {
 function initialiseStudio() {
     removeUnwantedFeatures();
 
+    initialiseModelProfile();
     initialiseMeasurements();
     initialiseDesignOptions();
     initialiseStyleSuggestions();
