@@ -2228,3 +2228,95 @@ STITCHEASE - CUSTOMER REVIEW DESIGN
     }
 }
 
+
+/* STITCHEASE ORDER PAYMENT QR */
+.orders-list .order-payment-panel {
+    margin-top: 18px;
+    padding: 17px;
+    border: 1px solid #E5D9BD;
+    border-radius: 13px;
+    background: #FFFCF5;
+}
+
+.orders-list .order-payment-panel h4 {
+    margin: 0 0 6px;
+    color: #3A3024;
+    font-size: 1rem;
+}
+
+.orders-list .order-payment-description {
+    margin: 0 0 14px;
+    color: #786F63;
+    font-size: .8rem;
+    line-height: 1.5;
+}
+
+.orders-list .order-payment-content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.orders-list .order-payment-qr {
+    display: block;
+    width: 145px;
+    height: 145px;
+    object-fit: contain;
+    padding: 7px;
+    background: #FFFFFF;
+    border: 1px solid #E5DFD2;
+    border-radius: 10px;
+}
+
+.orders-list .order-payment-info {
+    flex: 1;
+    min-width: 190px;
+}
+
+.orders-list .order-payment-info p {
+    margin: 7px 0;
+    color: #665B4E;
+    font-size: .82rem;
+    overflow-wrap: anywhere;
+}
+
+.orders-list .order-payment-info strong {
+    color: #3A3024;
+}
+
+.orders-list .order-payment-status {
+    font-weight: 600;
+}
+
+.orders-list .order-pay-button {
+    display: inline-block;
+    margin-top: 9px;
+    padding: 10px 20px;
+    color: #FFFFFF;
+    background: #3A3024;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.orders-list .order-pay-button:hover {
+    background: #80652B;
+}
+
+.orders-list .order-payment-confirmed {
+    color: #267347 !important;
+    font-weight: 700;
+}
+
+@media (max-width: 480px) {
+    .orders-list .order-payment-content {
+        align-items: flex-start;
+    }
+
+    .orders-list .order-payment-qr {
+        width: 125px;
+        height: 125px;
+    }
+}

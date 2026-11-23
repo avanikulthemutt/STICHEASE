@@ -940,6 +940,93 @@ async function renderOrders() {
 
             card.append(header, details);
 
+            // UPI PAYMENT PANEL
+            const paymentPanel = document.createElement("section");
+            paymentPanel.className = "order-payment-panel";
+
+            const paymentHeading = document.createElement("h4");
+            paymentHeading.textContent = "Pay Boutique";
+
+            const paymentDescription = document.createElement("p");
+            paymentDescription.className = "order-payment-description";
+            paymentDescription.textContent =
+                "Scan the QR code or use the button below to pay for this order.";
+
+            const paymentContent = document.createElement("div");
+            paymentContent.className = "order-payment-content";
+
+            const qrImage = document.createElement("img");
+            qrImage.className = "order-payment-qr";
+            qrImage.src = "/images/upi-qr.png.jpeg";
+            qrImage.alt = "Stitchease boutique UPI payment QR code";
+            qrImage.loading = "lazy";
+
+            const paymentInfo = document.createElement("div");
+            paymentInfo.className = "order-payment-info";
+
+            const amountLine = document.createElement("p");
+            const amountLabel = document.createElement("strong");
+            amountLabel.textContent = "Amount: ";
+            amountLine.append(
+                amountLabel,
+                document.createTextNode(
+                    `₹${estimatedPrice.toLocaleString("en-IN")}`
+                )
+            );
+
+            const upiLine = document.createElement("p");
+            const upiLabel = document.createElement("strong");
+            upiLabel.textContent = "UPI ID: ";
+            upiLine.append(
+                upiLabel,
+                document.createTextNode("avanikulthemutt@okhdfcbank")
+            );
+
+            const paymentStatus = String(
+                order.payment_status || "Pending"
+            );
+
+            const paymentStatusLine = document.createElement("p");
+            paymentStatusLine.className = "order-payment-status";
+
+            const paymentStatusLabel = document.createElement("strong");
+            paymentStatusLabel.textContent = "Payment status: ";
+
+            paymentStatusLine.append(
+                paymentStatusLabel,
+                document.createTextNode(paymentStatus)
+            );
+
+            paymentInfo.append(amountLine, upiLine, paymentStatusLine);
+
+            if (paymentStatus.toLowerCase() !== "paid" &&
+                paymentStatus.toLowerCase() !== "refunded") {
+
+                const upiParams = new URLSearchParams({
+                    pa: "avanikulthemutt@okhdfcbank",
+                    pn: "Stitchease",
+                    am: estimatedPrice.toFixed(2),
+                    cu: "INR",
+                    tn: `Order #${order.id}`
+                });
+
+                const payLink = document.createElement("a");
+                payLink.className = "order-pay-button";
+                payLink.href = `upi://pay?${upiParams.toString()}`;
+                payLink.textContent = "Pay Now";
+                paymentInfo.appendChild(payLink);
+
+            } else if (paymentStatus.toLowerCase() === "paid") {
+                const paidNote = document.createElement("p");
+                paidNote.className = "order-payment-confirmed";
+                paidNote.textContent = "Payment verified by the boutique.";
+                paymentInfo.appendChild(paidNote);
+            }
+
+            paymentContent.append(qrImage, paymentInfo);
+            paymentPanel.append(paymentHeading, paymentDescription, paymentContent);
+            card.appendChild(paymentPanel);
+
             // ORDER TRACKING TIMELINE
 
             if (order.status !== "Cancelled") {

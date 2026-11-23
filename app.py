@@ -839,11 +839,19 @@ def get_customer_custom_orders(customer_id):
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
+        # Ensure payment status exists for customer order cards.
+        cursor.execute("SHOW COLUMNS FROM custom_orders LIKE 'payment_status'")
+        if not cursor.fetchone():
+            cursor.execute("""
+                ALTER TABLE custom_orders
+                ADD COLUMN payment_status VARCHAR(30) NOT NULL DEFAULT 'Pending'
+            """)
+
         cursor.execute("""
             SELECT
                 id, customer_id, outfit_type, colour, fabric,
                 occasion, description, duration_days, payment_mode,
-                estimated_price, status, created_at
+                estimated_price, status, payment_status, created_at
             FROM custom_orders
             WHERE customer_id = %s
             ORDER BY created_at DESC
