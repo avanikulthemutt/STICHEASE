@@ -2715,3 +2715,16 @@ STITCHEASE - CUSTOMER REVIEW DESIGN
         padding: 14px;
     }
 }
+
+
+/* Full-width layout for Appointment and Explore Fashion pages */
+#appointmentSection .content-main,
+#designsSection .content-main {
+    width: min(1400px, 94%);
+    max-width: 1400px;
+}
+
+/* Stack appointment form and appointment history */
+#appointmentSection .two-column-layout {
+    grid-template-columns: minmax(0, 1fr);
+}
