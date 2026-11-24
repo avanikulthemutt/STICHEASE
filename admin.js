@@ -255,6 +255,10 @@ function showPage(pageId) {
     if (pageId === "measurements") {
         loadMeasurements();
     }
+
+    if (pageId === "tailors") {
+        loadTailors();
+    }
 }
 
 
@@ -884,6 +888,296 @@ async function deleteCustomerReview(reviewId) {
     }
 }
 
+
+// ---------------- TAILOR MANAGEMENT ----------------
+
+let tailorRecords = [];
+
+async function loadTailors() {
+    const table = document.getElementById("tailorsTable");
+    if (!table) return;
+
+    table.innerHTML = `
+        <tr><td colspan="7" class="empty-state">
+            Loading tailoring team...
+        </td></tr>
+    `;
+
+    try {
+        const data = await apiRequest("/api/admin/tailors");
+        tailorRecords = data.tailors || [];
+        renderTailors();
+    } catch (error) {
+        table.innerHTML = `
+            <tr><td colspan="7" class="empty-state">
+                ${escapeHTML(error.message)}
+            </td></tr>
+        `;
+    }
+}
+
+function renderTailors() {
+    const table = document.getElementById("tailorsTable");
+    const search = (
+        document.getElementById("tailorSearch")?.value || ""
+    ).trim().toLowerCase();
+
+    if (!table) return;
+
+    const filtered = tailorRecords.filter(tailor => {
+        const searchable = [
+            tailor.name,
+            tailor.phone,
+            tailor.email,
+            tailor.specialisation
+        ].join(" ").toLowerCase();
+
+        return searchable.includes(search);
+    });
+
+    setText(
+        "tailorCount",
+        `${filtered.length} ${filtered.length === 1 ? "tailor" : "tailors"}`
+    );
+
+    if (!filtered.length) {
+        table.innerHTML = `
+            <tr><td colspan="7" class="empty-state">
+                ${tailorRecords.length
+                    ? "No matching tailors found."
+                    : "No tailors added yet. Add your first tailor above."}
+            </td></tr>
+        `;
+    } else {
+        table.innerHTML = filtered.map(tailor => {
+            const id = Number(tailor.id);
+
+            return `
+                <tr>
+                    <td>#${escapeHTML(id)}</td>
+                    <td><strong>${escapeHTML(tailor.name || "—")}</strong></td>
+                    <td>${escapeHTML(tailor.phone || "—")}</td>
+                    <td>${escapeHTML(tailor.email || "—")}</td>
+                    <td>${escapeHTML(tailor.specialisation || "—")}</td>
+                    <td>${escapeHTML(tailor.assigned_orders ?? 0)}</td>
+                    <td>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="editTailor(${id})">
+                            Edit
+                        </button>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="deleteTailor(${id})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    }
+
+    populateTailorAssignmentOptions();
+    refreshIcons();
+}
+
+function populateTailorAssignmentOptions() {
+    const tailorSelect = document.getElementById("assignmentTailor");
+    const orderSelect = document.getElementById("assignmentOrder");
+
+    if (!tailorSelect || !orderSelect) return;
+
+    const selectedTailor = tailorSelect.value;
+    const selectedOrder = orderSelect.value;
+
+    tailorSelect.innerHTML = `
+        <option value="">Choose a tailor</option>
+        ${tailorRecords.map(tailor => `
+            <option value="${escapeHTML(tailor.id)}">
+                ${escapeHTML(tailor.name)}
+                — ${escapeHTML(tailor.specialisation || "General Tailoring")}
+            </option>
+        `).join("")}
+    `;
+
+    const orders = dashboardData.orders || [];
+
+    orderSelect.innerHTML = `
+        <option value="">Choose an order</option>
+        ${orders.map(order => {
+            const id = getValue(order, "id", "order_id");
+            const customer = getValue(order, "customer_name", "name") || "Customer";
+            const outfit = getValue(order, "outfit_type", "outfit") || "Custom outfit";
+            const status = getValue(order, "status") || "Placed";
+
+            return `
+                <option value="${escapeHTML(id)}">
+                    #${escapeHTML(id)} — ${escapeHTML(customer)}
+                    — ${escapeHTML(outfit)} (${escapeHTML(status)})
+                </option>
+            `;
+        }).join("")}
+    `;
+
+    if (selectedTailor) tailorSelect.value = selectedTailor;
+    if (selectedOrder) orderSelect.value = selectedOrder;
+}
+
+async function handleTailorSubmit(event) {
+    event.preventDefault();
+
+    const id = document.getElementById("tailorId").value;
+
+    const tailor = {
+        name: document.getElementById("tailorName").value.trim(),
+        phone: document.getElementById("tailorPhone").value.trim(),
+        email: document.getElementById("tailorEmail").value.trim(),
+        specialisation: document.getElementById("tailorSpecialisation").value,
+        notes: document.getElementById("tailorNotes").value.trim()
+    };
+
+    const button = document.getElementById("tailorSubmitButton");
+    button.disabled = true;
+
+    try {
+        const result = await apiRequest(
+            id
+                ? `/api/admin/tailors/${encodeURIComponent(id)}`
+                : "/api/admin/tailors",
+            {
+                method: id ? "PATCH" : "POST",
+                body: JSON.stringify(tailor)
+            }
+        );
+
+        showMessage(
+            "tailorMessage",
+            result.message || (id ? "Tailor updated." : "Tailor added."),
+            true
+        );
+
+        resetTailorForm();
+        await loadTailors();
+
+    } catch (error) {
+        showMessage("tailorMessage", error.message);
+    } finally {
+        button.disabled = false;
+    }
+}
+
+function editTailor(tailorId) {
+    const tailor = tailorRecords.find(
+        item => Number(item.id) === Number(tailorId)
+    );
+
+    if (!tailor) return;
+
+    document.getElementById("tailorId").value = tailor.id;
+    document.getElementById("tailorName").value = tailor.name || "";
+    document.getElementById("tailorPhone").value = tailor.phone || "";
+    document.getElementById("tailorEmail").value = tailor.email || "";
+    document.getElementById("tailorSpecialisation").value =
+        tailor.specialisation || "";
+    document.getElementById("tailorNotes").value = tailor.notes || "";
+
+    setText("tailorFormTitle", "Edit Tailor");
+
+    const button = document.getElementById("tailorSubmitButton");
+    button.innerHTML = '<i data-lucide="save"></i> Update Tailor';
+
+    document.getElementById("tailorCancelButton").hidden = false;
+
+    showMessage("tailorMessage", "");
+    document.getElementById("tailorForm").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+    refreshIcons();
+}
+
+function resetTailorForm() {
+    const form = document.getElementById("tailorForm");
+    if (!form) return;
+
+    form.reset();
+    document.getElementById("tailorId").value = "";
+
+    setText("tailorFormTitle", "Add Tailor");
+
+    const button = document.getElementById("tailorSubmitButton");
+    button.innerHTML = '<i data-lucide="user-plus"></i> Add Tailor';
+
+    document.getElementById("tailorCancelButton").hidden = true;
+    showMessage("tailorMessage", "");
+    refreshIcons();
+}
+
+async function deleteTailor(tailorId) {
+    const tailor = tailorRecords.find(
+        item => Number(item.id) === Number(tailorId)
+    );
+
+    if (!tailor) return;
+
+    if (!confirm(
+        `Delete ${tailor.name} from the tailoring team?`
+    )) {
+        return;
+    }
+
+    try {
+        const result = await apiRequest(
+            `/api/admin/tailors/${encodeURIComponent(tailorId)}`,
+            { method: "DELETE" }
+        );
+
+        showMessage(
+            "tailorMessage",
+            result.message || "Tailor deleted successfully.",
+            true
+        );
+
+        await loadTailors();
+    } catch (error) {
+        showMessage("tailorMessage", error.message);
+    }
+}
+
+async function handleTailorAssignment(event) {
+    event.preventDefault();
+
+    const tailorId = document.getElementById("assignmentTailor").value;
+    const orderId = document.getElementById("assignmentOrder").value;
+
+    if (!tailorId || !orderId) {
+        showMessage("assignmentMessage", "Please select both a tailor and an order.");
+        return;
+    }
+
+    try {
+        const result = await apiRequest(
+            `/api/admin/tailors/${encodeURIComponent(tailorId)}/assign`,
+            {
+                method: "POST",
+                body: JSON.stringify({ order_id: Number(orderId) })
+            }
+        );
+
+        showMessage(
+            "assignmentMessage",
+            result.message || "Order assigned successfully.",
+            true
+        );
+
+        document.getElementById("assignmentForm").reset();
+
+        await loadTailors();
+    } catch (error) {
+        showMessage("assignmentMessage", error.message);
+    }
+}
+
+
 // ---------------- LOGOUT ----------------
 
 async function logout() {
@@ -939,6 +1233,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("adminRegisterForm")
         .addEventListener("submit", handleAdminRegister);
+
+    document.getElementById("tailorForm")
+        .addEventListener("submit", handleTailorSubmit);
+
+    document.getElementById("assignmentForm")
+        .addEventListener("submit", handleTailorAssignment);
+
+    document.getElementById("tailorSearch")
+        .addEventListener("input", renderTailors);
 
     refreshIcons();
 });
