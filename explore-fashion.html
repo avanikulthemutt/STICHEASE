@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +25,7 @@
         <a href="/#customerDashboard">My account</a>
     </nav>
 
-    <a href="/#customerDashboard" class="account-link">My account ↗</a>
+    <a href="/#customerDashboard" class="account-link">My account ↗️</a>
 </header>
 
 <main class="studio-page">
@@ -34,9 +33,7 @@
     <section class="page-heading">
         <div>
             <p class="eyebrow">DESIGNED AROUND YOU</p>
-
             <h1>Customisation <em>Studio</em></h1>
-
             <p class="heading-description">
                 Start with an idea. Choose every detail. Create an outfit that feels completely yours.
             </p>
@@ -56,7 +53,6 @@
 
             <div class="panel-heading">
                 <span class="step-number">01</span>
-
                 <div>
                     <h2>Design your outfit</h2>
                     <p>Choose your preferred details</p>
@@ -65,7 +61,6 @@
 
             <div class="control-group">
                 <h3>Base garment</h3>
-
                 <div class="option-row">
                     <button type="button" class="option active" data-key="garment" data-value="Kurti">Kurti</button>
                     <button type="button" class="option" data-key="garment" data-value="Lehenga">Lehenga</button>
@@ -74,28 +69,42 @@
                 </div>
             </div>
 
-            <div class="control-group">
-                <h3>Fabric</h3>
+            <!-- FABRIC IMAGE OPTIONS -->
+            <div class="control-group fabric-control-group">
+                <h3>Choose your fabric</h3>
+                <p class="fabric-description">Select the material you would like for your outfit.</p>
 
-                <div class="option-row">
-                    <button type="button" class="option active" data-key="fabric" data-value="Cotton">Cotton</button>
-                    <button type="button" class="option" data-key="fabric" data-value="Silk">Silk</button>
-                    <button type="button" class="option" data-key="fabric" data-value="Chanderi">Chanderi</button>
-                    <button type="button" class="option" data-key="fabric" data-value="Georgette">Georgette</button>
+                <div class="fabric-grid">
+                    <button type="button" class="fabric-card active" data-key="fabric" data-value="Cotton" aria-label="Select Cotton fabric">
+                        <img src="/images/fabrics/cotton.jpg" alt="Cotton fabric texture" onerror="this.src='/images/fabrics/image-placeholder.jpg'">
+                        <span>Cotton</span>
+                    </button>
+
+                    <button type="button" class="fabric-card" data-key="fabric" data-value="Silk" aria-label="Select Silk fabric">
+                        <img src="/images/fabrics/silk.jpg" alt="Silk fabric texture" onerror="this.src='/images/fabrics/image-placeholder.jpg'">
+                        <span>Silk</span>
+                    </button>
+
+                    <button type="button" class="fabric-card" data-key="fabric" data-value="Chanderi" aria-label="Select Chanderi fabric">
+                        <img src="/images/fabrics/chanderi.jpg" alt="Chanderi fabric texture" onerror="this.src='/images/fabrics/image-placeholder.jpg'">
+                        <span>Chanderi</span>
+                    </button>
+
+                    <button type="button" class="fabric-card" data-key="fabric" data-value="Georgette" aria-label="Select Georgette fabric">
+                        <img src="/images/fabrics/georgette.jpg" alt="Georgette fabric texture" onerror="this.src='/images/fabrics/image-placeholder.jpg'">
+                        <span>Georgette</span>
+                    </button>
                 </div>
             </div>
 
             <div class="control-group">
                 <h3>Choose a colour</h3>
-
                 <div class="swatch-row" id="colourSwatches"></div>
-
                 <p class="selected-colour" id="selectedColour">Navy</p>
             </div>
 
             <div class="control-group">
                 <h3>Neckline</h3>
-
                 <div class="option-row">
                     <button type="button" class="option active" data-key="neckline" data-value="Round">Round</button>
                     <button type="button" class="option" data-key="neckline" data-value="V-neck">V-neck</button>
@@ -105,7 +114,6 @@
 
             <div class="control-group">
                 <h3>Sleeves</h3>
-
                 <div class="option-row">
                     <button type="button" class="option active" data-key="sleeves" data-value="Sleeveless">Sleeveless</button>
                     <button type="button" class="option" data-key="sleeves" data-value="Short">Short</button>
@@ -115,7 +123,6 @@
 
             <div class="control-group">
                 <h3>Outfit length</h3>
-
                 <div class="option-row">
                     <button type="button" class="option" data-key="length" data-value="Short">Short</button>
                     <button type="button" class="option active" data-key="length" data-value="Knee length">Knee</button>
@@ -125,7 +132,6 @@
 
             <div class="control-group">
                 <h3>Print / detailing</h3>
-
                 <div class="option-row">
                     <button type="button" class="option active" data-key="print" data-value="Plain">Plain</button>
                     <button type="button" class="option" data-key="print" data-value="Gold dots">Gold dots</button>
@@ -165,7 +171,6 @@
             <!-- MEASUREMENTS -->
 
             <div class="control-group measurements-group">
-
                 <h3>
                     Your measurements
                     <span class="cm-tag">CM</span>
@@ -176,7 +181,6 @@
                 </p>
 
                 <div class="measurement-grid">
-
                     <label>
                         Bust
                         <input type="number" id="measureBust" min="1" max="100" step="0.5" placeholder="e.g. 90">
@@ -206,12 +210,9 @@
                         Garment length
                         <input type="number" id="measureLength" min="1" max="100" step="0.5" placeholder="e.g. 95">
                     </label>
-
                 </div>
 
-                <label class="fit-label" for="fitPreference">
-                    Preferred fit
-                </label>
+                <label class="fit-label" for="fitPreference">Preferred fit</label>
 
                 <select id="fitPreference" class="fit-select">
                     <option value="Regular">Regular fit</option>
@@ -220,15 +221,8 @@
                 </select>
 
                 <div class="measurement-actions">
-
-                    <button type="button" class="gold-button" id="applyMeasurements">
-                        Apply measurements
-                    </button>
-
-                    <button type="button" class="outline-button" id="clearMeasurements">
-                        Clear
-                    </button>
-
+                    <button type="button" class="gold-button" id="applyMeasurements">Apply measurements</button>
+                    <button type="button" class="outline-button" id="clearMeasurements">Clear</button>
                 </div>
 
                 <p class="measurement-status" id="measurementStatus" aria-live="polite">
@@ -238,7 +232,6 @@
                 <p class="measurement-note">
                     Please confirm final measurements with the boutique before stitching.
                 </p>
-
             </div>
 
         </aside>
@@ -246,28 +239,19 @@
         <!-- LIVE OUTFIT PREVIEW -->
 
         <section class="panel preview-panel">
-
             <div class="preview-topline">
-
                 <div>
                     <p class="eyebrow">YOUR CREATION</p>
                     <h2 id="previewTitle">Kurti in Cotton</h2>
                 </div>
 
-                <span class="live-tag">
-                    <i></i> Live preview
-                </span>
-
+                <span class="live-tag"><i></i> Live preview</span>
             </div>
 
             <div class="model-stage" id="modelStage">
-
-                <div class="preview-badge" id="previewBadge">
-                    Your design preview
-                </div>
+                <div class="preview-badge" id="previewBadge">Your design preview</div>
 
                 <svg id="outfitSvg" viewBox="0 0 260 440" role="img" aria-label="Illustrated outfit preview">
-
                     <defs>
                         <pattern id="dotPattern" width="13" height="13" patternUnits="userSpaceOnUse">
                             <circle cx="6" cy="6" r="2" fill="#FCE9A5"/>
@@ -279,128 +263,81 @@
                     </defs>
 
                     <g id="modelFigure">
-                    <ellipse cx="130" cy="48" rx="29" ry="31" fill="#2A1A14"/>
-                    <circle id="modelFace" cx="130" cy="53" r="23" fill="#E9B99A"/>
-                    <path d="M106 48 Q130 15 154 48 Q145 34 130 34 Q115 34 106 48Z" fill="#2A1A14"/>
-                    <rect id="modelNeck" x="121" y="74" width="18" height="28" fill="#E9B99A"/>
+                        <ellipse cx="130" cy="48" rx="29" ry="31" fill="#2A1A14"/>
+                        <circle id="modelFace" cx="130" cy="53" r="23" fill="#E9B99A"/>
+                        <path d="M106 48 Q130 15 154 48 Q145 34 130 34 Q115 34 106 48Z" fill="#2A1A14"/>
+                        <rect id="modelNeck" x="121" y="74" width="18" height="28" fill="#E9B99A"/>
 
-                    <path id="leftArm" d="M91 112 L66 185 L78 190 L105 140Z" fill="#E9B99A"/>
-                    <path id="rightArm" d="M169 112 L194 185 L182 190 L155 140Z" fill="#E9B99A"/>
+                        <path id="leftArm" d="M91 112 L66 185 L78 190 L105 140Z" fill="#E9B99A"/>
+                        <path id="rightArm" d="M169 112 L194 185 L182 190 L155 140Z" fill="#E9B99A"/>
 
-                    <g id="garmentGroup">
+                        <g id="garmentGroup">
+                            <path id="leftSleeve" d="" fill="#0B3D5C"/>
+                            <path id="rightSleeve" d="" fill="#0B3D5C"/>
+                            <path id="garmentShape" d="M92 103 Q130 91 168 103 L160 170 L190 325 L70 325 L100 170Z" fill="#0B3D5C"/>
+                            <path id="garmentPattern" d="" fill="none"/>
+                            <path id="neckShape" d="M111 101 Q130 128 149 101Z" fill="#E9B99A"/>
+                            <path d="M100 170 Q130 180 160 170" stroke="#FFC928" stroke-width="2" fill="none"/>
+                        </g>
 
-                        <path id="leftSleeve" d="" fill="#0B3D5C"/>
-                        <path id="rightSleeve" d="" fill="#0B3D5C"/>
-
-                        <path id="garmentShape" d="M92 103 Q130 91 168 103 L160 170 L190 325 L70 325 L100 170Z" fill="#0B3D5C"/>
-
-                        <path id="garmentPattern" d="" fill="none"/>
-
-                        <path id="neckShape" d="M111 101 Q130 128 149 101Z" fill="#E9B99A"/>
-
-                        <path d="M100 170 Q130 180 160 170" stroke="#FFC928" stroke-width="2" fill="none"/>
-
-                    </g>
-
-                    <path id="leftLeg" d="M91 320 L124 320 L120 425 L91 425Z" fill="#E7DDC9"/>
-                    <path id="rightLeg" d="M136 320 L169 320 L169 425 L140 425Z" fill="#E7DDC9"/>
-
-                    <path d="M89 425 L122 425 L122 434 L83 434Z" fill="#071B35"/>
-                    <path d="M140 425 L171 425 L178 434 L140 434Z" fill="#071B35"/>
-
+                        <path id="leftLeg" d="M91 320 L124 320 L120 425 L91 425Z" fill="#E7DDC9"/>
+                        <path id="rightLeg" d="M136 320 L169 320 L169 425 L140 425Z" fill="#E7DDC9"/>
+                        <path d="M89 425 L122 425 L122 434 L83 434Z" fill="#071B35"/>
+                        <path d="M140 425 L171 425 L178 434 L140 434Z" fill="#071B35"/>
                     </g>
                 </svg>
 
                 <div class="preview-caption" id="previewCaption">
                     Illustrative design preview · Final fit confirmed at the boutique
                 </div>
-
             </div>
 
             <div class="price-strip">
-
                 <div>
                     <small>Estimated price</small>
                     <strong id="estimatedPrice">Design your outfit to see the estimated price</strong>
                 </div>
-
                 <span class="estimate-label">Indicative estimate</span>
-
             </div>
 
             <div class="preview-buttons">
-
-                <button type="button" class="outline-button" id="saveDesign">
-                    ♡ Save design
-                </button>
-
-                <button type="button" class="gold-button" id="bookFitting">
-                    Book a fitting ↗
-                </button>
-
+                <button type="button" class="outline-button" id="saveDesign">♡ Save design</button>
+                <button type="button" class="gold-button" id="bookFitting">Book a fitting ↗️</button>
             </div>
 
             <p class="price-disclaimer">
                 Final price may vary based on measurements, fabric availability and tailoring requirements.
             </p>
-
         </section>
 
         <!-- AI STUDIO -->
 
         <aside class="panel ai-panel">
-
             <div class="panel-heading">
-
                 <span class="step-number">02</span>
-
                 <div>
                     <h2>AI Studio</h2>
                     <p>Your personal style companion</p>
                 </div>
-
             </div>
 
             <div class="ai-card">
-
-                <h3>
-                    <span class="gold-dot"></span>
-                    Style match
-                </h3>
-
-                <p class="card-description">
-                    Choose an occasion for a styling suggestion.
-                </p>
+                <h3><span class="gold-dot"></span> Style match</h3>
+                <p class="card-description">Choose an occasion for a styling suggestion.</p>
 
                 <div class="occasion-options">
-
-                    <button type="button" class="occasion active" data-occasion="Wedding guest">
-                        Wedding guest
-                    </button>
-
-                    <button type="button" class="occasion" data-occasion="Festive">
-                        Festive
-                    </button>
-
-                    <button type="button" class="occasion" data-occasion="Office">
-                        Office
-                    </button>
-
+                    <button type="button" class="occasion active" data-occasion="Wedding guest">Wedding guest</button>
+                    <button type="button" class="occasion" data-occasion="Festive">Festive</button>
+                    <button type="button" class="occasion" data-occasion="Office">Office</button>
                 </div>
 
                 <div class="suggestion-box" id="styleSuggestion">
                     Pick an occasion and we’ll suggest a design to match.
                 </div>
-
             </div>
 
             <div class="ai-card">
-
-                <h3>
-                    <span class="gold-dot"></span>
-                    Design from a reference photo
-                </h3>
-
+                <h3><span class="gold-dot"></span> Design from a reference photo</h3>
                 <p class="card-description">
                     Upload an outfit image to preview it and extract its main colours.
                 </p>
@@ -418,18 +355,11 @@
                 </div>
 
                 <div class="palette" id="referencePalette"></div>
-
                 <p class="reference-status" id="referenceStatus" aria-live="polite"></p>
-
             </div>
 
             <div class="ai-card see-on-you-card">
-
-                <h3>
-                    <span class="gold-dot"></span>
-                    See it on you
-                </h3>
-
+                <h3><span class="gold-dot"></span> See it on you</h3>
                 <p class="card-description">
                     Upload a clear front-facing photo to detect facial landmarks and receive styling suggestions.
                 </p>
@@ -443,16 +373,11 @@
                 <input type="file" id="faceUpload" accept="image/*">
 
                 <div class="face-preview" id="facePreview" hidden>
-
                     <img id="faceImage" alt="Uploaded photo for face analysis">
-
                     <canvas id="faceCanvas" aria-label="Detected facial landmarks"></canvas>
-
                 </div>
 
-                <button type="button" class="navy-button" id="analyseFace">
-                    Analyse my face
-                </button>
+                <button type="button" class="navy-button" id="analyseFace">Analyse my face</button>
 
                 <div class="face-progress">
                     <span id="faceProgress"></span>
@@ -463,11 +388,8 @@
                 </p>
 
                 <div class="face-result" id="faceResult" hidden>
-
                     <p class="result-label">YOUR STYLE PROFILE</p>
-
                     <h4 id="faceShape">Face shape</h4>
-
                     <p id="faceDescription"></p>
 
                     <div class="face-tip">
@@ -488,11 +410,8 @@
                     <p class="face-disclaimer">
                         This is an approximate styling suggestion, not a medical or identity analysis.
                     </p>
-
                 </div>
-
             </div>
-
         </aside>
 
     </section>
@@ -500,27 +419,20 @@
     <!-- SAVED DESIGNS -->
 
     <section class="saved-section" id="savedDesignsSection">
-
         <div class="saved-heading">
-
             <div>
                 <p class="eyebrow">YOUR PERSONAL COLLECTION</p>
                 <h2>My saved designs</h2>
             </div>
-
             <span id="savedCount">0 designs saved</span>
-
         </div>
 
         <div class="saved-grid" id="savedDesigns">
-
             <div class="empty-saved">
                 <span>♡</span>
                 <p>Your saved designs will appear here.</p>
             </div>
-
         </div>
-
     </section>
 
 </main>
@@ -528,13 +440,9 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <footer class="footer">
-
     <a href="/" class="logo">Stitchease<span>.</span></a>
-
     <p>Your style. Your way.</p>
-
-    <small>© 2026 STITCHEASE. All rights reserved.</small>
-
+    <small>©️ 2026 STITCHEASE. All rights reserved.</small>
 </footer>
 
 <script src="/explore-fashion.js"></script>
